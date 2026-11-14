@@ -1,6 +1,6 @@
 --- a/UI/Packages/Inventory/window.xml
 +++ b/UI/Packages/Inventory/window.xml
-@@ -1,15 +1,21 @@
+@@ -1,15 +1,25 @@
  <root>
    <View name="inventory_body" view_layout="vertical" h_alignment="center" v_alignment="center">
      <View name="inventory_root" view_layout="stacked" weight="1">
@@ -11,7 +11,11 @@
 +           (core.scroll_bar), and the view gives up the bar's width while the bar shows. -->
 +      <View name="inventory_grid_holder" view_layout="horizontal">
 +        <ScrollView name="inventory_content" capture_input="true" weight="1">
-+          <ScrollViewChild name="inventory_grid" view_layout="grid" grid_columns="1" min_columns="1" grid_spacing="4" h_alignment="center" layout_borders="Rect(0,4,0,0)" />
++          <!-- The slots' outlines 5 pixels clear of the window's left line and 4 under the title's line, as in the
++               original client: the content starts half a pixel right of that line and a pixel under the title's, and
++               each slot picture has a dark pixel around its outline at the sides. main.lua sizes the window so that
++               they stand as far from the right line, or 4 from the scroll bar. -->
++          <ScrollViewChild name="inventory_grid" view_layout="grid" grid_columns="1" min_columns="1" grid_spacing="4" h_alignment="left" layout_borders="Rect(3.5,3,0,0)" />
 +        </ScrollView>
 +      </View>
        <View name="inventory_list" view_layout="vertical" visible="false" />

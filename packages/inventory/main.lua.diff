@@ -14,7 +14,23 @@
  local list_host = ui.find(content, "inventory_list")
  local search_query = ui.find(content, "search_query")
  local FOOTER_HEIGHT = 26
-@@ -154,8 +158,15 @@
+@@ -150,12 +154,30 @@
+ 		cells:show(entries)
+ 	end
+ end
+-local sizing = Grid.slots(capacity)
++-- The slots as far from the window's frame as in the original client: their outlines 5 pixels clear of its left and
++-- right lines and 4 under the title's line (window.xml), and with the scroll bar 4 from it, the bar a pixel short of
++-- the right line. Grid.size counts Spiritech's: 4 pixels on either side, 5 under the title and 12 for the bar.
++local function slot_sizing(maximum)
++	local slots = Grid.slots(maximum)
++	function slots:size(columns, rows, scrollbar)
++		local width, height = Grid.size(self, columns, rows, scrollbar)
++		return width + (scrollbar and 1 or 2), height - 1
++	end
++	return slots
++end
++local sizing = slot_sizing(capacity)
  local function footer_height(search)
  	return (search or counts_slots) and FOOTER_HEIGHT or 0
  end
@@ -30,7 +46,7 @@
  	ui.visible(footer, shown)
  	ui.visible(search_query, searchable)
  	ui.visible(footer_spacer, not searchable)
-@@ -178,8 +189,12 @@
+@@ -178,8 +200,12 @@
  		local _, max_height = sizing:size(1, capacity, true)
  		ui.limits(window.root, min_width, min_height + reserved_height, max_width, max_height + reserved_height)
  		width, height = math.max(width, min_width), math.max(height, min_height + reserved_height)
@@ -45,7 +61,7 @@
  		height = height + reserved_height
  		title_visible = columns >= 3
  		ui.size(grid, columns * 58 - 4, -1)
-@@ -200,7 +215,7 @@
+@@ -200,7 +226,7 @@
  	list:clear()
  	mode = value
  	selected, splitting, split_count = -1, -1, ""
@@ -54,7 +70,7 @@
  	ui.visible(list_host, mode == "list")
  	ui.menu.checked(frame.icon, 1, mode == "list")
  	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
-@@ -230,7 +245,7 @@
+@@ -230,14 +256,14 @@
  	},
  })
  ui.root(frame.root)
@@ -63,7 +79,15 @@
  ui.visible(list_host, mode == "list")
  ui.publish("view_mode", mode)
  
-@@ -265,7 +280,8 @@
+ function inventory_configure(configuration)
+ 	capacity, request_close = math.max(1, configuration.capacity), configuration.request_close
+ 	frame.placement.options.remember_open = not request_close
+-	sizing = Grid.slots(capacity)
++	sizing = slot_sizing(capacity)
+ 	ui.grid_columns(grid, capacity)
+ 	ui.text(ui.find(frame.root, "window_title"), configuration.title)
+ 	ui.place(frame.root, configuration.x, configuration.y)
+@@ -265,7 +291,8 @@
  			occupied[#occupied + 1] = entry
  		end
  	end
@@ -73,7 +97,7 @@
  	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
  	reconcile()
  end
-@@ -336,6 +352,7 @@
+@@ -336,6 +363,7 @@
  		return
  	end
  	credits_shown = available
@@ -81,7 +105,7 @@
  	ui.visible(credits_section, available)
  	choose_credits("")
  	if not available then
-@@ -358,7 +375,7 @@
+@@ -358,7 +386,7 @@
  		bind_credits_transfer()
  	end
  	ui.grid_columns(grid, capacity)

@@ -1,6 +1,6 @@
 --- a/UI/Packages/Core/tooltip_delay.lua
 +++ b/UI/Packages/Core/tooltip_delay.lua
-@@ -0,0 +1,158 @@
+@@ -0,0 +1,171 @@
 +-- Tooltips that wait for the pointer to rest, as in the original client. Spiritech shows a tooltip the moment the
 +-- pointer touches a view, so sweeping it over the shortcut bars or a grid pops one up after another; the original
 +-- client showed one only once the pointer had rested on its view for about a second. The client has no delay of its
@@ -19,7 +19,20 @@
 +-- Tooltips that don't pass through Lua keep showing at once: those a layout file sets (the tooltip attribute) and the
 +-- client's own, such as the item descriptions in the inventory, the bank and the Wear window.
 +do
-+	local DELAY = 1000 -- milliseconds; 0 shows tooltips at once, as Spiritech does
++	-- The delay is the player's answer to the installer, which writes it into ui_plus_settings.xml as the width of its
++	-- tooltip_delay view (Lua can read a view's size, not its text): milliseconds, 0 for tooltips at once, as Spiritech
++	-- shows them. Without that file, a second.
++	local function setting()
++		local loaded, settings = pcall(ui.shared_layout, "ui_plus_settings.xml")
++		if not loaded then
++			return 1000
++		end
++		local read, delay = pcall(ui.minimum_width, settings)
++		ui.destroy(settings)
++		return read and delay or 1000
++	end
++
++	local DELAY = math.min(setting(), 10000)
 +
 +	if DELAY > 0 then
 +		local set_tooltip, observe_pointer = ui.tooltip, ui.on_pointer

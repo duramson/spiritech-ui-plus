@@ -40,6 +40,8 @@ $Skip = @('.DS_Store', 'Thumbs.db', 'desktop.ini')
 $NoNl = [string][char]0   # marks a last line without a line break while patching
 $Utf8 = New-Object System.Text.UTF8Encoding($false)
 $StrictUtf8 = New-Object System.Text.UTF8Encoding($false, $true)
+$SettingsName = 'ui_plus_settings.xml'   # in UI\Packages\Core: the settings the installer asks for, read by Core's Lua
+$DefaultTooltipDelay = 1000   # milliseconds the pointer rests before a tooltip shows, about the original client's wait
 
 function Say([string]$Text = '') { Write-Host $Text }
 
@@ -269,10 +271,11 @@ function Get-ClientVersion([string]$ClientDir) {
 
 function Read-State([string]$ClientDir) {
     $path = Join $ClientDir $StateName
-    $state = @{ version = $null; core = @{}; packages = @{}; fonts = @() }
+    $state = @{ version = $null; core = @{}; packages = @{}; fonts = @(); tooltip_delay = $DefaultTooltipDelay }
     if (Test-Path -LiteralPath $path) {
         $json = [IO.File]::ReadAllText($path) | ConvertFrom-Json
         $state.version = $json.version
+        if ($json.PSObject.Properties['tooltip_delay']) { $state.tooltip_delay = [int]$json.tooltip_delay }
         # the fonts install.py put in (fonts\pixelfont.py), kept for its uninstall; an install from before
         # Notum Grotesk 200 recorded only "font": true
         if ($json.PSObject.Properties['fonts']) {
@@ -294,7 +297,8 @@ function Read-State([string]$ClientDir) {
 function Save-State([string]$ClientDir, $State) {
     $path = Join $ClientDir $StateName
     if ($State.core.Count -gt 0 -or $State.packages.Count -gt 0) {
-        $data = @{ version = $State.version; core = $State.core; packages = $State.packages }
+        $data = @{ version = $State.version; core = $State.core; packages = $State.packages
+                   tooltip_delay = $State.tooltip_delay }
         if ($State.fonts.Count -gt 0) { $data.fonts = @($State.fonts) }
         $json = $data | ConvertTo-Json -Depth 6
         [IO.File]::WriteAllText($path, $json.Replace("`r`n", "`n") + "`n", $Utf8)
@@ -530,8 +534,64 @@ function Remove-Package($State, [string]$Name) {
 
 # ---- commands --------------------------------------------------------------------------------------------------------
 
+# ---- settings: one file in Core, read by its Lua ---------------------------------------------------------------------
+
+# The question before installing: how long the pointer rests on a button before its tooltip shows, in milliseconds.
+# Only asked when someone is there to answer; otherwise the last answer stays.
+function Read-TooltipDelay($State) {
+    $current = $State.tooltip_delay
+    if ([Console]::IsInputRedirected) { return $current }
+    Say 'Spiritech shows a tooltip the moment the pointer touches a button; the original client waited until the'
+    Say 'pointer had rested there for about a second. UI+ makes them wait (not yet the item tooltips in the'
+    Say 'inventory, bags, bank and Wear window, which the client draws itself).'
+    $shown = ($current / 1000).ToString([Globalization.CultureInfo]::InvariantCulture)
+    while ($true) {
+        $answer = (Read-Host "Seconds before a tooltip shows, 0 for at once [$shown]").Trim()
+        if (-not $answer) { Say; return $current }
+        $seconds = 0.0
+        $number = [double]::TryParse($answer.Replace(',', '.'), [Globalization.NumberStyles]::Float,
+                                     [Globalization.CultureInfo]::InvariantCulture, [ref]$seconds)
+        if ($number -and $seconds -ge 0 -and $seconds -le 5) {
+            Say
+            return [int][Math]::Round($seconds * 1000)
+        }
+        Say 'A number of seconds from 0 to 5, please.'
+    }
+}
+
+# ui_plus_settings.xml, the same bytes install.py writes. Lua can read a view's size but not its text, so each
+# setting is a view's width.
+function Get-SettingsXml($State) {
+    return "<?xml version=`"1.0`" encoding=`"utf-8`"?>`n<root>`n" +
+        "  <!-- duramson UI+'s settings, written by its installer: run it again to change them. The width of`n" +
+        "       tooltip_delay is how many milliseconds the pointer rests on a view before its tooltip shows`n" +
+        "       (tooltip_delay.lua); 0 shows them at once, as Spiritech does. -->`n" +
+        "  <View name=`"tooltip_delay`" min_size=`"Point($($State.tooltip_delay),0)`" />`n" +
+        "</root>`n"
+}
+
+function Write-Settings([string]$ClientDir, $State) {
+    $path = Join $ClientDir 'UI' 'Packages' 'Core' $SettingsName
+    $data = $Utf8.GetBytes((Get-SettingsXml $State))
+    if ((Test-Path -LiteralPath $path) -and (Get-Sha ([IO.File]::ReadAllBytes($path))) -eq (Get-Sha $data)) {
+        return 0
+    }
+    [IO.File]::WriteAllBytes($path, $data)
+    Say "  wrote UI/Packages/Core/$SettingsName"
+    return 1
+}
+
+function Remove-Settings([string]$ClientDir) {
+    $path = Join $ClientDir 'UI' 'Packages' 'Core' $SettingsName
+    if (Test-Path -LiteralPath $path) {
+        Remove-Item -LiteralPath $path
+        Say "  removed UI/Packages/Core/$SettingsName"
+    }
+}
+
 function Invoke-Install([string]$ClientDir) {
     $state = Read-State $ClientDir
+    $state.tooltip_delay = Read-TooltipDelay $state
     Say "Installing $Title $(Get-Version) into $ClientDir"
     $clientVersion = Get-ClientVersion $ClientDir
     if ($clientVersion -ne $MadeFor) {
@@ -547,7 +607,7 @@ function Invoke-Install([string]$ClientDir) {
     } catch {
         throw "Nothing was changed. $($_.Exception.Message)"
     }
-    $changed = Write-Core $ClientDir $state $core
+    $changed = (Write-Core $ClientDir $state $core) + (Write-Settings $ClientDir $state)
     foreach ($package in $packages) { $changed += Write-Package $ClientDir $state $package.Name $package.Files }
     $repoCore = @(Get-RepoCore | ForEach-Object { $_.Name.Substring(0, $_.Name.Length - '.diff'.Length) })
     foreach ($name in @($state.core.Keys)) { if ($repoCore -notcontains $name) { Remove-Core $ClientDir $state $name } }
@@ -573,6 +633,7 @@ function Invoke-Uninstall([string]$ClientDir) {
     Say "Removing $Title from $ClientDir"
     foreach ($name in @($state.core.Keys | Sort-Object)) { Remove-Core $ClientDir $state $name }
     foreach ($name in @($state.packages.Keys | Sort-Object)) { Remove-Package $state $name }
+    Remove-Settings $ClientDir
     Save-State $ClientDir $state
     Say 'Done. The client''s own UI is back at your next character login (the Options and login screens after a'
     Say 'restart). If you picked UI+''s windows in Options, the client falls back to its own ones.'
@@ -603,6 +664,11 @@ function Show-Status([string]$ClientDir) {
         } else {
             Say "  window $($source.Name): not installed yet"
         }
+    }
+    if ($state.tooltip_delay -gt 0) {
+        Say "  tooltips: after $(($state.tooltip_delay / 1000).ToString([Globalization.CultureInfo]::InvariantCulture)) s"
+    } else {
+        Say '  tooltips: at once, as Spiritech shows them'
     }
 }
 

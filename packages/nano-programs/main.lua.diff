@@ -1,8 +1,16 @@
 --- a/UI/Packages/NanoPrograms/main.lua
 +++ b/UI/Packages/NanoPrograms/main.lua
-@@ -9,7 +9,26 @@
+@@ -3,13 +3,34 @@
+ local Grid = ui.require("core.icon_grid")
+ local presentation = NanoPresentation
+ local Table = ui.require("core.table")
++local ScrollBar = ui.require("core.scroll_bar")
+ NanoPresentation = nil
+ 
+ local content = ui.load("window.xml")
  local list = ui.find(content, "nano_list")
  local grid_scroll = ui.find(content, "nano_grid_scroll")
++local grid_holder = ui.find(content, "nano_grid_holder")
  local grid = ui.find(content, "nano_grid")
 -local search = ui.find(content, "search")
 +-- Two layouts, picked in the window menu and remembered: the schools as tabs (as in the Wear window), or the bundled
@@ -28,7 +36,7 @@
  local favorites = ui.find(content, "school_favorites")
  ui.enabled(favorites, false)
  ui.tooltip(favorites, "Not implemented")
-@@ -23,23 +42,83 @@
+@@ -23,23 +44,83 @@
  local toolbar = ui.find(content, "toolbar")
  local first_row = ui.find(content, "toolbar_row")
  local LIST_MINIMUM_HEIGHT = 168
@@ -123,7 +131,7 @@
  local function toolbar_row(index)
  	if not toolbar_rows[index] then
  		toolbar_rows[index] = ui.load("toolbar_row.xml")
-@@ -52,26 +131,45 @@
+@@ -52,26 +133,45 @@
  		return
  	end
  	local room = width - Window.CONTENT_SIDES - TOOLBAR_SIDES
@@ -181,7 +189,7 @@
  local cells = Grid.cells({
  	host = grid,
  	template = "slot.xml",
-@@ -119,14 +217,32 @@
+@@ -119,14 +219,32 @@
  		populate()
  	end,
  })
@@ -219,7 +227,7 @@
  end
  
  local function reconcile()
-@@ -138,38 +254,75 @@
+@@ -138,38 +256,82 @@
  end
  
  local function layout(window, width, height)
@@ -278,23 +286,30 @@
  	reconcile()
  end
 +
++-- The original client's scroll bar over the grid's right edge (core.scroll_bar), its arrows a row of tiles at a time.
++-- As there, it stands a pixel clear of the frame's lines: right of it, under the top one, and in the tab layout over
++-- the bottom one; in the bundled layout it ends where the grid does, over the search field. place() sets it for each.
++local scroll_bar = ScrollBar.attach(grid_scroll, grid_holder, { step = cell_size + spacing, borders = { 0, 2, 2, 2 } })
++
 +-- Shows the chosen layout and moves the list and the grid into it, with the insets each layout gives them. The
 +-- other layout's search field takes over the text typed so far.
 +local function place()
 +	local tabbed = style == "tabs"
 +	if placed ~= style then
 +		ui.add(tabbed and nano_frame or bundled_body, list)
-+		ui.add(tabbed and nano_frame or bundled_body, grid_scroll)
++		ui.add(tabbed and nano_frame or bundled_body, grid_holder)
 +		if tabbed then
 +			ui.borders(list, 4, 4, 4, 4)
 +			ui.borders(grid_scroll, 4, 1, 4, 4)
 +			ui.borders(grid, 0, 4, 0, 0)
++			scroll_bar:borders(0, 2, 2, 2)
 +		else
 +			-- In the frame: the list and the tiles 4 pixels clear of its lines at the sides, and 4 above the search
 +			-- field's outline (for the grid, its scroll view's 3 and the pixel to spare in it).
 +			ui.borders(list, 4, 3, 4, 4)
 +			ui.borders(grid_scroll, 4, 1, 4, 3)
 +			ui.borders(grid, 0, 3, 0, 0)
++			scroll_bar:borders(0, 2, 2, 3)
 +		end
 +		placed = style
 +	end
@@ -306,7 +321,15 @@
  
  populate = function()
  	selected, matches = {}, {}
-@@ -203,8 +356,24 @@
+@@ -196,15 +358,31 @@
+ 	cells:clear()
+ 	mode = value
+ 	ui.visible(list, mode == "list")
+-	ui.visible(grid_scroll, mode == "grid")
++	ui.visible(grid_holder, mode == "grid")
+ 	ui.menu.checked(frame.icon, 1, mode == "list")
+ 	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
+ 	ui.preference.write("listview_config.listview_mode", tostring(mode == "list"), "bool")
  	ui.publish("view_mode", mode)
  end
  
@@ -332,7 +355,7 @@
  	content = content,
  	x = 10,
  	y = 174,
-@@ -219,29 +388,58 @@
+@@ -219,29 +397,58 @@
  				set_mode(mode == "list" and "grid" or "list")
  			end,
  		},
@@ -347,11 +370,12 @@
  })
  ui.root(frame.root)
  ui.visible(list, mode == "list")
- ui.visible(grid_scroll, mode == "grid")
+-ui.visible(grid_scroll, mode == "grid")
 -ui.on_text_changed(search, function(text)
 -	terms = {}
 -	for term in string.gmatch(string.lower(text), "%S+") do
 -		terms[#terms + 1] = term
++ui.visible(grid_holder, mode == "grid")
 +for _, field in pairs(searches) do
 +	ui.on_text_changed(field, function(text)
 +		search_text = text
@@ -405,3 +429,12 @@
  	end)
  end
  
+@@ -253,7 +460,7 @@
+ 
+ Security.on_unlock(function()
+ 	ui.visible(list, mode == "list")
+-	ui.visible(grid_scroll, mode == "grid")
++	ui.visible(grid_holder, mode == "grid")
+ 	ui.publish("view_mode", mode)
+ 	populate()
+ end)

@@ -1,6 +1,6 @@
 --- a/UI/Packages/NanoPrograms/window.xml
 +++ b/UI/Packages/NanoPrograms/window.xml
-@@ -1,21 +1,64 @@
+@@ -1,21 +1,68 @@
  <?xml version="1.0" encoding="utf-8"?>
  <root>
 +  <!-- Two layouts, picked in the window menu ("School Tabs"); main.lua moves the list and the grid between them. -->
@@ -32,9 +32,13 @@
 +                  left_gfx="GFX_GUI_TAB_BORDER_LEFT" top_gfx="GFX_GUI_TAB_BORDER_TOP"
 +                  right_gfx="GFX_GUI_TAB_BORDER_RIGHT" bottom_gfx="GFX_GUI_TAB_BORDER_BOTTOM" bg_gfx="GFX_GUI_TAB_BACKGROUND">
 +        <View name="nano_list" view_layout="vertical" weight="1" layout_borders="Rect(4,4,4,4)" />
-+        <ScrollView name="nano_grid_scroll" visible="false" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1" weight="1" layout_borders="Rect(4,1,4,4)">
-+          <ScrollViewChild name="nano_grid" view_layout="grid" grid_columns="60" min_columns="1" grid_spacing="2" h_alignment="left" layout_borders="Rect(0,4,0,0)" />
-+        </ScrollView>
++        <!-- The grid's scroll view without the client's own scroll bar, in a holder that main.lua moves between the
++             layouts: the original client's bar (core.scroll_bar) stands in it over the scroll view's right edge. -->
++        <View name="nano_grid_holder" view_layout="stacked" visible="false" weight="1">
++          <ScrollView name="nano_grid_scroll" capture_input="true" layout_borders="Rect(4,1,4,4)">
++            <ScrollViewChild name="nano_grid" view_layout="grid" grid_columns="60" min_columns="1" grid_spacing="2" h_alignment="left" layout_borders="Rect(0,4,0,0)" />
++          </ScrollView>
++        </View>
 +      </BorderView>
 +      <!-- The search under the frame, as in the Inventory window. -->
 +      <View name="footer" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(0,4,0,0)">

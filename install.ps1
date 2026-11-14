@@ -332,23 +332,37 @@ function Get-RepoPackages {
 
 # ---- Core: patched in place ------------------------------------------------------------------------------------------
 
+# Whether a Core file is UI+'s own, one the client doesn't have: it gets no kept copy, and uninstalling deletes it.
+# Earlier installers took such a file for the client's own when installing again and kept an empty copy of it, so an
+# empty kept copy means the same.
+function Test-MadeByUiPlus($Entry, [string]$Backup) {
+    return ([bool]$Entry.created -or
+            ((Test-Path -LiteralPath $Backup) -and (Get-Item -LiteralPath $Backup).Length -eq 0))
+}
+
 # The client's own file for a Core patch, without UI+'s changes: the kept copy while the installed file is still
-# UI+'s, else the file in the client with UI+'s last changes taken out where they are still in it.
+# UI+'s, else the file in the client with UI+'s last changes taken out where they are still in it. Nothing, for a
+# file UI+ makes.
 function Get-CoreBase([string]$ClientDir, $State, [string]$Name) {
     $target = Join $ClientDir 'UI' 'Packages' 'Core' $Name
     $backup = $target + $BackupSuffix
     $entry = $null
     if ($State.core.ContainsKey($Name)) { $entry = $State.core[$Name] }
+    $made = $null -ne $entry -and (Test-MadeByUiPlus $entry $backup)
     if (-not (Test-Path -LiteralPath $target)) {
-        return @{ Text = ''; Crlf = $false; Bom = $false; Created = ($null -eq $entry -or $entry.created) }
+        return @{ Text = ''; Crlf = $false; Bom = $false; Created = ($null -eq $entry -or $made) }
     }
     $data = [IO.File]::ReadAllBytes($target)
-    if ($entry -and (Test-Path -LiteralPath $backup) -and (Get-Sha $data) -eq $entry.sha) {
+    if ($entry -and -not $made -and (Test-Path -LiteralPath $backup) -and (Get-Sha $data) -eq $entry.sha) {
         return (ConvertFrom-FileBytes ([IO.File]::ReadAllBytes($backup)))
     }
     $file = ConvertFrom-FileBytes $data
-    if ($entry) {   # changed since UI+ installed it: a client update, or another mod editing UI+'s file
-        try { $file.Text = Invoke-Patch $file.Text $entry.diff $true } catch { }
+    # UI+'s own file, or changed since UI+ installed it: a client update, or another mod editing UI+'s file
+    if ($entry) {
+        try {
+            $file.Text = Invoke-Patch $file.Text $entry.diff $true
+            $file.Created = $made -and [string]::IsNullOrEmpty($file.Text)
+        } catch { }
     }
     return $file
 }
@@ -385,6 +399,12 @@ function Write-Core([string]$ClientDir, $State, $Plan) {
             if (-not (Test-Path -LiteralPath $backup) -or (Get-Sha ([IO.File]::ReadAllBytes($backup))) -ne (Get-Sha $data)) {
                 [IO.File]::WriteAllBytes($backup, $data)
             }
+        } elseif (Test-Path -LiteralPath $backup) {
+            # a kept copy of a file UI+ made: the empty one an earlier installer left
+            Remove-Item -LiteralPath $backup
+            Say ("  removed UI/Packages/Core/$($item.Name)$BackupSuffix " +
+                 "(UI+ made that file, the client has none to keep)")
+            $changed++
         }
         $data = ConvertTo-FileBytes $item.New $item.Base.Crlf $item.Base.Bom
         if (-not (Test-Path -LiteralPath $target) -or (Get-Sha ([IO.File]::ReadAllBytes($target))) -ne (Get-Sha $data)) {
@@ -402,14 +422,16 @@ function Remove-Core([string]$ClientDir, $State, [string]$Name) {
     $backup = $target + $BackupSuffix
     $entry = $State.core[$Name]
     $State.core.Remove($Name)
+    $made = Test-MadeByUiPlus $entry $backup
     if (-not (Test-Path -LiteralPath $target)) {
         if (Test-Path -LiteralPath $backup) { Remove-Item -LiteralPath $backup }
         return
     }
     $data = [IO.File]::ReadAllBytes($target)
     if ((Get-Sha $data) -eq $entry.sha) {
-        if ($entry.created) {
+        if ($made) {
             Remove-Item -LiteralPath $target
+            if (Test-Path -LiteralPath $backup) { Remove-Item -LiteralPath $backup }
             Say "  removed UI/Packages/Core/$Name"
         } elseif (Test-Path -LiteralPath $backup) {
             [IO.File]::WriteAllBytes($target, [IO.File]::ReadAllBytes($backup))
@@ -420,8 +442,14 @@ function Remove-Core([string]$ClientDir, $State, [string]$Name) {
     }
     $file = ConvertFrom-FileBytes $data
     try {
-        [IO.File]::WriteAllBytes($target, (ConvertTo-FileBytes (Invoke-Patch $file.Text $entry.diff $true) $file.Crlf $file.Bom))
-        Say "  took UI+'s changes out of UI/Packages/Core/$Name (it changed since UI+ installed it)"
+        $base = Invoke-Patch $file.Text $entry.diff $true
+        if ($made -and [string]::IsNullOrEmpty($base)) {
+            Remove-Item -LiteralPath $target
+            Say "  removed UI/Packages/Core/$Name"
+        } else {
+            [IO.File]::WriteAllBytes($target, (ConvertTo-FileBytes $base $file.Crlf $file.Bom))
+            Say "  took UI+'s changes out of UI/Packages/Core/$Name (it changed since UI+ installed it)"
+        }
     } catch {
         Say "  left UI/Packages/Core/${Name}: it changed since UI+ installed it and has none of UI+'s changes left"
     }

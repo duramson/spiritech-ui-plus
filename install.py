@@ -288,22 +288,32 @@ def files_of(root):
 
 # ---- Core: patched in place ------------------------------------------------------------------------------------------
 
+def made_by_ui_plus(entry, backup):
+    """Whether a Core file is UI+'s own, one the client doesn't have: it gets no kept copy, and uninstalling deletes
+    it. Earlier installers took such a file for the client's own when installing again and kept an empty copy of it,
+    so an empty kept copy means the same."""
+    return entry.get("created", False) or (backup.exists() and backup.stat().st_size == 0)
+
+
 def core_base(client, state, name):
     """The client's own file for a Core patch, without UI+'s changes: the kept copy while the installed file is still
-    UI+'s, else the file in the client with UI+'s last changes taken out where they are still in it."""
+    UI+'s, else the file in the client with UI+'s last changes taken out where they are still in it. Nothing, for a
+    file UI+ makes."""
     target = client / "UI" / "Packages" / "Core" / name
     backup = target.with_name(name + BACKUP)
     entry = state["core"].get(name)
+    made = entry is not None and made_by_ui_plus(entry, backup)
     if not target.exists():
-        return "", (False, False), entry is None or entry.get("created", False)
+        return "", (False, False), entry is None or made
     data = target.read_bytes()
-    if entry and backup.exists() and sha(data) == entry["sha"]:
+    if entry and not made and backup.exists() and sha(data) == entry["sha"]:
         text, style = decode(backup.read_bytes())
         return text, style, False
     text, style = decode(data)
-    if entry:  # changed since UI+ installed it: a client update, or another mod editing UI+'s file
+    if entry:  # UI+'s own file, or changed since UI+ installed it: a client update, or another mod editing UI+'s file
         try:
-            return apply_diff(text, entry["diff"], reverse=True), style, False
+            base = apply_diff(text, entry["diff"], reverse=True)
+            return base, style, made and not base
         except PatchError:
             pass
     return text, style, False
@@ -336,6 +346,10 @@ def write_core(client, state, plan):
             data = encode(base, style)
             if not backup.exists() or backup.read_bytes() != data:
                 backup.write_bytes(data)
+        elif backup.exists():  # a kept copy of a file UI+ made: the empty one an earlier installer left
+            backup.unlink()
+            say(f"  removed UI/Packages/Core/{name}{BACKUP} (UI+ made that file, the client has none to keep)")
+            changed += 1
         data = encode(new, style)
         if not target.exists() or target.read_bytes() != data:
             target.write_bytes(data)
@@ -349,13 +363,16 @@ def remove_core(client, state, name):
     core = client / "UI" / "Packages" / "Core"
     target, backup = core / name, core / (name + BACKUP)
     entry = state["core"].pop(name)
+    made = made_by_ui_plus(entry, backup)
     if not target.exists():
         if backup.exists():
             backup.unlink()
         return
     if sha(target.read_bytes()) == entry["sha"]:
-        if entry.get("created"):
+        if made:
             target.unlink()
+            if backup.exists():
+                backup.unlink()
             say(f"  removed UI/Packages/Core/{name}")
         elif backup.exists():
             target.write_bytes(backup.read_bytes())
@@ -364,8 +381,13 @@ def remove_core(client, state, name):
         return
     text, style = decode(target.read_bytes())
     try:
-        target.write_bytes(encode(apply_diff(text, entry["diff"], reverse=True), style))
-        say(f"  took UI+'s changes out of UI/Packages/Core/{name} (it changed since UI+ installed it)")
+        base = apply_diff(text, entry["diff"], reverse=True)
+        if made and not base:
+            target.unlink()
+            say(f"  removed UI/Packages/Core/{name}")
+        else:
+            target.write_bytes(encode(base, style))
+            say(f"  took UI+'s changes out of UI/Packages/Core/{name} (it changed since UI+ installed it)")
     except PatchError:
         say(f"  left UI/Packages/Core/{name}: it changed since UI+ installed it and has none of UI+'s changes left")
     if backup.exists():

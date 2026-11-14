@@ -28,7 +28,7 @@
  local favorites = ui.find(content, "school_favorites")
  ui.enabled(favorites, false)
  ui.tooltip(favorites, "Not implemented")
-@@ -23,10 +42,46 @@
+@@ -23,10 +42,47 @@
  local toolbar = ui.find(content, "toolbar")
  local first_row = ui.find(content, "toolbar_row")
  local LIST_MINIMUM_HEIGHT = 168
@@ -52,9 +52,10 @@
 +local GRID_SIDES, GRID_ENDS = 4 + 4, (1 + 4 + 4) - (4 + 3)
 +local TABS_GRID_TOOLBAR = INSET_ENDS + TAB_HEIGHT + GRID_ENDS + FOOTER
 +ui.size(searches.tabs, -1, CONTROL_HEIGHT)
-+-- Each tab as wide as its text: the text starts a few pixels in, and the tab's slanted right edge covers the last
-+-- part of it. Neighbours overlap as the Wear window's do.
-+local TAB_PADDING, TAB_OVERLAP = 24, 6
++-- Each tab as wide as its text: the text starts 6 pixels in (text_padding in window.xml: the client's own placement
++-- sat it close against the tab's curved left edge, closer than the original client does for a smaller font), and the
++-- tab's slanted right edge covers the last part of it. Neighbours overlap as the Wear window's do.
++local TAB_PADDING, TAB_OVERLAP = 26, 6
 +local tabs_width = 0
 +for index, tab in ipairs(tabs) do
 +	local text = ui.text_width(tab.view) or 0
@@ -77,7 +78,7 @@
  local toolbar_buttons = {
  	{ view = favorites, width = 121, row = 1 },
  	{ view = schools[1], width = 75, row = 1 },
-@@ -39,7 +94,7 @@
+@@ -39,7 +95,7 @@
  	ui.size(button.view, button.width, BUTTON_HEIGHT)
  end
  local toolbar_rows = { first_row }
@@ -86,7 +87,7 @@
  local function toolbar_row(index)
  	if not toolbar_rows[index] then
  		toolbar_rows[index] = ui.load("toolbar_row.xml")
-@@ -70,8 +125,9 @@
+@@ -70,8 +126,9 @@
  	end
  	toolbar_height = row * CONTROL_HEIGHT + (row - 1) * ROW_GAP + TOOLBAR_ENDS
  end
@@ -97,7 +98,7 @@
  local cells = Grid.cells({
  	host = grid,
  	template = "slot.xml",
-@@ -124,9 +180,28 @@
+@@ -124,9 +181,28 @@
  local maximum_extent = presentation.maximum_extent
  local maximum_columns = math.floor((maximum_extent - 16 + spacing) / step)
  local sizing = Grid.create(cell_size, spacing, 600)
@@ -129,7 +130,7 @@
  end
  
  local function reconcile()
-@@ -138,38 +213,74 @@
+@@ -138,38 +214,74 @@
  end
  
  local function layout(window, width, height)
@@ -215,7 +216,7 @@
  
  populate = function()
  	selected, matches = {}, {}
-@@ -203,6 +314,22 @@
+@@ -203,6 +315,22 @@
  	ui.publish("view_mode", mode)
  end
  
@@ -238,7 +239,7 @@
  frame = Window.create({
  	title = "Nano Programs",
  	content = content,
-@@ -219,29 +346,50 @@
+@@ -219,29 +347,50 @@
  				set_mode(mode == "list" and "grid" or "list")
  			end,
  		},

@@ -1,36 +1,38 @@
 --- a/UI/Packages/Core/window.xml
 +++ b/UI/Packages/Core/window.xml
-@@ -1,22 +1,22 @@
- <?xml version="1.0" standalone="yes"?>
+@@ -2,24 +2,24 @@
  <root>
    <View name="window" capture_input="true" color="Default" composite_layer="true" interaction_scope="true" view_layout="stacked">
--    <BorderView name="window_outer" border_gfx="GFX_GUI_WINDOW3_BORDER" bg_gfx="GFX_GUI_WINDOW_BACKGROUND" alpha="0.85" />
--    <BorderView name="window_inner" border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" alpha="0.85" layout_borders="Rect(4,26,4,4)" />
--    <View view_layout="vertical" weight="1" layout_borders="Rect(3,3,3,3)">
--      <View name="window_titlebar" view_layout="horizontal" capture_input="true" min_size="Point(-1,24)" max_size="Point(-1,24)">
--        <BitmapView name="window_icon" interactive="true" image="gfx://GFX_GUI_WINDOW_ICON_I" graphic_mode="tinted" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(2,0,0,1)" />
--        <View name="window_title_tab" view_layout="stacked" min_size="Point(-1,17)" max_size="Point(-1,17)" v_alignment="top" layout_borders="Rect(3,7,0,0)">
--          <BorderView border_style="horizontal" border_gfx="GFX_GUI_TAB_ACTIVE" alpha="0.85" />
-+    <BorderView name="window_outer" border_gfx="GFX_GUI_WINDOW3_BORDER" bg_gfx="GFX_GUI_WINDOW_BACKGROUND" alpha="0.33" />
-+    <BorderView name="window_inner" border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" alpha="0.85" layout_borders="Rect(3,23,3,3)" />
-+    <View view_layout="vertical" weight="1" layout_borders="Rect(2,3,2,2)">
-+      <View name="window_titlebar" view_layout="horizontal" capture_input="true" min_size="Point(-1,21)" max_size="Point(-1,21)">
-+        <BitmapView name="window_icon" interactive="true" image="gfx://GFX_GUI_WINDOW_ICON_I" graphic_mode="tinted" alpha="0.85" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(3,0,0,2)" />
-+        <View name="window_title_tab" view_layout="stacked" min_size="Point(-1,17)" max_size="Point(-1,17)" v_alignment="top" layout_borders="Rect(3,4,0,0)">
-+          <BorderView border_style="horizontal" border_gfx="GFX_GUI_TAB_ACTIVE" alpha="1" />
-           <View view_layout="horizontal">
--            <TextView name="window_title" weight="1" layout_borders="Rect(4,0,0,0)" v_alignment="center" />
-+            <TextView name="window_title" font_size="11" weight="1" layout_borders="Rect(6,0,0,0)" v_alignment="center" />
-             <HLayoutSpacer weight="0" min_size="Point(21,0)" max_size="Point(21,0)" />
+     <View name="window_floating" view_layout="stacked">
+-      <BorderView name="window_outer" border_gfx="GFX_GUI_WINDOW3_BORDER" bg_gfx="GFX_GUI_WINDOW_BACKGROUND" alpha="0.85" />
+-      <BorderView name="window_inner" border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" alpha="0.85" layout_borders="Rect(4,26,4,4)" />
+-      <View view_layout="vertical" weight="1" layout_borders="Rect(3,3,3,3)">
+-        <View name="window_titlebar" view_layout="horizontal" capture_input="true" min_size="Point(-1,24)" max_size="Point(-1,24)">
++      <BorderView name="window_outer" border_gfx="GFX_GUI_WINDOW3_BORDER" bg_gfx="GFX_GUI_WINDOW_BACKGROUND" alpha="0.33" />
++      <BorderView name="window_inner" border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" alpha="0.85" layout_borders="Rect(3,23,3,3)" />
++      <View view_layout="vertical" weight="1" layout_borders="Rect(2,3,2,2)">
++        <View name="window_titlebar" view_layout="horizontal" capture_input="true" min_size="Point(-1,21)" max_size="Point(-1,21)">
+           <View name="window_icon_slot" view_layout="stacked">
+-            <BitmapView name="window_icon" interactive="true" image="gfx://GFX_GUI_WINDOW_ICON_I" graphic_mode="tinted" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(2,0,0,1)" />
++            <BitmapView name="window_icon" interactive="true" image="gfx://GFX_GUI_WINDOW_ICON_I" graphic_mode="tinted" alpha="0.85" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(3,0,0,2)" />
            </View>
+-          <View name="window_title_tab" view_layout="stacked" min_size="Point(-1,17)" max_size="Point(-1,17)" v_alignment="top" layout_borders="Rect(3,7,0,0)">
+-            <BorderView border_style="horizontal" border_gfx="GFX_GUI_TAB_ACTIVE" alpha="0.85" />
++          <View name="window_title_tab" view_layout="stacked" min_size="Point(-1,17)" max_size="Point(-1,17)" v_alignment="top" layout_borders="Rect(3,4,0,0)">
++            <BorderView border_style="horizontal" border_gfx="GFX_GUI_TAB_ACTIVE" alpha="1" />
+             <View view_layout="horizontal">
+-              <TextView name="window_title" weight="1" layout_borders="Rect(4,0,0,0)" v_alignment="center" />
++              <TextView name="window_title" font_size="11" weight="1" layout_borders="Rect(6,0,0,0)" v_alignment="center" />
+               <HLayoutSpacer weight="0" min_size="Point(21,0)" max_size="Point(21,0)" />
+             </View>
+           </View>
+-          <View name="window_tabs" view_layout="horizontal" selected_on_top="true" v_alignment="top" min_size="Point(-1,17)" max_size="Point(-1,17)" layout_borders="Rect(3,7,0,0)" />
++          <View name="window_tabs" view_layout="horizontal" selected_on_top="true" v_alignment="top" min_size="Point(-1,17)" max_size="Point(-1,17)" layout_borders="Rect(3,4,0,0)" />
+           <HLayoutSpacer />
+-          <Button name="window_pin" visible="false" graphic_mode="tinted" alpha="0.6" active_alpha="0.85" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(0,0,3,1)" gfxid_raised="GFX_GUI_WINDOW_PIN" gfxid_hover="GFX_GUI_WINDOW_PIN_STATE2" gfxid_pressed="GFX_GUI_WINDOW_PIN_STATE3" />
+-          <Button name="window_close" visible="false" graphic_mode="tinted" alpha="0.6" active_alpha="0.85" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(0,0,4,1)" gfxid_raised="GFX_GUI_WINDOW_CLOSE_X" gfxid_hover="GFX_GUI_WINDOW_CLOSE_X_STATE2" gfxid_pressed="GFX_GUI_WINDOW_CLOSE_X_STATE3" />
++          <Button name="window_pin" visible="false" graphic_mode="tinted" alpha="0.85" active_alpha="1" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(0,0,3,2)" gfxid_raised="GFX_GUI_WINDOW_PIN" gfxid_hover="GFX_GUI_WINDOW_PIN_STATE2" gfxid_pressed="GFX_GUI_WINDOW_PIN_STATE3" />
++          <Button name="window_close" visible="false" graphic_mode="tinted" alpha="0.85" active_alpha="1" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(0,0,3,2)" gfxid_raised="GFX_GUI_WINDOW_CLOSE_X" gfxid_hover="GFX_GUI_WINDOW_CLOSE_X_STATE2" gfxid_pressed="GFX_GUI_WINDOW_CLOSE_X_STATE3" />
          </View>
--        <View name="window_tabs" view_layout="horizontal" selected_on_top="true" v_alignment="top" min_size="Point(-1,17)" max_size="Point(-1,17)" layout_borders="Rect(3,7,0,0)" />
-+        <View name="window_tabs" view_layout="horizontal" selected_on_top="true" v_alignment="top" min_size="Point(-1,17)" max_size="Point(-1,17)" layout_borders="Rect(3,4,0,0)" />
-         <HLayoutSpacer />
--        <Button name="window_pin" visible="false" graphic_mode="tinted" alpha="0.6" active_alpha="0.85" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(0,0,3,1)" gfxid_raised="GFX_GUI_WINDOW_PIN" gfxid_hover="GFX_GUI_WINDOW_PIN_STATE2" gfxid_pressed="GFX_GUI_WINDOW_PIN_STATE3" />
--        <Button name="window_close" visible="false" graphic_mode="tinted" alpha="0.6" active_alpha="0.85" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(0,0,4,1)" gfxid_raised="GFX_GUI_WINDOW_CLOSE_X" gfxid_hover="GFX_GUI_WINDOW_CLOSE_X_STATE2" gfxid_pressed="GFX_GUI_WINDOW_CLOSE_X_STATE3" />
-+        <Button name="window_pin" visible="false" graphic_mode="tinted" alpha="0.85" active_alpha="1" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(0,0,3,2)" gfxid_raised="GFX_GUI_WINDOW_PIN" gfxid_hover="GFX_GUI_WINDOW_PIN_STATE2" gfxid_pressed="GFX_GUI_WINDOW_PIN_STATE3" />
-+        <Button name="window_close" visible="false" graphic_mode="tinted" alpha="0.85" active_alpha="1" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(0,0,3,2)" gfxid_raised="GFX_GUI_WINDOW_CLOSE_X" gfxid_hover="GFX_GUI_WINDOW_CLOSE_X_STATE2" gfxid_pressed="GFX_GUI_WINDOW_CLOSE_X_STATE3" />
+         <View name="window_content" view_layout="vertical" weight="1" layout_borders="Rect(2,1,2,2)" />
        </View>
-       <View name="window_content" view_layout="vertical" weight="1" layout_borders="Rect(2,1,2,2)" />
-     </View>

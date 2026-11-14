@@ -31,7 +31,7 @@ Set-StrictMode -Version 2
 
 $Here = $PSScriptRoot
 $Title = 'duramson UI+ for Spiritech'
-$MadeFor = '0.1.0'   # the client version the patches were made against
+$MadeFor = '0.2.0'   # the client version the patches were made against
 $StateName = 'ui-plus.json'
 $BackupSuffix = '.ui-plus-backup'
 $Prefix = 'ui-plus-'

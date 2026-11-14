@@ -28,11 +28,14 @@
  local favorites = ui.find(content, "school_favorites")
  ui.enabled(favorites, false)
  ui.tooltip(favorites, "Not implemented")
-@@ -23,10 +42,47 @@
+@@ -23,23 +42,71 @@
  local toolbar = ui.find(content, "toolbar")
  local first_row = ui.find(content, "toolbar_row")
  local LIST_MINIMUM_HEIGHT = 168
 -local SEARCH_LABEL_WIDTH, SEARCH_FIELD_MINIMUM, CONTROL_HEIGHT, BUTTON_HEIGHT, BUTTON_GAP, ROW_GAP = 50, 100, 22, 16, 8, 4
+-local TOOLBAR_SIDES, TOOLBAR_ENDS = 12, 10
+-ui.size(ui.find(content, "search_label"), SEARCH_LABEL_WIDTH, CONTROL_HEIGHT)
+-ui.size(search, -1, CONTROL_HEIGHT)
 +local CONTROL_HEIGHT = 22
 +
 +-- Tabs: the tab frame stands 4 pixels clear of the window's own inner frame on every side, as the Inventory's content
@@ -69,40 +72,95 @@
 +-- The narrowest window that shows every tab.
 +local TABS_MINIMUM_WIDTH = math.max(Window.MINIMUM_WIDTH, tabs_width + Window.CONTENT_SIDES + INSET_SIDES)
 +
-+-- Bundled: the buttons in a toolbar that wraps into more rows as the window narrows, and the search row under the
-+-- list, built as the Inventory window's (FOOTER: the field's 22 pixels, 1 above it and 3 below).
-+local BUTTON_HEIGHT, BUTTON_GAP, ROW_GAP = 16, 8, 4
- local TOOLBAR_SIDES, TOOLBAR_ENDS = 12, 10
--ui.size(ui.find(content, "search_label"), SEARCH_LABEL_WIDTH, CONTROL_HEIGHT)
--ui.size(search, -1, CONTROL_HEIGHT)
++-- Bundled: the school buttons as the original client lays them out, measured from its pictures. Each is a plain button
++-- 20 high with its label about 10 pixels in from either end (the label's width plus 19). They flow over rows a pixel in
++-- from the window's frame; a button goes on to the next row when its row would leave fewer than 4 pixels for each of
++-- its buttons. A row's free width is shared out equally among its buttons, half of each share on either side, so the
++-- gap between two buttons is twice the margin at the row's ends and a lone one is centred. The rows show 4 pixels under
++-- the frame and 4 apart, and the list 7 under them. (The bundled window drew pictures of the buttons instead, each with
++-- its label baked in at a fixed width, packed to the left.) Under the list the search row, built as the Inventory
++-- window's (FOOTER: the field's 22 pixels, 1 above it and 3 below).
++local BUTTON_PADDING, BUTTON_HEIGHT, BUTTON_ROOM, ROW_GAP = 19, 20, 4, 4
++local TOOLBAR_SIDES, TOOLBAR_ENDS = 2, 6
 +ui.size(searches.bundled, -1, CONTROL_HEIGHT)
  local toolbar_buttons = {
- 	{ view = favorites, width = 121, row = 1 },
- 	{ view = schools[1], width = 75, row = 1 },
-@@ -39,7 +95,7 @@
+-	{ view = favorites, width = 121, row = 1 },
+-	{ view = schools[1], width = 75, row = 1 },
+-	{ view = schools[2], width = 77, row = 1 },
+-	{ view = schools[3], width = 54, row = 1 },
+-	{ view = schools[4], width = 53, row = 1 },
+-	{ view = schools[5], width = 54, row = 1 },
++	{ view = favorites, label = "Favorites", row = 1 },
++	{ view = schools[1], label = "Combat", row = 1 },
++	{ view = schools[2], label = "Medical", row = 1 },
++	{ view = schools[3], label = "Prot", row = 1 },
++	{ view = schools[4], label = "Psi", row = 1 },
++	{ view = schools[5], label = "Space", row = 1 },
+ }
+ for _, button in ipairs(toolbar_buttons) do
++	local text = ui.text_width(button.view) or 0
++	if text <= 0 then
++		text = 7 * #button.label -- (not measured yet: about the 12-point font's width)
++	end
++	button.width = math.ceil(text) + BUTTON_PADDING
  	ui.size(button.view, button.width, BUTTON_HEIGHT)
  end
  local toolbar_rows = { first_row }
 -local toolbar_height = CONTROL_HEIGHT + TOOLBAR_ENDS
-+local toolbar_height = style == "tabs" and TABS_TOOLBAR or CONTROL_HEIGHT + TOOLBAR_ENDS + FOOTER
++local toolbar_height = style == "tabs" and TABS_TOOLBAR or BUTTON_HEIGHT + TOOLBAR_ENDS + FOOTER
  local function toolbar_row(index)
  	if not toolbar_rows[index] then
  		toolbar_rows[index] = ui.load("toolbar_row.xml")
-@@ -52,7 +108,7 @@
+@@ -52,26 +119,45 @@
  		return
  	end
  	local room = width - Window.CONTENT_SIDES - TOOLBAR_SIDES
 -	local row, used = 1, SEARCH_LABEL_WIDTH + SEARCH_FIELD_MINIMUM
-+	local row, used = 1, 0
++	local rows, used = { {} }, 0
++	for _, button in ipairs(toolbar_buttons) do
++		local current = rows[#rows]
++		if #current > 0 and used + button.width + (#current + 1) * BUTTON_ROOM > room then
++			current, used = {}, 0
++			rows[#rows + 1] = current
++		end
++		used = used + button.width
++		current[#current + 1] = button
++	end
++	-- A button moved to another row is appended there, so the ones after it are re-appended to keep their order. Each
++	-- button's place is worked out unrounded and rounded on its own, so the odd pixels spread over the row.
  	local appended = false
- 	for _, button in ipairs(toolbar_buttons) do
- 		local needed = button.width + BUTTON_GAP
-@@ -68,10 +124,11 @@
+-	for _, button in ipairs(toolbar_buttons) do
+-		local needed = button.width + BUTTON_GAP
+-		if used > 0 and used + needed > room then
+-			row, used, appended = row + 1, 0, false
++	for index, row in ipairs(rows) do
++		local free = room
++		for _, button in ipairs(row) do
++			free = free - button.width
+ 		end
+-		if button.row ~= row or appended then
+-			ui.add(toolbar_row(row), button.view)
+-			button.row, appended = row, true
++		local share = math.max(0, free) / #row
++		local at, edge = share / 2, 0
++		for _, button in ipairs(row) do
++			if button.row ~= index or appended then
++				ui.add(toolbar_row(index), button.view)
++				button.row, appended = index, true
++			end
++			local left = math.floor(at + 0.5)
++			ui.borders(button.view, left - edge, 0, 0, 0)
++			edge = left + button.width
++			at = at + button.width + share
+ 		end
+-		used = used + needed
+ 	end
  	for index, view in ipairs(toolbar_rows) do
- 		ui.visible(view, index <= row)
+-		ui.visible(view, index <= row)
++		ui.visible(view, index <= #rows)
  	end
 -	toolbar_height = row * CONTROL_HEIGHT + (row - 1) * ROW_GAP + TOOLBAR_ENDS
-+	toolbar_height = row * CONTROL_HEIGHT + (row - 1) * ROW_GAP + TOOLBAR_ENDS + FOOTER
++	toolbar_height = #rows * BUTTON_HEIGHT + (#rows - 1) * ROW_GAP + TOOLBAR_ENDS + FOOTER
  end
 -local school, frame, populate, set_mode
 +local school, frame, populate, set_mode, set_style
@@ -111,7 +169,7 @@
  local cells = Grid.cells({
  	host = grid,
  	template = "slot.xml",
-@@ -124,9 +181,28 @@
+@@ -124,9 +210,28 @@
  local maximum_extent = presentation.maximum_extent
  local maximum_columns = math.floor((maximum_extent - 16 + spacing) / step)
  local sizing = Grid.create(cell_size, spacing, 600)
@@ -143,7 +201,7 @@
  end
  
  local function reconcile()
-@@ -138,38 +214,76 @@
+@@ -138,38 +243,76 @@
  end
  
  local function layout(window, width, height)
@@ -231,7 +289,7 @@
  
  populate = function()
  	selected, matches = {}, {}
-@@ -203,6 +317,22 @@
+@@ -203,6 +346,22 @@
  	ui.publish("view_mode", mode)
  end
  
@@ -254,7 +312,7 @@
  frame = Window.create({
  	title = "Nano Programs",
  	content = content,
-@@ -219,29 +349,50 @@
+@@ -219,29 +378,58 @@
  				set_mode(mode == "list" and "grid" or "list")
  			end,
  		},
@@ -284,6 +342,13 @@
 +		populate()
 +	end)
 +end
++-- The bundled buttons' labels in the original client's colours: cyan, and pale yellow on the chosen school (the client
++-- writes them white).
++local LABEL_COLOR, LABEL_SELECTED_COLOR = "#80E9F3", "#FFFFCC"
++local function select_school_button(view, selected)
++	ui.selected(view, selected)
++	ui.text_color(view, selected and LABEL_SELECTED_COLOR or LABEL_COLOR)
++end
 +-- One school filter for both layouts: the tabs pick a school (or All), the bundled buttons toggle theirs.
 +local function show_school(value)
 +	school = value
@@ -291,7 +356,7 @@
 +		ui.selected(tab.view, tab.school == school)
 +	end
 +	for index, view in ipairs(schools) do
-+		ui.selected(view, index == school)
++		select_school_button(view, index == school)
  	end
  	populate()
 -end)
@@ -305,6 +370,7 @@
 +	end)
 +end
  for index, button in ipairs(schools) do
++	select_school_button(button, index == school)
  	ui.on_click(button, function()
 -		if school == index then
 -			school = nil

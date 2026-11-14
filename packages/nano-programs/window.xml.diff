@@ -1,6 +1,6 @@
 --- a/UI/Packages/NanoPrograms/window.xml
 +++ b/UI/Packages/NanoPrograms/window.xml
-@@ -1,21 +1,50 @@
+@@ -1,21 +1,52 @@
  <?xml version="1.0" encoding="utf-8"?>
  <root>
 +  <!-- Two layouts, picked in the window menu ("School Tabs"); main.lua moves the list and the grid between them. -->
@@ -48,14 +48,16 @@
 +    <!-- The bundled window's layout: its school buttons over the list, and the search under it as in the Inventory
 +         window. -->
 +    <View name="bundled_layout" view_layout="vertical" weight="1" visible="false">
-+      <View name="toolbar" view_layout="vertical" layout_borders="Rect(6,4,6,6)">
-+        <View name="toolbar_row" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)">
-+          <Button name="school_favorites" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_FAVOURITES" gfxid_hover="GFX_GUI_NANO_FAVOURITES" gfxid_pressed="GFX_GUI_NANO_FAVOURITES_PRESSED" gfxid_selected="GFX_GUI_NANO_FAVOURITES_PRESSED" />
-+          <Button name="school_combat" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_COMBAT" gfxid_hover="GFX_GUI_NANO_COMBAT" gfxid_pressed="GFX_GUI_NANO_COMBAT_PRESSED" gfxid_selected="GFX_GUI_NANO_COMBAT_PRESSED" />
-+          <Button name="school_medical" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_MEDICAL" gfxid_hover="GFX_GUI_NANO_MEDICAL" gfxid_pressed="GFX_GUI_NANO_MEDICAL_PRESSED" gfxid_selected="GFX_GUI_NANO_MEDICAL_PRESSED" />
-+          <Button name="school_prot" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_PROT" gfxid_hover="GFX_GUI_NANO_PROT" gfxid_pressed="GFX_GUI_NANO_PROT_PRESSED" gfxid_selected="GFX_GUI_NANO_PROT_PRESSED" />
-+          <Button name="school_psi" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_PSI" gfxid_hover="GFX_GUI_NANO_PSI" gfxid_pressed="GFX_GUI_NANO_PSI_PRESSED" gfxid_selected="GFX_GUI_NANO_PSI_PRESSED" />
-+          <Button name="school_space" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_SPACE" gfxid_hover="GFX_GUI_NANO_SPACE" gfxid_pressed="GFX_GUI_NANO_SPACE_PRESSED" gfxid_selected="GFX_GUI_NANO_SPACE_PRESSED" />
++      <View name="toolbar" view_layout="vertical" layout_borders="Rect(1,3,1,3)">
++        <!-- The school buttons as the original client draws them: plain buttons with their label (main.lua sizes and
++             spreads them). -->
++        <View name="toolbar_row" view_layout="horizontal" min_size="Point(-1,20)" max_size="Point(-1,20)">
++          <Button name="school_favorites" label="Favorites" font_size="12" v_alignment="center" />
++          <Button name="school_combat" label="Combat" font_size="12" v_alignment="center" />
++          <Button name="school_medical" label="Medical" font_size="12" v_alignment="center" />
++          <Button name="school_prot" label="Prot" font_size="12" v_alignment="center" />
++          <Button name="school_psi" label="Psi" font_size="12" v_alignment="center" />
++          <Button name="school_space" label="Space" font_size="12" v_alignment="center" />
 +        </View>
 +      </View>
 +      <View name="bundled_body" view_layout="vertical" weight="1" />

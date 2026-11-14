@@ -1,0 +1,8 @@
+--- a/UI/Packages/NanoPrograms/toolbar_row.xml
++++ b/UI/Packages/NanoPrograms/toolbar_row.xml
+@@ -1,4 +1,4 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <root>
+-  <View view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(0,4,0,0)" />
++  <View view_layout="horizontal" min_size="Point(-1,20)" max_size="Point(-1,20)" layout_borders="Rect(0,4,0,0)" />
+ </root>

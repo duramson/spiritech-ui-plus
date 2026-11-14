@@ -28,12 +28,13 @@
  local LIST_MINIMUM_HEIGHT = 168
 -local SEARCH_LABEL_WIDTH, SEARCH_FIELD_MINIMUM, CONTROL_HEIGHT, BUTTON_HEIGHT, BUTTON_GAP, ROW_GAP = 50, 100, 22, 16, 8, 4
 -local TOOLBAR_SIDES, TOOLBAR_ENDS = 12, 10
-+local SEARCH_LABEL_WIDTH, CONTROL_HEIGHT, TOOLBAR_ENDS = 50, 22, 10
-+-- Everything but the list or grid: the search row, the tab row (overlapping the frame by one) and the tab frame's
-+-- own edges. Fixed: unlike the bundled window's buttons, the tabs never wrap.
-+local TAB_HEIGHT, FRAME_ENDS, FRAME_SIDES = 16, 6, 6
-+local toolbar_height = CONTROL_HEIGHT + TOOLBAR_ENDS + TAB_HEIGHT + FRAME_ENDS
- ui.size(ui.find(content, "search_label"), SEARCH_LABEL_WIDTH, CONTROL_HEIGHT)
+-ui.size(ui.find(content, "search_label"), SEARCH_LABEL_WIDTH, CONTROL_HEIGHT)
++local CONTROL_HEIGHT = 22
++-- Everything but the list or grid: the gap over the tabs, the tab row (overlapping the frame by one), the tab frame's
++-- own edges, and the search row under the frame with its borders. Fixed: unlike the bundled window's buttons, the
++-- tabs never wrap.
++local TOP_GAP, TAB_HEIGHT, FRAME_ENDS, FRAME_SIDES, FOOTER = 4, 16, 6, 6, 29
++local toolbar_height = TOP_GAP + TAB_HEIGHT + FRAME_ENDS + FOOTER
  ui.size(search, -1, CONTROL_HEIGHT)
 -local toolbar_buttons = {
 -	{ view = favorites, width = 121, row = 1 },

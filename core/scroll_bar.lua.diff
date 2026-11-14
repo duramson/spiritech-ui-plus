@@ -1,0 +1,153 @@
+--- a/UI/Packages/Core/scroll_bar.lua
++++ b/UI/Packages/Core/scroll_bar.lua
+@@ -0,0 +1,150 @@
++ui.define("core.scroll_bar", function()
++	-- The original client's scroll bar (scroll_bar.xml) for a scroll view whose own bar is off: the scroll view
++	-- leaves out v_scrollbar_mode, and ScrollBar.attach puts this bar over its right edge, in the stacked view that
++	-- holds it. The arrows scroll a step and repeat while held, a press above or below the bar pages that way, and
++	-- the bar can be dragged. The bar shows only while the content is taller than the scroll view.
++	--
++	-- The client tells a package nothing when a scroll view scrolls (the wheel), changes size or gets new content, so
++	-- the bars follow their scroll views from the package's update observer. A package has only one: one that needs
++	-- its own as well hands it to ScrollBar.on_update instead of ui.on_update.
++	local ScrollBar = {}
++	ScrollBar.__index = ScrollBar
++
++	local bars, also = {}, nil
++
++	local function update(now)
++		for _, bar in ipairs(bars) do
++			bar:refresh()
++		end
++		if also then
++			also(now)
++		end
++	end
++
++	function ScrollBar.on_update(callback)
++		also = callback
++		ui.on_update(update)
++	end
++
++	-- options.step: the pixels an arrow scrolls (a row of the content); options.borders: the bar's distance from the
++	-- edges of the holder, as left, top, right, bottom, where the window's lines need it.
++	function ScrollBar.attach(scroll, holder, options)
++		options = options or {}
++		local self = setmetatable({}, ScrollBar)
++		self.scroll, self.content = scroll, options.content or ui.child(scroll, 1)
++		self.step = options.step or 16
++		self.root = ui.shared_layout("scroll_bar.xml")
++		self.up = ui.find(self.root, "scroll_bar_up")
++		self.down = ui.find(self.root, "scroll_bar_down")
++		self.track = ui.find(self.root, "scroll_bar_track")
++		self.before = ui.find(self.root, "scroll_bar_before")
++		self.thumb = ui.find(self.root, "scroll_bar_thumb")
++		self.after = ui.find(self.root, "scroll_bar_after")
++		ui.add(holder, self.root)
++		if options.borders then
++			self:borders(options.borders[1], options.borders[2], options.borders[3], options.borders[4])
++		end
++		ui.on_repeat(self.up, function()
++			self:scroll_by(-self.step)
++		end)
++		ui.on_repeat(self.down, function()
++			self:scroll_by(self.step)
++		end)
++		ui.on_pointer(self.before, function(phase)
++			if phase == "start" then
++				self:scroll_by(-ui.height(self.scroll))
++			end
++		end)
++		ui.on_pointer(self.after, function(phase)
++			if phase == "start" then
++				self:scroll_by(ui.height(self.scroll))
++			end
++		end)
++		ui.on_pointer(self.thumb, function(phase, _, y)
++			self:drag(phase, y)
++		end)
++		bars[#bars + 1] = self
++		ui.on_update(update)
++		return self
++	end
++
++	-- Stops following the scroll view, before a window destroys it.
++	function ScrollBar:detach()
++		for index, bar in ipairs(bars) do
++			if bar == self then
++				table.remove(bars, index)
++				break
++			end
++		end
++	end
++
++	-- How far the bar stands from the edges of its holder, for a window that moves it (left, top, right, bottom).
++	function ScrollBar:borders(left, top, right, bottom)
++		ui.borders(self.root, left, top, right, bottom)
++	end
++
++	-- Off while the window shows something else in place of the scroll view (a list instead of the grid).
++	function ScrollBar:enable(enabled)
++		self.disabled = not enabled
++		self:refresh()
++	end
++
++	function ScrollBar:scroll_by(pixels)
++		ui.scroll_to(self.scroll, math.max(0, ui.scroll_offset(self.scroll) + pixels))
++		self:refresh()
++	end
++
++	-- Dragging the bar moves the content as far, in proportion, as the bar moves in the free part of the track.
++	function ScrollBar:drag(phase, y)
++		if phase == "start" then
++			ui.capture_pointer(self.thumb)
++			self.grip = { y = y, offset = ui.scroll_offset(self.scroll) }
++		elseif self.grip and (phase == "move" or phase == "end") then
++			local free = (self.track_height or 0) - (self.size or 0)
++			if free > 0 then
++				ui.scroll_to(self.scroll, math.max(0, self.grip.offset + (y - self.grip.y) * self.range / free))
++				self:refresh()
++			end
++		end
++		if phase == "end" or phase == "cancel" then
++			self.grip = nil
++		end
++	end
++
++	-- The bar is as long, in proportion to the track, as the scroll view is to its content (at least as long as its
++	-- picture), and stands as far down the track as the content is scrolled.
++	function ScrollBar:refresh()
++		local view = ui.height(self.scroll)
++		local content = math.max(ui.height(self.content), ui.desired_height(self.content))
++		local needed = not self.disabled and content > view + 0.5
++		if needed ~= self.shown then
++			self.shown = needed
++			ui.visible(self.root, needed)
++		end
++		if not needed then
++			return
++		end
++		local track, offset = ui.height(self.track), ui.scroll_offset(self.scroll)
++		if track == self.track_height and view == self.view and content == self.content_height
++			and offset == self.offset then
++			return
++		end
++		self.track_height, self.view, self.content_height, self.offset = track, view, content, offset
++		if track <= 0 then
++			return
++		end
++		self.range = content - view
++		local size = math.min(track, math.max(16, math.floor(track * view / content + 0.5)))
++		local top = math.floor((track - size) * math.min(1, math.max(0, offset / self.range)) + 0.5)
++		if size ~= self.size then
++			self.size = size
++			ui.limits(self.thumb, 11, size, 11, size)
++		end
++		if top ~= self.top then
++			self.top = top
++			ui.limits(self.before, 11, top, 11, top)
++		end
++	end
++
++	return ScrollBar
++end)

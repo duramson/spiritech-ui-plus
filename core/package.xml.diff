@@ -1,0 +1,10 @@
+--- a/UI/Packages/Core/package.xml
++++ b/UI/Packages/Core/package.xml
+@@ -11,6 +11,7 @@
+   <Script src="hud_column.lua" />
+   <Script src="dockable.lua" />
+   <Script src="window.lua" />
++  <Script src="scroll_bar.lua" />
+   <Script src="rollup.lua" />
+   <Script src="icon_grid.lua" />
+   <Script src="preferences.lua" />

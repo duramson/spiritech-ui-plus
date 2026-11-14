@@ -1,0 +1,19 @@
+--- a/UI/Packages/Core/scroll_bar.xml
++++ b/UI/Packages/Core/scroll_bar.xml
+@@ -0,0 +1,16 @@
++<?xml version="1.0" encoding="utf-8"?>
++<root>
++  <!-- The original client's scroll bar, from its own pictures (GFX_GUI_SIMPLE_SB_*), 11 pixels wide: the arrows are
++       smooth triangles 6 pixels high, and each arrow's picture carries the 3 pixels between it and the bar. The bar
++       picture is stretched to its length. core.scroll_bar puts this over the right edge of a scroll view, sizes the
++       bar and moves it: the space above and below the bar takes a press to page that way, the bar can be dragged. -->
++  <View name="scroll_bar" view_layout="vertical" visible="false" h_alignment="right" min_size="Point(11,-1)" max_size="Point(11,-1)">
++    <Button name="scroll_bar_up" graphic_mode="tinted" min_size="Point(11,9)" max_size="Point(11,9)" repeat_delay_ms="400" repeat_interval_ms="50" gfxid_raised="GFX_GUI_SIMPLE_SB_UP" gfxid_hover="GFX_GUI_SIMPLE_SB_UP_STATE2" gfxid_pressed="GFX_GUI_SIMPLE_SB_UP_STATE3" />
++    <View name="scroll_bar_track" view_layout="vertical" weight="1">
++      <View name="scroll_bar_before" capture_input="true" interactive="true" min_size="Point(11,0)" max_size="Point(11,0)" />
++      <BitmapView name="scroll_bar_thumb" image="gfx://GFX_GUI_SIMPLE_SB_SLIDER_VERT" graphic_mode="tinted" capture_input="true" interactive="true" min_size="Point(11,16)" max_size="Point(11,16)" />
++      <View name="scroll_bar_after" capture_input="true" interactive="true" weight="1" />
++    </View>
++    <Button name="scroll_bar_down" graphic_mode="tinted" min_size="Point(11,9)" max_size="Point(11,9)" repeat_delay_ms="400" repeat_interval_ms="50" gfxid_raised="GFX_GUI_SIMPLE_SB_DOWN" gfxid_hover="GFX_GUI_SIMPLE_SB_DOWN_STATE2" gfxid_pressed="GFX_GUI_SIMPLE_SB_DOWN_STATE3" />
++  </View>
++</root>

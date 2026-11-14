@@ -9,13 +9,19 @@ pixels for every one of those sizes, and the font's hinting program picks the se
 text stays crisp pixels at any font size and any interface scale (fractional sizes snap to whole pixels); without
 hinting, or above 72 px, it shows Verdana's own outline.
 
-Nothing made from Verdana is shipped: the font is built where it is used, from the Verdana already there.
+On a Retina screen, or at 200 % display scaling, Spiritech draws its text in device pixels, twice as many as the
+interface's: there Notum Grotesk's pixels come out half the size of the original's. The second font, Notum Grotesk 200,
+draws every pixel as 2 x 2: at 24 px it shows the 12 px pixels doubled, with twice their advance, and at an odd size
+the one below (25 px: 12 px doubled). A font only sees the pixel size it is drawn at, not the screen, so the player
+picks the one that fits.
+
+Nothing made from Verdana is shipped: the fonts are built where they are used, from the Verdana already there.
 
     pixelfont.py status                        the Verdana found, whether it gives the original pixels, what's installed
-    pixelfont.py build [options]               build the font (default: into build/ beside this script)
+    pixelfont.py build [options]               build both fonts (default: into build/ beside this script)
     pixelfont.py check [--verdana PATH]        compare a Verdana with the original client's pixels
     pixelfont.py install [options]             build, then install into the user's font folder
-    pixelfont.py uninstall [--fonts-dir DIR]   remove the installed font
+    pixelfont.py uninstall [--fonts-dir DIR]   remove the installed fonts
 
 Options:
     --verdana PATH     use this Verdana instead of searching for one
@@ -45,9 +51,10 @@ HERE = Path(__file__).resolve().parent
 VENV = HERE / "build" / "venv"
 CHECKSUMS = HERE / "ao-pixels.json"
 FAMILY = "Notum Grotesk"
-SIZES = range(6, 73)  # pixel sizes the font carries Verdana's monochrome glyphs for
+SIZES = range(6, 73)  # pixel sizes the fonts carry Verdana's monochrome glyphs for
 CHECK_SIZE = 11  # the original client's interface size (AO's "NORMAL" font), which ao-pixels.json holds
-FILENAME = "notum-grotesk.ttf"
+# The fonts built: family, file and how many device pixels each of Verdana's pixels takes, across and down
+FONTS = [(FAMILY, "notum-grotesk.ttf", 1), (FAMILY + " 200", "notum-grotesk-200.ttf", 2)]
 
 # Characters built into the fonts: Latin (with Extended-A/B), Greek, Cyrillic, punctuation, currency, letterlike
 # symbols, arrows, maths, box drawing and geometric shapes, as far as Verdana has them.
@@ -259,11 +266,19 @@ def trace(rows, left, top):
 # it. The glyph program asks for the size, flattens Verdana's outline and lifts the matching pixel outline's points
 # to their rows. It only moves points up and down, which FreeType's newer (v40) interpreter does too, in grayscale
 # and in black and white. Without hinting nothing runs, and Verdana's outline is what shows.
+#
+# Notum Grotesk 200 holds a pixel outline for every size from 12 to 145 px: the pixels of half that size (rounded
+# down) traced at twice their size, with x on that size's own grid, so odd sizes stay sharp too. Its advance would
+# otherwise round on its own at the doubled size; the glyph program moves the advance point to twice the advance of
+# the half size instead. That is a move across, which FreeType's v40 interpreter makes only for fonts that switch off
+# its backward compatibility mode (INSTCTRL selector 3, as fonts hinted for ClearType do), so this font's prep does.
 
 # TrueType instructions used below
-SVTCA_Y, SRP0, MPPEM, EQ, IF, EIF, CALL, FDEF, ENDF = 0x00, 0x10, 0x4B, 0x54, 0x58, 0x59, 0x2B, 0x2C, 0x2D
+SVTCA_Y, SVTCA_X, SRP0, MPPEM, EQ, IF, EIF, CALL, FDEF, ENDF = (0x00, 0x01, 0x10, 0x4B, 0x54, 0x58, 0x59, 0x2B, 0x2C,
+                                                                0x2D)
 SWAP, DUP, POP, CINDEX, ROLL, ADD, SUB, MUL, ALIGNRP, MSIRP, JROT = (0x23, 0x20, 0x21, 0x25, 0x8A, 0x60, 0x61, 0x63,
                                                                    0x3C, 0x3A, 0x78)
+INSTCTRL = 0x8E
 
 
 def _push(values, words=False):
@@ -285,20 +300,23 @@ def _range_loop(body):
     return code + _push([-back & 0xFFFF], words=True) + [SWAP, JROT, POP, POP]
 
 
-def _functions():
+def _functions(scale):
     # 0 (start, count): flatten the points onto rp0's height
     flatten = _range_loop([SWAP, DUP, ALIGNRP, SWAP])
-    # 1 (rows..., start, count): put each point (row - 128) pixels above rp0; the first point's row is on top of the
-    # rows, just under start and count
-    lift = _range_loop(_push([3]) + [CINDEX] + _push([128]) + [SUB] + _push([4096], words=True) + [MUL]  # row * 64
+    # 1 (rows..., start, count): put each point (row - 128) * scale pixels above rp0; the first point's row is on top
+    # of the rows, just under start and count
+    lift = _range_loop(_push([3]) + [CINDEX] + _push([128]) + [SUB]
+                       + _push([4096 * scale], words=True) + [MUL]  # row * scale * 64
                        + _push([3]) + [CINDEX, SWAP, MSIRP, ROLL, POP])
     return _push([0]) + [FDEF] + flatten + [ENDF] + _push([1]) + [FDEF] + lift + [ENDF]
 
 
-def build_font(raster, out_path):
+def build_font(raster, out_path, family, scale, rasters):
+    """Builds one of FONTS. rasters caches Verdana's pixels by (glyph, size), for the next font."""
     src = raster.font
     k = 16384 // raster.upem
     upem = raster.upem * k  # 16384 for Verdana: advances scale exactly, so they round as Verdana's own do
+    sizes = range(SIZES[0] * scale, (SIZES[-1] + 1) * scale)  # the sizes drawn with pixels; their pixels: size // scale
     glyph_set = src.getGlyphSet()
     order = src.getGlyphOrder()
     names = [".notdef"] + sorted(set(raster.cmap.values()) - {".notdef"}, key=order.index)
@@ -320,17 +338,22 @@ def build_font(raster, out_path):
         top_ink = max([top_ink] + [y for _, y in coords])
         bottom_ink = min([bottom_ink] + [y for _, y in coords])
         sets = []  # (size, first point, rows + 128 per point)
-        for ppem in SIZES:
-            rows, left, top = raster.glyph(name, ppem)
+        for ppem in sizes:
+            if (name, ppem // scale) not in rasters:
+                rasters[name, ppem // scale] = raster.glyph(name, ppem // scale)
+            rows, left, top = rasters[name, ppem // scale]
             first, lifts = len(coords), []
             for contour in trace(rows, left, top):
                 for x, y in contour:
-                    coords.append((round(x * upem / ppem), 0))
+                    coords.append((round(x * scale * upem / ppem), 0))
                     flags.append(1)  # on the curve
                     lifts.append(y + 128)
-                    top_ink, bottom_ink = max(top_ink, y * upem // ppem), min(bottom_ink, y * upem // ppem)
+                    ink = y * scale * upem // ppem
+                    top_ink, bottom_ink = max(top_ink, ink), min(bottom_ink, ink)
                 ends.append(len(coords) - 1)
             sets.append((ppem, first, lifts))
+        if not coords and scale != 1:  # an empty glyph (space) can't hold a program: one point that draws nothing
+            coords, flags, ends = [(0, 0)], [1], [0]
         glyph = Glyph()
         glyph.numberOfContours = len(ends)
         program = []
@@ -344,6 +367,9 @@ def build_font(raster, out_path):
                 if lifts:
                     block += (_push(reversed(lifts)) + _push([first, len(lifts)], words=True) + _push([1]) + [CALL])
                     deepest_stack = max(deepest_stack, len(lifts) + 8)
+                if scale != 1:  # the advance (phantom point 2): scale times the advance of the pixels' own size
+                    advance = 64 * scale * raster.advance(name, ppem // scale)
+                    block += [SVTCA_X] + _push([len(coords) + 1, advance], words=True) + [MSIRP, SVTCA_Y]
                 if block:
                     program += [MPPEM] + _push([ppem]) + [EQ, IF] + block + [EIF]
             most_points = max(most_points, len(coords))
@@ -355,7 +381,12 @@ def build_font(raster, out_path):
 
     # line spacing as the original client spaces its lines: the size above the baseline, 2 px below at 11 px
     ascent, descent = upem, round(upem * 2 / 11)
-    ps = FAMILY.replace(" ", "") + "-Regular"
+    ps = family.replace(" ", "") + "-Regular"
+    if scale == 1:
+        about = f"as pixels for every size from {SIZES[0]} to {SIZES[-1]} px."
+    else:
+        about = (f"every pixel drawn as {scale} x {scale}, for screens that draw text at {scale} times the interface's "
+                 f"pixels: from {sizes[0]} to {sizes[-1]} px.")
     fb = FontBuilder(upem, isTTF=True)
     fb.setupGlyphOrder(names)
     fb.setupCharacterMap(dict(raster.cmap))
@@ -363,13 +394,12 @@ def build_font(raster, out_path):
     fb.setupHorizontalMetrics(metrics)
     fb.setupHorizontalHeader(ascent=ascent, descent=-descent, lineGap=0)
     fb.setupNameTable(dict(
-        familyName=FAMILY, styleName="Regular", uniqueFontIdentifier=f"{ps};2.0", fullName=FAMILY, psName=ps,
+        familyName=family, styleName="Regular", uniqueFontIdentifier=f"{ps};2.0", fullName=family, psName=ps,
         version="Version 2.000",
         copyright="Built on this computer from its own copy of Verdana (c) Microsoft Corporation. "
                   "For personal use only: do not pass this file on.",
         licenseDescription="Personal use only. Not for distribution.",
-        description=f"Verdana as the original Anarchy Online client draws it (monochrome, hinted), as pixels for "
-                    f"every size from {SIZES[0]} to {SIZES[-1]} px."))
+        description=f"Verdana as the original Anarchy Online client draws it (monochrome, hinted), {about}"))
     os2 = src["OS/2"]
     fb.setupOS2(version=4, sTypoAscender=ascent, sTypoDescender=-descent, sTypoLineGap=0,
                 usWinAscent=max(ascent, top_ink), usWinDescent=max(descent, -bottom_ink),
@@ -379,16 +409,19 @@ def build_font(raster, out_path):
     fb.setupPost(isFixedPitch=0, underlinePosition=post.underlinePosition * k,
                  underlineThickness=post.underlineThickness * k)
     now = timestampNow()
-    fb.setupHead(unitsPerEm=upem, fontRevision=2.0, lowestRecPPEM=SIZES[0], created=now, modified=now)
+    fb.setupHead(unitsPerEm=upem, fontRevision=2.0, lowestRecPPEM=sizes[0], created=now, modified=now)
     font = fb.font
     font["head"].flags |= 1 << 3  # whole-pixel sizes: a fractional size (UI scaling) snaps to the nearest one
+    if scale != 1:
+        font["head"].flags |= 1 << 4  # the glyph programs set the advances
     fpgm = newTable("fpgm")
     fpgm.program = ttProgram.Program()
-    fpgm.program.fromBytecode(bytes(_functions()))
+    fpgm.program.fromBytecode(bytes(_functions(scale)))
     font["fpgm"] = fpgm
     prep = newTable("prep")
     prep.program = ttProgram.Program()
-    prep.program.fromBytecode(bytes([SVTCA_Y]))
+    # Notum Grotesk 200: v40 keeps the advances its glyph programs set (INSTCTRL selector 3, value 4)
+    prep.program.fromBytecode(bytes(([] if scale == 1 else _push([4, 3]) + [INSTCTRL]) + [SVTCA_Y]))
     font["prep"] = prep
     gasp = newTable("gasp")
     gasp.version, gasp.gaspRange = 1, {0xFFFF: 0x000F}
@@ -401,7 +434,7 @@ def build_font(raster, out_path):
     font["OS/2"].ulCodePageRange1 = 1
     out_path.parent.mkdir(parents=True, exist_ok=True)
     font.save(str(out_path))
-    return FAMILY
+    return sizes
 
 
 # --- comparing a Verdana with the original client ---------------------------------------------------------------
@@ -502,7 +535,10 @@ def install(built, fonts_dir=None):
     placed = []
     for family, path in built:
         dest = target / path.name
-        dest.write_bytes(path.read_bytes())
+        # written beside it, then swapped in: a program still drawing with the old file keeps reading that one
+        part = dest.with_name(dest.name + ".part")
+        part.write_bytes(path.read_bytes())
+        os.replace(part, dest)
         placed.append((family, dest))
         print(f"installed {family}: {dest}")
     if not fonts_dir:
@@ -510,13 +546,14 @@ def install(built, fonts_dir=None):
             _windows_registry(placed)
         elif sys.platform != "darwin":
             subprocess.run(["fc-cache", "-f", str(target)], check=False)
-    print(f"Restart Spiritech, then pick {FAMILY} as the interface font in Options. It is sharp at every size from "
-          f"{SIZES[0]} to {SIZES[-1]} px.")
+    print(f"Restart Spiritech, then pick the interface font in Options: {FONTS[0][0]}, or {FONTS[1][0]} on a Retina "
+          f"screen or at 200 % display scaling, where Spiritech draws text with twice the pixels. Both are sharp at "
+          f"every size.")
 
 
 def uninstall(fonts_dir=None):
     target = Path(fonts_dir) if fonts_dir else user_font_dir()
-    removed = [target / FILENAME] if (target / FILENAME).is_file() else []
+    removed = [target / filename for _, filename, _ in FONTS if (target / filename).is_file()]
     for path in removed:
         path.unlink()
         print(f"removed {path}")
@@ -539,23 +576,27 @@ def build_all(args):
         sys.exit(NO_VERDANA)
     print(f"Verdana {version}: {path}")
     print_check(check(path))
-    dest = (Path(args.out) if args.out else HERE / "build") / FILENAME
-    print(f"Building {FAMILY} ({SIZES[0]} to {SIZES[-1]} px) ...", flush=True)
-    family = build_font(Rasteriser(path), dest)
-    print(f"  built {family}: {dest} ({dest.stat().st_size / 1e6:.1f} MB)")
-    return [(family, dest)]
+    raster, rasters, built = Rasteriser(path), {}, []
+    for family, filename, scale in FONTS:
+        dest = (Path(args.out) if args.out else HERE / "build") / filename
+        print(f"Building {family} ...", flush=True)
+        sizes = build_font(raster, dest, family, scale, rasters)
+        print(f"  built {family} ({sizes[0]} to {sizes[-1]} px): {dest} ({dest.stat().st_size / 1e6:.1f} MB)")
+        built.append((family, dest))
+    return built
 
 
 def status(args):
     path, version = find_verdana(args.verdana)
     if path:
         print(f"Verdana {version}: {path}")
-        print(f"  would build: {FAMILY} ({SIZES[0]} to {SIZES[-1]} px)")
+        print("  would build: " + ", ".join(family for family, _, _ in FONTS))
         print_check(check(path))
     else:
         print(NO_VERDANA)
     target = Path(args.fonts_dir) if args.fonts_dir else user_font_dir()
-    print(f"{FAMILY} in {target}: {'installed' if (target / FILENAME).is_file() else 'not installed'}")
+    for family, filename, _ in FONTS:
+        print(f"{family} in {target}: {'installed' if (target / filename).is_file() else 'not installed'}")
 
 
 def main():

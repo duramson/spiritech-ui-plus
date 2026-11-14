@@ -123,14 +123,27 @@ as shipped. The original client's picture has no nano running.
 ## Inventory: search and slot count
 
 UI+ replaces the Inventory window (Options > Interface & HUD > UI packages, "duramson.inventory"), the one package the
-client draws the inventory, bags, banks and loot with. So far it takes out what got in the way: the tooltips on the
-search field ("Item name, at least three letters, then Enter") and on the slot count ("Slots holding an item, of all
-slots") only repeated what they show, and the search's opened right over the slot count and ran far past the window's
-edge. The count reads "24 / 30", without "Slots: " in front. The scroll bar is the original client's (see Scroll bar
-below). The rest of the window is the bundled one.
+client draws the inventory, bags, banks and loot with. It takes out what got in the way: the tooltips on the search
+field ("Item name, at least three letters, then Enter") and on the slot count ("Slots holding an item, of all slots")
+only repeated what they show, and the search's opened right over the slot count and ran far past the window's edge.
+
+The search and the count were Spiritech's grey, rounded input fields. Now each sits in a frame like the Nano Programs
+window's second frame, in the tab frame's blue line on its dark background, and the two mirror each other: the
+search's bottom-left corner is cut as the window's, the count's bottom-right one, and their cut top corners meet in a
+notch between them. Their lines stand 5 pixels clear of the window's side and bottom lines, in line with the slots'
+outlines, and run on under the scroll bar where it shows, as the Nano window's search does. The count reads "24/30"
+in the blue of the NCU count in the corner of the screen, its digits 6 pixels from every line; typed text in the search
+takes the same blue. The window's dark background now reaches under the two frames as well. The scroll bar is the
+original client's (see Scroll bar below).
+
+![Inventory with UI+: the search and the slot count in mirrored frames under the slots](images/inventory-footer.png)
 
 - [15d653f](https://github.com/duramson/spiritech-ui-plus/commit/15d653f) feat(inventory): offer an Inventory window
   without the search and slot tooltips
+- [29c8fa3](https://github.com/duramson/spiritech-ui-plus/commit/29c8fa3) fix(inventory): draw the dark background
+  under the search and the slot count too
+- [94c18e8](https://github.com/duramson/spiritech-ui-plus/commit/94c18e8) feat(inventory): frame the search and the
+  slot count like the Nano window's second frame
 
 ## Inventory: full rows
 

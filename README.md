@@ -15,7 +15,7 @@ for good.
 | --- | --- | --- |
 | Nano Programs | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done. The list view gets a second round later. |
 | NCU | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done. |
-| Inventory | `▱▱▱▱▱▱▱▱▱▱` 0 % | Next: the inventory, bags and banks. |
+| Inventory | `▰▰▰▱▱▱▱▱▱▱` 30 % | Search and slot count framed as in the Nano Programs window, and full rows when resized. The rest of the window still to come. |
 | Wear | `▱▱▱▱▱▱▱▱▱▱` 0 % | After the Inventory. |
 
 ### Elements
@@ -32,7 +32,7 @@ Pieces many windows share. Each gets the original client's look once, for every 
 | | What it does | How to turn it on |
 | --- | --- | --- |
 | **Window frame** | Every window's frame, title tab, icon, pin and close button at the original client's sizes, distances and opacity, measured from pictures of its windows. | Nothing to do: it shows from the next character login. |
-| **Inventory** | The inventory, bags and banks with the original client's scroll bar, without the tooltips that only repeated their search field and slot count, and the count as just "24 / 30". | Once: Options → Interface & HUD → UI packages, set Inventory containers to `External [duramson.inventory] — UI+`, then log the character in again. |
+| **Inventory** | The inventory, bags and banks with the original client's scroll bar, the search and the slot count in mirrored frames like the Nano Programs window's, without the tooltips that only repeated them, and only sizes whose rows are all full. | Once: Options → Interface & HUD → UI packages, set Inventory containers to `External [duramson.inventory] — UI+`, then log the character in again. |
 | **Nano Programs** | School buttons, tiles and search as the original client draws them, or a new School Tabs layout. | Once: Options → Interface & HUD → UI packages, set Nano Programs to `External [duramson.nano] — UI+`, then log the character in again. The window's menu (the i icon) switches between the two layouts. |
 | **NCU** | Slots, their spacing and the margins as in the original client's NCU window. | Nothing to do: it shows from the next character login. |
 | **Scroll bar** | The original client's scroll bar, from its own pictures: smooth arrows, a pixel clear of the frame's lines, 3 pixels from the bar. In the NCU, Nano Programs and Inventory windows so far. | Comes with those windows. |

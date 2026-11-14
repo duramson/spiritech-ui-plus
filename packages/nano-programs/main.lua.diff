@@ -1,0 +1,180 @@
+--- a/UI/Packages/NanoPrograms/main.lua
++++ b/UI/Packages/NanoPrograms/main.lua
+@@ -10,66 +10,39 @@
+ local grid_scroll = ui.find(content, "nano_grid_scroll")
+ local grid = ui.find(content, "nano_grid")
+ local search = ui.find(content, "search")
+-local favorites = ui.find(content, "school_favorites")
+-ui.enabled(favorites, false)
+-ui.tooltip(favorites, "Not implemented")
+-local schools = {
+-	ui.find(content, "school_combat"),
+-	ui.find(content, "school_medical"),
+-	ui.find(content, "school_prot"),
+-	ui.find(content, "school_psi"),
+-	ui.find(content, "school_space"),
++-- The schools as tabs (as in the Wear window). "All" stands for no school filter; Favorites is left out until the
++-- client implements it (the bundled window shows it disabled). The school numbers are the bundled window's.
++local tabs = {
++	{ label = "All", view = ui.find(content, "tab_all"), school = nil },
++	{ label = "Combat", view = ui.find(content, "tab_combat"), school = 1 },
++	{ label = "Medical", view = ui.find(content, "tab_medical"), school = 2 },
++	{ label = "Prot", view = ui.find(content, "tab_prot"), school = 3 },
++	{ label = "Psi", view = ui.find(content, "tab_psi"), school = 4 },
++	{ label = "Space", view = ui.find(content, "tab_space"), school = 5 },
+ }
+-local toolbar = ui.find(content, "toolbar")
+-local first_row = ui.find(content, "toolbar_row")
+ local LIST_MINIMUM_HEIGHT = 168
+-local SEARCH_LABEL_WIDTH, SEARCH_FIELD_MINIMUM, CONTROL_HEIGHT, BUTTON_HEIGHT, BUTTON_GAP, ROW_GAP = 50, 100, 22, 16, 8, 4
+-local TOOLBAR_SIDES, TOOLBAR_ENDS = 12, 10
++local SEARCH_LABEL_WIDTH, CONTROL_HEIGHT, TOOLBAR_ENDS = 50, 22, 10
++-- Everything but the list or grid: the search row, the tab row (overlapping the frame by one) and the tab frame's
++-- own edges. Fixed: unlike the bundled window's buttons, the tabs never wrap.
++local TAB_HEIGHT, FRAME_ENDS, FRAME_SIDES = 16, 6, 6
++local toolbar_height = CONTROL_HEIGHT + TOOLBAR_ENDS + TAB_HEIGHT + FRAME_ENDS
+ ui.size(ui.find(content, "search_label"), SEARCH_LABEL_WIDTH, CONTROL_HEIGHT)
+ ui.size(search, -1, CONTROL_HEIGHT)
+-local toolbar_buttons = {
+-	{ view = favorites, width = 121, row = 1 },
+-	{ view = schools[1], width = 75, row = 1 },
+-	{ view = schools[2], width = 77, row = 1 },
+-	{ view = schools[3], width = 54, row = 1 },
+-	{ view = schools[4], width = 53, row = 1 },
+-	{ view = schools[5], width = 54, row = 1 },
+-}
+-for _, button in ipairs(toolbar_buttons) do
+-	ui.size(button.view, button.width, BUTTON_HEIGHT)
++-- Each tab as wide as its text: the text starts a few pixels in, and the tab's slanted right edge covers the last
++-- part of it. Neighbours overlap as the Wear window's do.
++local TAB_PADDING, TAB_OVERLAP = 24, 6
++local tabs_width = 0
++for index, tab in ipairs(tabs) do
++	local text = ui.text_width(tab.view) or 0
++	if text <= 0 then
++		text = 7 * #tab.label -- (not measured yet: about the 12-point font's width)
++	end
++	local width = math.ceil(text) + TAB_PADDING
++	ui.size(tab.view, width, TAB_HEIGHT + 1)
++	tabs_width = tabs_width + width - (index < #tabs and TAB_OVERLAP or 0)
+ end
+-local toolbar_rows = { first_row }
+-local toolbar_height = CONTROL_HEIGHT + TOOLBAR_ENDS
+-local function toolbar_row(index)
+-	if not toolbar_rows[index] then
+-		toolbar_rows[index] = ui.load("toolbar_row.xml")
+-		ui.add(toolbar, toolbar_rows[index])
+-	end
+-	return toolbar_rows[index]
+-end
+-local function reflow_toolbar(width)
+-	if ui.in_combat() then
+-		return
+-	end
+-	local room = width - Window.CONTENT_SIDES - TOOLBAR_SIDES
+-	local row, used = 1, SEARCH_LABEL_WIDTH + SEARCH_FIELD_MINIMUM
+-	local appended = false
+-	for _, button in ipairs(toolbar_buttons) do
+-		local needed = button.width + BUTTON_GAP
+-		if used > 0 and used + needed > room then
+-			row, used, appended = row + 1, 0, false
+-		end
+-		if button.row ~= row or appended then
+-			ui.add(toolbar_row(row), button.view)
+-			button.row, appended = row, true
+-		end
+-		used = used + needed
+-	end
+-	for index, view in ipairs(toolbar_rows) do
+-		ui.visible(view, index <= row)
+-	end
+-	toolbar_height = row * CONTROL_HEIGHT + (row - 1) * ROW_GAP + TOOLBAR_ENDS
+-end
++-- The narrowest window that shows every tab.
++local MINIMUM_WIDTH = math.max(Window.MINIMUM_WIDTH, tabs_width + Window.CONTENT_SIDES)
+ local school, frame, populate, set_mode
+ local entries, ordered, matches, terms = {}, {}, {}, {}
+ local cells = Grid.cells({
+@@ -124,8 +97,14 @@
+ local maximum_extent = presentation.maximum_extent
+ local maximum_columns = math.floor((maximum_extent - 16 + spacing) / step)
+ local sizing = Grid.create(cell_size, spacing, 600)
++-- The grid sits inside the tab frame: its edges widen the window (resolve goes through this size too).
++function sizing:size(columns, rows, scrollbar)
++	local width, height = Grid.size(self, columns, rows, scrollbar)
++	return width + FRAME_SIDES, height
++end
++-- The fewest columns whose window still shows every tab.
+ local minimum_columns = 1
+-while sizing:size(minimum_columns + 1, 1, true) <= Window.MINIMUM_WIDTH do
++while sizing:size(minimum_columns, 1, false) < MINIMUM_WIDTH do
+ 	minimum_columns = minimum_columns + 1
+ end
+ 
+@@ -139,32 +118,22 @@
+ 
+ local function layout(window, width, height)
+ 	if mode == "list" then
+-		reflow_toolbar(math.max(Window.MINIMUM_WIDTH, width))
+ 		local minimum_height = LIST_MINIMUM_HEIGHT + toolbar_height
+-		ui.limits(window.root, Window.MINIMUM_WIDTH, minimum_height, 1800, 1400)
+-		width = math.max(Window.MINIMUM_WIDTH, math.min(1800, width))
++		ui.limits(window.root, MINIMUM_WIDTH, minimum_height, 1800, 1400)
++		width = math.max(MINIMUM_WIDTH, math.min(1800, width))
+ 		height = math.max(minimum_height, math.min(1400, height))
+ 	else
+ 		local min_width, min_height = sizing:size(minimum_columns, 1, false)
+ 		local max_width = sizing:size(maximum_columns, 1, false)
+ 		width = math.max(min_width, math.min(max_width, width))
+-		reflow_toolbar(width)
+ 		ui.limits(window.root, min_width, min_height + toolbar_height, max_width, maximum_extent)
+ 		local columns, rows
+-		local content_height = height - toolbar_height
+-		width, height, columns, rows = sizing:resolve(width, content_height, #ordered)
+-		-- Snapping the width can move the toolbar's wrap point; settle on the height of the final row count.
+-		local settled = toolbar_height
+-		reflow_toolbar(width)
+-		if toolbar_height ~= settled then
+-			width, height, columns, rows = sizing:resolve(width, content_height + settled - toolbar_height, #ordered)
+-			reflow_toolbar(width)
+-		end
++		width, height, columns, rows = sizing:resolve(width, height - toolbar_height, #ordered)
+ 		height = height + toolbar_height
+ 		capacity = columns * rows
+ 		ui.size(grid, columns * step - spacing, -1)
+ 	end
+-	list_table.width = width - 19
++	list_table.width = width - 19 - FRAME_SIDES
+ 	window:fit_title(width, true)
+ 	ui.request_size(window.root, width, height)
+ 	window:fit_content(width, height)
+@@ -231,17 +200,19 @@
+ 	end
+ 	populate()
+ end)
+-for index, button in ipairs(schools) do
+-	ui.on_click(button, function()
+-		if school == index then
+-			school = nil
+-		else
+-			school = index
++local function show_school(value)
++	school = value
++	for _, tab in ipairs(tabs) do
++		ui.selected(tab.view, tab.school == school)
++	end
++	populate()
++end
++for _, tab in ipairs(tabs) do
++	ui.selected(tab.view, tab.school == school)
++	ui.on_click(tab.view, function()
++		if tab.school ~= school then
++			show_school(tab.school)
+ 		end
+-		for value, view in ipairs(schools) do
+-			ui.selected(view, value == school)
+-		end
+-		populate()
+ 	end)
+ end
+ 

@@ -1,0 +1,38 @@
+#!/bin/sh
+# Commits go on a branch named <type>/<short-name>, never on main: main changes only when a pull request is
+# merged (CONTRIBUTING.md). Switched on with: git config core.hooksPath .githooks
+
+branch=$(git symbolic-ref --quiet --short HEAD)
+
+if [ -z "$branch" ]; then
+    # No branch checked out. A rebase commits this way; anything else would be lost work.
+    gitdir=$(git rev-parse --git-dir)
+    if [ -d "$gitdir/rebase-merge" ] || [ -d "$gitdir/rebase-apply" ]; then
+        exit 0
+    fi
+    echo "No branch is checked out, so this commit would belong to none." >&2
+    echo "Start one first, your changes come along:  git switch -c fix/<short-name>" >&2
+    exit 1
+fi
+
+if [ "$branch" = "main" ]; then
+    echo "No commits on main: it changes only when a pull request is merged (CONTRIBUTING.md)." >&2
+    echo "Start a branch, your changes come along:  git switch -c fix/<short-name>" >&2
+    exit 1
+fi
+
+case "$branch" in
+    issue-pictures)
+        exit 0 ;;
+    feat/*|fix/*|docs/*|chore/*)
+        name=${branch#*/}
+        case "$name" in
+            ""|-*|*[!a-z0-9-]*) ;;
+            *) exit 0 ;;
+        esac ;;
+esac
+
+echo "The branch \"$branch\" is not named <type>/<short-name> (CONTRIBUTING.md):" >&2
+echo "feat/, fix/, docs/ or chore/, then lower-case letters, digits and hyphens." >&2
+echo "Rename it:  git branch -m fix/<short-name>" >&2
+exit 1

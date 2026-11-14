@@ -1,0 +1,41 @@
+#!/bin/sh
+# Nothing is pushed to main, and a pushed branch is named <type>/<short-name> (CONTRIBUTING.md). GitHub refuses a
+# push to main as well; this says so before anything is sent. Switched on with: git config core.hooksPath .githooks
+#
+# Git gives one line per pushed ref: <local ref> <local commit> <remote ref> <remote commit>.
+
+status=0
+while read -r local_ref local_commit remote_ref remote_commit; do
+    case "$remote_ref" in
+        refs/heads/*) branch=${remote_ref#refs/heads/} ;;
+        *) continue ;;
+    esac
+
+    if [ "$branch" = "main" ]; then
+        echo "No pushes to main: it changes only when a pull request is merged (CONTRIBUTING.md)." >&2
+        status=1
+        continue
+    fi
+
+    # Deleting a branch is allowed whatever it is called.
+    case "$local_commit" in
+        *[!0]*) ;;
+        *) continue ;;
+    esac
+
+    case "$branch" in
+        issue-pictures)
+            continue ;;
+        feat/*|fix/*|docs/*|chore/*)
+            name=${branch#*/}
+            case "$name" in
+                ""|-*|*[!a-z0-9-]*) ;;
+                *) continue ;;
+            esac ;;
+    esac
+
+    echo "The branch \"$branch\" is not named <type>/<short-name> (CONTRIBUTING.md):" >&2
+    echo "feat/, fix/, docs/ or chore/, then lower-case letters, digits and hyphens." >&2
+    status=1
+done
+exit $status

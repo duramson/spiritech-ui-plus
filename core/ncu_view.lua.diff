@@ -1,0 +1,49 @@
+--- a/UI/Packages/Core/ncu_view.lua
++++ b/UI/Packages/Core/ncu_view.lua
+@@ -6,6 +6,13 @@
+ 	local Presentation = ui.require("ncu.presentation")
+ 	local View = {}
+ 	View.__index = View
++
++	-- The grid as the original client draws it (measured in its window): slots 47 pixels apart across and 29 down
++	-- (ncu_slot.xml), 4 pixels clear of the window's frame lines on every side (ncu_window.xml). Besides the slots, the
++	-- window takes 15 pixels across (3 of outer frame, the line and 4 clear on either side, less the spare pixel of the
++	-- last slot) and 37 down (23 to the title's line, the line, 4 clear above the slots, the last row's dark line,
++	-- 4 clear and the line below them, 3 of outer frame), with the pixel the grid keeps spare under the slots.
++	local SLOT_WIDTH, SLOT_HEIGHT, GRID_SIDES, GRID_ENDS, SCROLLBAR = 47, 29, 15, 37, 12
+ 
+ 	function View.create(options)
+ 		local self = setmetatable({}, View)
+@@ -86,8 +93,8 @@
+ 			content = self.content,
+ 			x = 10,
+ 			y = 174,
+-			width = 207,
+-			height = 135,
++			width = 4 * SLOT_WIDTH + GRID_SIDES,
++			height = 3 * SLOT_HEIGHT + GRID_ENDS,
+ 			layout = function(window, width, height)
+ 				self:layout(window, width, height)
+ 			end,
+@@ -112,13 +119,15 @@
+ 			width, height = math.max(160, math.min(1000, width)), math.max(90, math.min(1200, height))
+ 			window:fit_title(width, true)
+ 		else
+-			ui.limits(window.root, 69, 75, 1415, 945)
+-			local columns = math.max(1, math.min(30, math.floor((width - 23) / 46 + 0.5)))
+-			local rows = math.max(1, math.min(math.ceil(30 / columns), math.floor((height - 45) / 30 + 0.5)))
++			ui.limits(window.root, SLOT_WIDTH + GRID_SIDES, SLOT_HEIGHT + GRID_ENDS,
++				30 * SLOT_WIDTH + GRID_SIDES + SCROLLBAR, 30 * SLOT_HEIGHT + GRID_ENDS)
++			local columns = math.max(1, math.min(30, math.floor((width - GRID_SIDES) / SLOT_WIDTH + 0.5)))
++			local rows = math.max(1, math.min(math.ceil(30 / columns),
++				math.floor((height - GRID_ENDS) / SLOT_HEIGHT + 0.5)))
+ 			self.capacity = columns * rows
+-			width = columns * 46 + 23 + (#self.entries > self.capacity and 12 or 0)
+-			height = rows * 30 + 45
+-			ui.size(self.grid, columns * 46 + 12, -1)
++			width = columns * SLOT_WIDTH + GRID_SIDES + (#self.entries > self.capacity and SCROLLBAR or 0)
++			height = rows * SLOT_HEIGHT + GRID_ENDS
++			ui.size(self.grid, columns * SLOT_WIDTH + 6, -1)
+ 			window:fit_title(width, columns >= 3)
+ 		end
+ 		ui.request_size(window.root, width, height)

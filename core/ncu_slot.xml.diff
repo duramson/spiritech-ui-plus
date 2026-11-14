@@ -1,0 +1,10 @@
+--- a/UI/Packages/Core/ncu_slot.xml
++++ b/UI/Packages/Core/ncu_slot.xml
+@@ -1,4 +1,6 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <root>
+-  <ItemSlotView name="ncu_slot" min_size="Point(46,30)" max_size="Point(46,30)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_40X24" icon_inset="3" icon_fit="cover" overlay_inset="3" />
++  <!-- The original client sets these slots 47 pixels apart across, a pixel of background between them, and 29 down:
++       each row covers the dark bottom line of the slot picture above it, so only the last row shows it. -->
++  <ItemSlotView name="ncu_slot" min_size="Point(46,30)" max_size="Point(46,30)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_40X24" icon_inset="3" icon_fit="cover" overlay_inset="3" layout_borders="Rect(0,0,1,-1)" />
+ </root>

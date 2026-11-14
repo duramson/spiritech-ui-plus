@@ -1,0 +1,20 @@
+--- a/UI/Packages/Core/ncu_window.xml
++++ b/UI/Packages/Core/ncu_window.xml
+@@ -1,8 +1,15 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <root>
+-  <View name="ncu_content_root" view_layout="stacked" h_alignment="center" v_alignment="center">
++  <!-- Set to the left of its place in the window: the content is a pixel narrower than that place (window.lua's
++       CONTENT_SIDES), and centred it stood half a pixel right, the slots further from the left line than the right. -->
++  <View name="ncu_content_root" view_layout="stacked" h_alignment="left" v_alignment="center">
+     <ScrollView name="ncu_content" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1">
+-      <ScrollViewChild name="ncu_grid" view_layout="grid" grid_columns="30" min_columns="1" grid_spacing="0" h_alignment="left" layout_borders="Rect(6,6,6,6)" />
++      <!-- The slots 4 pixels clear of the window's frame lines on every side, as in the original client. The content
++           area starts right after the left line and a pixel under the title's line, and stops a pixel short of the
++           right line and right on the bottom line; on the right, each slot's spare pixel (ncu_slot.xml) counts too.
++           Under the last row's dark line: 3 pixels of the border and the pixel ncu.view keeps spare, so that a window
++           placed on a half pixel doesn't bring up the scroll bar. -->
++      <ScrollViewChild name="ncu_grid" view_layout="grid" grid_columns="30" min_columns="1" grid_spacing="0" h_alignment="left" layout_borders="Rect(4,3,2,4)" />
+     </ScrollView>
+     <View name="ncu_list" view_layout="vertical" visible="false" />
+   </View>

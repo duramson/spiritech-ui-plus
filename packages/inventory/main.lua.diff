@@ -1,6 +1,6 @@
 --- a/UI/Packages/Inventory/main.lua
 +++ b/UI/Packages/Inventory/main.lua
-@@ -2,9 +2,13 @@
+@@ -2,12 +2,17 @@
  local Security = ui.require("core.security")
  local Grid = ui.require("core.icon_grid")
  local Table = ui.require("core.table")
@@ -13,8 +13,13 @@
 +local scroll_bar = ScrollBar.attach(grid_scroll, grid_holder, { step = 58, borders = { 0, 0, 0.5, 0 } })
  local list_host = ui.find(content, "inventory_list")
  local search_query = ui.find(content, "search_query")
- local FOOTER_HEIGHT = 26
-@@ -150,12 +154,53 @@
+-local FOOTER_HEIGHT = 26
++local search_frame = ui.find(content, "search_frame")
++local FOOTER_HEIGHT = 29
+ local footer = ui.find(content, "footer")
+ local footer_spacer = ui.find(content, "footer_spacer")
+ local slot_count = ui.find(content, "slot_count")
+@@ -150,14 +155,55 @@
  		cells:show(entries)
  	end
  end
@@ -67,9 +72,12 @@
  	local shown = searchable or counts_slots
 +	place_scroll_bar()
  	ui.visible(footer, shown)
- 	ui.visible(search_query, searchable)
+-	ui.visible(search_query, searchable)
++	ui.visible(search_frame, searchable)
  	ui.visible(footer_spacer, not searchable)
-@@ -170,7 +215,12 @@
+ 	ui.visible(slot_count_frame, counts_slots)
+ end
+@@ -170,7 +216,12 @@
  	else
  		local fewest_columns, fewest_rows, fewest_scroll = 1, 1, false
  		if credits_shown then
@@ -83,7 +91,7 @@
  			fewest_scroll = capacity > fewest_columns * fewest_rows
  		end
  		local min_width, min_height = sizing:size(fewest_columns, fewest_rows, fewest_scroll)
-@@ -178,8 +228,12 @@
+@@ -178,8 +229,12 @@
  		local _, max_height = sizing:size(1, capacity, true)
  		ui.limits(window.root, min_width, min_height + reserved_height, max_width, max_height + reserved_height)
  		width, height = math.max(width, min_width), math.max(height, min_height + reserved_height)
@@ -98,7 +106,7 @@
  		height = height + reserved_height
  		title_visible = columns >= 3
  		ui.size(grid, columns * 58 - 4, -1)
-@@ -200,7 +254,7 @@
+@@ -200,7 +255,7 @@
  	list:clear()
  	mode = value
  	selected, splitting, split_count = -1, -1, ""
@@ -107,7 +115,7 @@
  	ui.visible(list_host, mode == "list")
  	ui.menu.checked(frame.icon, 1, mode == "list")
  	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
-@@ -230,14 +284,14 @@
+@@ -230,14 +285,14 @@
  	},
  })
  ui.root(frame.root)
@@ -124,17 +132,18 @@
  	ui.grid_columns(grid, capacity)
  	ui.text(ui.find(frame.root, "window_title"), configuration.title)
  	ui.place(frame.root, configuration.x, configuration.y)
-@@ -265,7 +319,8 @@
+@@ -265,7 +320,9 @@
  			occupied[#occupied + 1] = entry
  		end
  	end
 -	ui.text(slot_count, "Slots: " .. #occupied .. " / " .. capacity)
-+	-- The count alone, "24 / 30", without the bundled window's "Slots: " in front: it says what it is on its own.
-+	ui.text(slot_count, #occupied .. " / " .. capacity)
++	-- The count alone, "24/30" as the NCU count in the corner of the screen, without the bundled window's "Slots: "
++	-- in front: it says what it is on its own.
++	ui.text(slot_count, #occupied .. "/" .. capacity)
  	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
  	reconcile()
  end
-@@ -336,6 +391,7 @@
+@@ -336,6 +393,7 @@
  		return
  	end
  	credits_shown = available
@@ -142,7 +151,7 @@
  	ui.visible(credits_section, available)
  	choose_credits("")
  	if not available then
-@@ -358,7 +414,7 @@
+@@ -358,7 +416,7 @@
  		bind_credits_transfer()
  	end
  	ui.grid_columns(grid, capacity)

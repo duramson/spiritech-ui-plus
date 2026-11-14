@@ -43,6 +43,10 @@ Grotesk should give the original's pixels; that is untested so far.
   original pixels doubled for Retina and 200 % scaling
 - [a80993c](https://github.com/duramson/spiritech-ui-plus/commit/a80993c) feat: install Notum Grotesk 200 alongside
   Notum Grotesk
+- [097dfc9](https://github.com/duramson/spiritech-ui-plus/commit/097dfc9) fix(core): fit the window frame patch to
+  client 0.2.0
+- [00e2dac](https://github.com/duramson/spiritech-ui-plus/commit/00e2dac) fix(core): keep a docked window's content
+  as tall as when it floated
 
 ## Nano Programs: the bundled layout
 
@@ -96,6 +100,20 @@ clear of the tab frame on every side. The picture shows Spiritech as shipped and
   evenly inside the tab frame
 - [6b7098e](https://github.com/duramson/spiritech-ui-plus/commit/6b7098e) fix(nano-programs): set the tab labels
   further into their tabs
+
+## NCU window
+
+The NCU window, and the target's NCU window in grid mode, which is built from the same files. The slots stand 47
+pixels apart across with a pixel of background between them, and 29 down, each row covering the dark bottom line of
+the slot above, as in the original client; Spiritech sets them 46 by 30 apart. They stand 4 pixels clear of the
+window's frame lines on every side, where Spiritech leaves 6 to 10, so a window of 4 by 3 slots comes out 203 by 124
+pixels instead of 207 by 135. The middle picture was taken with UI+'s window frame already on; the window's content is
+as shipped. The original client's picture has no nano running.
+
+![NCU: Anarchy Online, Spiritech as shipped, Spiritech with UI+](images/ncu.png)
+
+- [13f0e81](https://github.com/duramson/spiritech-ui-plus/commit/13f0e81) fix(core): build the NCU window to the
+  original client's measurements
 
 ## Not done yet
 

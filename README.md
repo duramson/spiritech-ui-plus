@@ -14,7 +14,8 @@ for good.
 | Window | Progress | |
 | --- | --- | --- |
 | Nano Programs | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done. The list view gets a second round later. |
-| NCU | `▱▱▱▱▱▱▱▱▱▱` 0 % | Next. |
+| NCU | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done. |
+| Wear | `▱▱▱▱▱▱▱▱▱▱` 0 % | Next. |
 
 ## What works now
 
@@ -22,6 +23,7 @@ for good.
 | --- | --- | --- |
 | **Window frame** | Every window's frame, title tab, icon, pin and close button at the original client's sizes, distances and opacity, measured from pictures of its windows. | Nothing to do: it shows from the next character login. |
 | **Nano Programs** | School buttons, tiles and search as the original client draws them, or a new School Tabs layout. | Once: Options → Interface & HUD → UI packages, set Nano Programs to `External [duramson.nano] — UI+`, then log the character in again. The window's menu (the i icon) switches between the two layouts. |
+| **NCU** | Slots, their spacing and the margins as in the original client's NCU window. | Nothing to do: it shows from the next character login. |
 | **Notum Grotesk** | UI+'s own font: a modern, scalable take on the pixelated Verdana the original client draws its interface with, made on your computer ([more below](#notum-grotesk)). Notum Grotesk 200 is the same for Retina screens and 200 % scaling. | Say yes when the installer asks to generate it (only `install.py` so far), then pick Notum Grotesk as the interface font in Options (type "font" into its search), or Notum Grotesk 200 on a Retina screen or at 200 % scaling. |
 
 Not done yet: the Wear window (its tab labels come out too wide with Notum Grotesk: "Imp" for "Impl"), the other

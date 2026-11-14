@@ -269,10 +269,17 @@ function Get-ClientVersion([string]$ClientDir) {
 
 function Read-State([string]$ClientDir) {
     $path = Join $ClientDir $StateName
-    $state = @{ version = $null; core = @{}; packages = @{} }
+    $state = @{ version = $null; core = @{}; packages = @{}; fonts = @() }
     if (Test-Path -LiteralPath $path) {
         $json = [IO.File]::ReadAllText($path) | ConvertFrom-Json
         $state.version = $json.version
+        # the fonts install.py put in (fonts\pixelfont.py), kept for its uninstall; an install from before
+        # Notum Grotesk 200 recorded only "font": true
+        if ($json.PSObject.Properties['fonts']) {
+            $state.fonts = @($json.fonts)
+        } elseif ($json.PSObject.Properties['font'] -and $json.font) {
+            $state.fonts = @('Notum Grotesk')
+        }
         foreach ($entry in $json.core.PSObject.Properties) {
             $state.core[$entry.Name] = @{ sha = $entry.Value.sha; diff = $entry.Value.diff
                                          created = [bool]$entry.Value.created }
@@ -287,7 +294,9 @@ function Read-State([string]$ClientDir) {
 function Save-State([string]$ClientDir, $State) {
     $path = Join $ClientDir $StateName
     if ($State.core.Count -gt 0 -or $State.packages.Count -gt 0) {
-        $json = @{ version = $State.version; core = $State.core; packages = $State.packages } | ConvertTo-Json -Depth 6
+        $data = @{ version = $State.version; core = $State.core; packages = $State.packages }
+        if ($State.fonts.Count -gt 0) { $data.fonts = @($State.fonts) }
+        $json = $data | ConvertTo-Json -Depth 6
         [IO.File]::WriteAllText($path, $json.Replace("`r`n", "`n") + "`n", $Utf8)
     } elseif (Test-Path -LiteralPath $path) {
         Remove-Item -LiteralPath $path
@@ -567,6 +576,9 @@ function Invoke-Uninstall([string]$ClientDir) {
     Save-State $ClientDir $state
     Say 'Done. The client''s own UI is back at your next character login (the Options and login screens after a'
     Say 'restart). If you picked UI+''s windows in Options, the client falls back to its own ones.'
+    if ($state.fonts.Count -gt 0) {
+        Say "$($state.fonts -join ' and ') stay installed: fonts\pixelfont.py uninstall removes them (it needs Python)."
+    }
 }
 
 function Show-Status([string]$ClientDir) {

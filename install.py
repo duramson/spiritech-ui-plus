@@ -38,7 +38,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 TITLE = "duramson UI+ for Spiritech"
-MADE_FOR = "0.2.0"  # the client version the patches were made against
+MADE_FOR = "0.2.1"  # the client version the patches were made against
 STATE = "ui-plus.json"
 BACKUP = ".ui-plus-backup"
 PREFIX = "ui-plus-"

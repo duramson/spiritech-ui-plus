@@ -1,6 +1,13 @@
 --- a/UI/Packages/Core/window.xml
 +++ b/UI/Packages/Core/window.xml
-@@ -7,7 +7,7 @@
+@@ -1,13 +1,13 @@
+ <?xml version="1.0" standalone="yes"?>
+ <root>
+   <View name="window" capture_input="true" color="Default" composite_layer="true" interaction_scope="true" view_layout="stacked">
+-    <BorderView name="window_outer" border_gfx="GFX_GUI_WINDOW3_BORDER" bg_gfx="GFX_GUI_WINDOW_BACKGROUND" alpha="0.85" />
++    <BorderView name="window_outer" border_gfx="GFX_GUI_WINDOW3_BORDER" bg_gfx="GFX_GUI_WINDOW_BACKGROUND" alpha="0.4" />
+     <BorderView name="window_inner" border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" alpha="0.85" layout_borders="Rect(4,26,4,4)" />
+     <View view_layout="vertical" weight="1" layout_borders="Rect(3,3,3,3)">
        <View name="window_titlebar" view_layout="horizontal" capture_input="true" min_size="Point(-1,24)" max_size="Point(-1,24)">
          <BitmapView name="window_icon" interactive="true" image="gfx://GFX_GUI_WINDOW_ICON_I" graphic_mode="tinted" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(2,0,0,1)" />
          <View name="window_title_tab" view_layout="stacked" min_size="Point(-1,17)" max_size="Point(-1,17)" v_alignment="top" layout_borders="Rect(3,7,0,0)">

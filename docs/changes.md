@@ -115,6 +115,18 @@ as shipped. The original client's picture has no nano running.
 - [13f0e81](https://github.com/duramson/spiritech-ui-plus/commit/13f0e81) fix(core): build the NCU window to the
   original client's measurements
 
+## Inventory: search and slot count
+
+UI+ replaces the Inventory window (Options > Interface & HUD > UI packages, "duramson.inventory"), the one package the
+client draws the inventory, bags, banks and loot with. So far it only takes out what got in the way: the tooltips on the
+search field ("Item name, at least three letters, then Enter") and on the slot count ("Slots holding an item, of all
+slots") only repeated what they show, and the search's opened right over the slot count and ran far past the window's
+edge. The count reads "24 / 30", without "Slots: " in front. The rest of the window is the bundled one. There is no
+picture of it yet.
+
+- [15d653f](https://github.com/duramson/spiritech-ui-plus/commit/15d653f) feat(inventory): offer an Inventory window
+  without the search and slot tooltips
+
 ## Not done yet
 
 - **Wear.** Its tab labels are set at 12 pixels where the original client draws 11, so with Notum Grotesk "Impl" is

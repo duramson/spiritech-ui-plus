@@ -6,6 +6,8 @@
     python3 tools/dev.py core FILE        start patching another file of the client's UI/Packages/Core
     python3 tools/dev.py diff             the patches (and UI+'s own files) in core/ and packages/, from work/
     python3 tools/dev.py sync             diff, then install into the client
+    python3 tools/dev.py preview [off]    install (or remove) the preview: copies of the windows UI+ changes, built
+                                          again from the layout files after each sync, without logging out
     --client PATH                         as for install.py
 
 work/ is not tracked. fork overwrites it, so diff what you changed first. Run diff before every commit: the
@@ -13,6 +15,7 @@ repository holds only what diff writes.
 """
 import shutil
 import sys
+import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -20,6 +23,8 @@ sys.path.insert(0, str(REPO))
 import install as ui  # noqa: E402
 
 WORK = REPO / "work"
+PREVIEW = REPO / "dev" / "preview"
+PREVIEW_FOLDER = "ui-plus-dev-preview"
 
 
 def stock_package(client, source):
@@ -104,6 +109,41 @@ def diff(client):
     print(f"diff: {written} file(s) changed" if written else "diff: nothing changed")
 
 
+def preview_folder():
+    return ui.package_dir() / PREVIEW_FOLDER
+
+
+def bump_preview():
+    """Gives the installed preview a new generation number: it builds its windows again within a second."""
+    folder = preview_folder()
+    if not folder.is_dir():
+        return False
+    number = int(time.time()) % 30000 + 1
+    (folder / "generation.xml").write_text('<?xml version="1.0" encoding="utf-8"?>\n<root>\n'
+                                           f'  <View name="generation" min_size="Point({number},1)" />\n</root>\n',
+                                           encoding="utf-8")
+    return True
+
+
+def install_preview():
+    folder = preview_folder()
+    shutil.rmtree(folder, ignore_errors=True)
+    shutil.copytree(PREVIEW, folder)
+    bump_preview()
+    print(f"Installed the preview as {folder}. The client finds a new package only when it starts: restart the "
+          f"game once. After that every sync shows its layout files in the preview windows within a second; a change "
+          f"to Lua code still needs a login.")
+
+
+def remove_preview():
+    folder = preview_folder()
+    if folder.is_dir():
+        shutil.rmtree(folder)
+        print(f"Removed {folder}; the client lets go of it at its next start.")
+    else:
+        print("The preview isn't installed.")
+
+
 def put(path, content):
     """Writes a patch or file; an empty patch removes it. Returns whether anything changed."""
     data = content.encode("utf-8") if isinstance(content, str) else content
@@ -143,6 +183,12 @@ def main(argv):
     elif args == ["sync"]:
         diff(client)
         ui.install(client)
+        if bump_preview():
+            print("The preview builds its windows again.")
+    elif args == ["preview"]:
+        install_preview()
+    elif args == ["preview", "off"]:
+        remove_preview()
     else:
         sys.exit(__doc__)
 

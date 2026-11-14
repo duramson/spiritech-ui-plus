@@ -124,7 +124,12 @@ python3 tools/dev.py fork      # work/: the client's files with UI+'s patches ap
 python3 tools/dev.py sync      # patches from work/, then install into the client
 ```
 
-Log out to character select and back in to see a change. `python3 tools/dev.py new <name> <BundledPackage>`
+Log out to character select and back in to see a change. A layout file (XML) shows without that:
+`python3 tools/dev.py preview` installs a preview package (restart the game once after it), whose windows are copies
+of the window frame, the NCU window and the scroll bar, built from the layout files on disk. Each sync builds them
+again within a second; a change to Lua still needs a login. `python3 tools/dev.py preview off` removes it.
+
+`python3 tools/dev.py new <name> <BundledPackage>`
 starts a window from one of the client's bundled packages, and `python3 tools/dev.py core <file>` starts
 patching another Core file. [CONTRIBUTING.md](CONTRIBUTING.md) has the rest: one change per commit, and a
 picture for each change one can see.

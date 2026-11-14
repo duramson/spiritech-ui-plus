@@ -1,0 +1,3 @@
+<Package id="duramson.preview" name="UI+ preview">
+  <Script src="main.lua" />
+</Package>

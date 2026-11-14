@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- Two scroll views over the same content: left with the client's own scroll bar, right with the original client's
+       (core.scroll_bar, attached by main.lua). After them, the experiments main.lua finds in scroll-test-1.xml to -4.xml. -->
+  <View name="preview_scroll" view_layout="horizontal">
+    <ScrollView name="preview_scroll_view" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1" min_size="Point(48,150)" max_size="Point(48,150)">
+      <ScrollViewChild name="preview_scroll_child" view_layout="vertical" min_size="Point(30,400)" max_size="Point(30,400)">
+        <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+        <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+        <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+        <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+        <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+        <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+        <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+        <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+        <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+        <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+      </ScrollViewChild>
+    </ScrollView>
+    <View name="preview_ao_holder" view_layout="stacked" min_size="Point(48,150)" max_size="Point(48,150)" layout_borders="Rect(10,0,0,0)">
+      <ScrollView name="preview_ao_scroll" capture_input="true">
+        <ScrollViewChild name="preview_ao_child" view_layout="vertical" min_size="Point(30,400)" max_size="Point(30,400)">
+          <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+          <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+          <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+          <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+          <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+          <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+          <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+          <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+          <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+          <BorderView border_gfx="GFX_GUI_TAB_BORDER" bg_gfx="GFX_GUI_TAB_BACKGROUND" min_size="Point(30,40)" max_size="Point(30,40)" />
+        </ScrollViewChild>
+      </ScrollView>
+    </View>
+    <View name="preview_scroll_tests" view_layout="horizontal" />
+  </View>
+</root>

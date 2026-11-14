@@ -22,8 +22,8 @@ is patched twice. What was installed is recorded in ui-plus.json in the client f
 nothing else.
 
 Before installing, it asks whether to generate Notum Grotesk too: the original client's crisp pixel text as a font,
-made by fonts/pixelfont.py from the Verdana on this computer (it fetches the two Python packages it needs the first
-time). Uninstalling removes the font again.
+with Notum Grotesk 200 beside it for Retina screens and 200 % display scaling, made by fonts/pixelfont.py from the
+Verdana on this computer (it fetches the two Python packages it needs the first time). Uninstalling removes them again.
 """
 import difflib
 import hashlib
@@ -46,6 +46,7 @@ STOCK = "stock-package.txt"
 SKIP = {".DS_Store", "Thumbs.db", "desktop.ini"}
 NONL = "\0"  # marks a last line without a line break while diffing
 FONT_TOOL = HERE / "fonts" / "pixelfont.py"
+FONTS = ["Notum Grotesk", "Notum Grotesk 200"]  # what pixelfont.py install puts into the user's font folder
 
 
 class PatchError(Exception):
@@ -468,16 +469,23 @@ def ask_font():
     if not FONT_TOOL.exists() or not sys.stdin.isatty():
         return False
     say("Notum Grotesk is the original AO interface text as a font: crisp pixels at every size and interface scale.")
-    say("It is generated from the Verdana on this computer and stays on it.")
+    say("Notum Grotesk 200 draws each of its pixels as 2 x 2, for Retina screens and 200 % display scaling.")
+    say("Both are generated from the Verdana on this computer and stay on it.")
     answer = input("Generate Notum Grotesk? [Y/n]: ").strip().lower()
     say()
     return answer in ("", "y", "yes")
 
 
+def installed_fonts(state):
+    """The fonts UI+ installed. Installs from before Notum Grotesk 200 recorded only "font": true."""
+    return state.get("fonts") or (FONTS[:1] if state.get("font") else [])
+
+
 def install_font(client, state):
     say()
     if subprocess.run([sys.executable, str(FONT_TOOL), "install"]).returncode == 0:
-        state["font"] = True
+        state.pop("font", None)
+        state["fonts"] = list(FONTS)
         save_state(client, state)
     else:
         say("Notum Grotesk was not installed. UI+ itself is.")
@@ -532,7 +540,10 @@ def uninstall(client):
         remove_core(client, state, name)
     for name in sorted(state["packages"]):
         remove_package(state, name)
-    if state.pop("font", False) and FONT_TOOL.exists():
+    fonts = installed_fonts(state)
+    state.pop("font", None)
+    state.pop("fonts", None)
+    if fonts and FONT_TOOL.exists():  # removes every font of ours it finds, so an older single-font install too
         subprocess.run([sys.executable, str(FONT_TOOL), "uninstall"])
     save_state(client, state)
     say("Done. The client's own UI is back at your next character login (the Options and login screens after a")
@@ -567,8 +578,8 @@ def status(client):
         entry = state["packages"].get(source.name)
         say(f"  window {source.name}: " + (f"installed as {package_dir() / entry['folder']}" if entry else
                                           "not installed yet"))
-    if state.get("font"):
-        say("  font Notum Grotesk: installed")
+    for font in installed_fonts(state):
+        say(f"  font {font}: installed")
     if note:
         say(f"  note: {note}")
 

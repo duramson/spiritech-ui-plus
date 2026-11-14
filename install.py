@@ -585,8 +585,6 @@ def main(argv):
     client = find_client(given)
     if not args:
         menu(client)
-        if sys.stdin.isatty():
-            input("\nPress Enter to close.")
         return
     if len(args) != 1 or args[0] not in ("install", "uninstall", "status"):
         sys.exit(__doc__)

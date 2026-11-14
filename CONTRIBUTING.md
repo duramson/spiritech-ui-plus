@@ -110,6 +110,9 @@ tables. Progress has four groups:
 - **Bug fixes:** bugs in Spiritech itself that UI+ fixes until the client does. A bug of UI+'s own is fixed and
   gets a changelog line, not an entry here.
 
+The bars are pictures, one for every ten per cent: `![30 %](docs/images/progress/30.svg)`. A bar under way is
+turquoise, a full one gold. `python3 tools/progress.py` draws them; the colours are at its top.
+
 ### The changelog line
 
 ```markdown

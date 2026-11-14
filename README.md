@@ -38,10 +38,10 @@ its layouts and its crisp pixel text. With a few fixes and additions of its own.
 
 Every window that Options → Interface & HUD → UI packages can replace. 2 of 40 have had their first pass.
 
-`▰▰▰▰▰▰▰▰▰▰` Nano programs · 100 %\
-`▰▰▰▰▰▰▰▰▰▰` NCU · 100 %\
-`▰▰▰▱▱▱▱▱▱▱` Inventory containers · 30 %\
-`▱▱▱▱▱▱▱▱▱▱` Wear · next
+![100 %](docs/images/progress/100.svg) Nano programs · 100 %\
+![100 %](docs/images/progress/100.svg) NCU · 100 %\
+![30 %](docs/images/progress/30.svg) Inventory containers · 30 %\
+![0 %](docs/images/progress/0.svg) Wear · next
 
 <details>
 <summary>36 more, not started</summary>
@@ -59,8 +59,8 @@ Trade and shops · Tradeskills
 
 Pieces the windows share: how close each is to the original, and how many windows have it.
 
-`▰▰▰▰▰▰▰▰▰▰` Window frame · 100 % · every window\
-`▰▰▰▰▰▰▰▰▱▱` Scroll bar · 80 % · 3 of 18 windows
+![100 %](docs/images/progress/100.svg) Window frame · 100 % · every window\
+![80 %](docs/images/progress/80.svg) Scroll bar · 80 % · 3 of 18 windows
 
 ### Features
 

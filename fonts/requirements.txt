@@ -1,0 +1,3 @@
+fonttools>=4.40
+# pinned: its bundled FreeType (2.13.2) decides the pixels, so every player gets the same font
+freetype-py==2.5.1

@@ -50,6 +50,8 @@ grows with each change UI+ makes.
 
 ## Notum Grotesk
 
+<img src="docs/images/notum-grotesk-specimen.png" width="800" alt="Notum Grotesk: its name at 11 pixels, one line at every size from 9 to 16 pixels, and its letters and digits">
+
 Notum Grotesk is UI+'s own font: a modern, scalable take on the pixelated Verdana the original client draws its
 interface with. That client sets its text in Verdana, hinted and in black and white, so every letter is sharp
 pixels. Spiritech draws its text smoothed, so even Verdana comes out softer and thicker there. Notum Grotesk brings

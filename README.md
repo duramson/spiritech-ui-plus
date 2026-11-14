@@ -8,7 +8,8 @@ things of its own.
 - `core/`: files from the client's `UI/Packages/Core`, which every window builds its frame from. No UI package can
   replace them, so they are changed in the client itself.
 - `packages/`: UI packages. They go into the client's per-user package folder; a window's replacement is picked in
-  Options → Interface & HUD → UI packages, where this repository's packages carry `duramson` in their id and name.
+  Options → Interface & HUD → UI packages, where this repository's packages show as
+  `External [duramson.<window>] — UI+`.
 
 ## How changes are made
 

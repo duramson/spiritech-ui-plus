@@ -1,6 +1,5 @@
 # Patches keep their exact bytes: no line-ending conversion, no whitespace fixes.
 *.diff -text -whitespace
 *.py text eol=lf
-*.command text eol=lf
 *.bat text eol=crlf
 *.ps1 text eol=crlf

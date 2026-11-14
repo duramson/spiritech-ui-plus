@@ -10,10 +10,10 @@ its windows. [The changes in pictures](docs/changes.md), beside the original cli
 2. Start the installer:
    - **Windows:** double-click `install.bat`. If Windows warns about a script from the internet, choose Run
      (More info → Run anyway).
-   - **macOS:** right-click `install.command` → Open (a plain double-click is refused the first time, since
-     it comes from the internet). It needs `python3`; if macOS offers to install its command line developer
-     tools for it, let it.
-   - **Linux:** `python3 install.py`
+   - **macOS:** open Terminal (⌘ Space, type `Terminal`, Enter). Type `python3` and a space, drag
+     `install.py` from the unpacked folder into the Terminal window, and press Enter. If macOS offers to
+     install its command line developer tools for `python3`, let it, then do it again.
+   - **Linux:** the same in a terminal: `python3`, a space, the path to `install.py`.
 3. Press Enter to install. The installer finds the game in the usual places; if it doesn't, it asks for the
    client folder (the one with `PRK.Client` in it), and you can drag the folder into its window.
 4. Log in a character. The window frame changes by itself; the reworked windows are picked in

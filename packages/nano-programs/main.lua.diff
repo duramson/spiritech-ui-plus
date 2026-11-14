@@ -169,9 +169,18 @@
  local cells = Grid.cells({
  	host = grid,
  	template = "slot.xml",
-@@ -124,9 +210,28 @@
+@@ -119,14 +205,35 @@
+ 		populate()
+ 	end,
+ })
+-local cell_size, spacing = 38, 4
++-- The tiles as the original client draws them: the 38-pixel slot picture shown at 40 pixels, 2 apart, the icon 4
++-- pixels in (the bundled window drew it at its own 38, 4 apart). 14: what Grid.size counts besides the grid across.
++local cell_size, spacing = 40, 2
+ local step = cell_size + spacing
  local maximum_extent = presentation.maximum_extent
- local maximum_columns = math.floor((maximum_extent - 16 + spacing) / step)
+-local maximum_columns = math.floor((maximum_extent - 16 + spacing) / step)
++local maximum_columns = math.floor((maximum_extent - 14 + spacing) / step)
  local sizing = Grid.create(cell_size, spacing, 600)
 -local minimum_columns = 1
 -while sizing:size(minimum_columns + 1, 1, true) <= Window.MINIMUM_WIDTH do
@@ -201,7 +210,7 @@
  end
  
  local function reconcile()
-@@ -138,38 +243,76 @@
+@@ -138,38 +245,76 @@
  end
  
  local function layout(window, width, height)
@@ -289,7 +298,7 @@
  
  populate = function()
  	selected, matches = {}, {}
-@@ -203,6 +346,22 @@
+@@ -203,8 +348,24 @@
  	ui.publish("view_mode", mode)
  end
  
@@ -310,9 +319,12 @@
 +end
 +
  frame = Window.create({
- 	title = "Nano Programs",
+-	title = "Nano Programs",
++	title = "Programs",
  	content = content,
-@@ -219,29 +378,58 @@
+ 	x = 10,
+ 	y = 174,
+@@ -219,29 +380,58 @@
  				set_mode(mode == "list" and "grid" or "list")
  			end,
  		},

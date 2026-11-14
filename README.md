@@ -11,7 +11,7 @@ its layouts and its crisp pixel text. With a few fixes and additions of its own.
 2. **Windows:** double-click `install.bat`.\
    **macOS, Linux:** run `python3 install.py` in a terminal.
 3. Press Enter to install, then log in a character.
-4. In Options → Interface & HUD → UI packages, set **Inventory containers** and **Nano Programs** to **UI+**, and
+4. In Options → Interface & HUD → UI packages, set **Inventory containers** and **Nano programs** to **UI+**, and
    log in again.
 
 > [!IMPORTANT]
@@ -36,21 +36,22 @@ its layouts and its crisp pixel text. With a few fixes and additions of its own.
 
 ### Windows
 
-Every window a UI package can replace. 2 of 41 have had their first pass.
+Every window that Options → Interface & HUD → UI packages can replace. 2 of 40 have had their first pass.
 
-`▰▰▰▰▰▰▰▰▰▰` Nano Programs · 100 %\
+`▰▰▰▰▰▰▰▰▰▰` Nano programs · 100 %\
 `▰▰▰▰▰▰▰▰▰▰` NCU · 100 %\
 `▰▰▰▱▱▱▱▱▱▱` Inventory containers · 30 %\
 `▱▱▱▱▱▱▱▱▱▱` Wear · next
 
 <details>
-<summary>37 more, not started</summary>
+<summary>36 more, not started</summary>
 
-Actions · Agg/Def · Chat · Chat configuration · Chat windows · Combat timer stack · Compass · Control Center ·
-Faction · Floating combat text · Friends · Info · Logout progress · Market · Mission Terminal · Missions ·
-Nameplates · NPC dialogue · Perks · Pets · Planet map · Playfield map · Player status bars · Raid · Raid bars ·
-Shortcut bars · Skills · Sneak indicator · Stats · Target NCU · Target panels · Team · Team invitations ·
-Team search · Telegraph · Trade · Tradeskills
+Info / Inspect · Planet Map · Local Map · Compass · Sneak indicator · Logout progress ·
+Telegraph announcements · Overhead nameplates · Floating combat text · Actions · Agg/Def · Chat content ·
+Chat configuration · Chat windows · Control Center · Faction · Friends · NPC dialogue · Shortcut bars ·
+Global Market Interface · Missions · Mission terminal · Perks · Pets · Raid · Raid bars · Skills · Stats ·
+Player status bars · Target panels · Target NCU · Team · Team invitations · Combat timer stack ·
+Trade and shops · Tradeskills
 
 </details>
 
@@ -59,14 +60,14 @@ Team search · Telegraph · Trade · Tradeskills
 Pieces the windows share: how close each is to the original, and how many windows have it.
 
 `▰▰▰▰▰▰▰▰▰▰` Window frame · 100 % · every window\
-`▰▰▰▰▰▰▰▰▱▱` Scroll bar · 80 % · 3 of 20 windows
+`▰▰▰▰▰▰▰▰▱▱` Scroll bar · 80 % · 3 of 18 windows
 
 ### Features
 
 New with UI+.
 
 - [Notum Grotesk](docs/notum-grotesk.md), the original client's pixel text as a font
-- School Tabs, a second layout for Nano Programs
+- School Tabs, a second layout for the Nano programs window
 - Tooltips that wait until the pointer rests
 
 ### Bug fixes

@@ -5,7 +5,7 @@ The original client draws its interface text with Verdana, monochrome and hinted
 in the Stats window, 12 px in the chat (as AO draws it under Wine). Spiritech draws its text antialiased, so even
 Verdana comes out thicker and softer there. This tool rasterises the player's own Verdana the way the original client
 does, at every size from 6 to 72 px, and builds one TrueType font from it, Notum Grotesk: each glyph carries its
-pixels for every one of those sizes, and the font's hinting program picks the set for the size being drawn. So the
+pixels and spacing for every one of those sizes, and the font's hinting program picks them for the size drawn. So the
 text stays crisp pixels at any font size and any interface scale (fractional sizes snap to whole pixels); without
 hinting, or above 72 px, it shows Verdana's own outline.
 
@@ -53,6 +53,7 @@ CHECKSUMS = HERE / "ao-pixels.json"
 FAMILY = "Notum Grotesk"
 SIZES = range(6, 73)  # pixel sizes the fonts carry Verdana's monochrome glyphs for
 CHECK_SIZE = 11  # the original client's interface size (AO's "NORMAL" font), which ao-pixels.json holds
+ORIGINAL_SIZES = (11, 12)  # the sizes the original client draws its text at (windows, chat): its spacing is kept there
 # The fonts built: family, file and how many device pixels each of Verdana's pixels takes, across and down
 FONTS = [(FAMILY, "notum-grotesk.ttf", 1), (FAMILY + " 200", "notum-grotesk-200.ttf", 2)]
 
@@ -210,6 +211,20 @@ class Rasteriser:
         hdmx width Windows would use: AO under Wine draws "Combat" a pixel tighter than that)."""
         return math.floor(Fraction(self.font["hmtx"][name][0] * ppem, self.upem) + Fraction(1, 2))
 
+    def hinted_advance(self, name, ppem):
+        """Verdana's own advance for its hinted pixels: its hdmx width, or the hinted advance at a size hdmx leaves
+        out. This is the width Windows places these pixels with."""
+        self.face.set_pixel_sizes(0, ppem)
+        self.face.load_glyph(self.font.getGlyphID(name), freetype.FT_LOAD_TARGET_MONO)
+        return (self.face.glyph.advance.x + 32) // 64
+
+    def pen_advance(self, name, ppem):
+        """The advance the fonts give a glyph: the original client's at the sizes it draws text at, Verdana's hinted
+        width at every other size. The rounded unhinted width only fits the hinted pixels by chance: at 13 px, the
+        size of Spiritech's chat, Verdana's hinting keeps "m" 9 px wide, as at 11 and 12 px, while its unhinted width
+        rounds up to 13 px and leaves a gap after it twice the usual; its hinted width is 11 px."""
+        return self.advance(name, ppem) if ppem in ORIGINAL_SIZES else self.hinted_advance(name, ppem)
+
 
 def glyph_checksum(rows, left, top, advance):
     return hashlib.sha256(f"{'|'.join(rows)};{left};{top};{advance}".encode()).hexdigest()[:12]
@@ -264,14 +279,17 @@ def trace(rows, left, top):
 # (every point at y = 0, so they draw nothing) with x already on that size's pixel grid: the em is 16384 units, so a
 # pixel edge lands within 1/128 px of a whole pixel at any size, and FreeType's 1/64 px precision puts it exactly on
 # it. The glyph program asks for the size, flattens Verdana's outline and lifts the matching pixel outline's points
-# to their rows. It only moves points up and down, which FreeType's newer (v40) interpreter does too, in grayscale
-# and in black and white. Without hinting nothing runs, and Verdana's outline is what shows.
+# to their rows. It moves the outline's points only up and down, which FreeType's newer (v40) interpreter does too,
+# in grayscale and in black and white. Without hinting nothing runs, and Verdana's outline is what shows.
 #
 # Notum Grotesk 200 holds a pixel outline for every size from 12 to 145 px: the pixels of half that size (rounded
-# down) traced at twice their size, with x on that size's own grid, so odd sizes stay sharp too. Its advance would
-# otherwise round on its own at the doubled size; the glyph program moves the advance point to twice the advance of
-# the half size instead. That is a move across, which FreeType's v40 interpreter makes only for fonts that switch off
-# its backward compatibility mode (INSTCTRL selector 3, as fonts hinted for ClearType do), so this font's prep does.
+# down) traced at twice their size, with x on that size's own grid, so odd sizes stay sharp too.
+#
+# Left alone, the advance would be Verdana's unhinted width rounded at the size drawn: in Notum Grotesk 200 rounded at
+# the doubled size, and at most sizes not the width the hinted pixels need (Rasteriser.pen_advance). So each size's
+# block also moves the advance point (phantom point 2) to that size's pen advance, times the scale. That is a move
+# across, which FreeType's v40 interpreter makes only for fonts that switch off its backward compatibility mode
+# (INSTCTRL selector 3, as fonts hinted for ClearType do), so both fonts' prep does.
 
 # TrueType instructions used below
 SVTCA_Y, SVTCA_X, SRP0, MPPEM, EQ, IF, EIF, CALL, FDEF, ENDF = (0x00, 0x01, 0x10, 0x4B, 0x54, 0x58, 0x59, 0x2B, 0x2C,
@@ -312,7 +330,7 @@ def _functions(scale):
 
 
 def build_font(raster, out_path, family, scale, rasters):
-    """Builds one of FONTS. rasters caches Verdana's pixels by (glyph, size), for the next font."""
+    """Builds one of FONTS. rasters caches Verdana's pixels and pen advance by (glyph, size), for the next font."""
     src = raster.font
     k = 16384 // raster.upem
     upem = raster.upem * k  # 16384 for Verdana: advances scale exactly, so they round as Verdana's own do
@@ -337,11 +355,12 @@ def build_font(raster, out_path, family, scale, rasters):
         verdana_points = len(coords)
         top_ink = max([top_ink] + [y for _, y in coords])
         bottom_ink = min([bottom_ink] + [y for _, y in coords])
-        sets = []  # (size, first point, rows + 128 per point)
+        sets = []  # (size, first point, rows + 128 per point, pen advance in pixels)
         for ppem in sizes:
-            if (name, ppem // scale) not in rasters:
-                rasters[name, ppem // scale] = raster.glyph(name, ppem // scale)
-            rows, left, top = rasters[name, ppem // scale]
+            key = name, ppem // scale
+            if key not in rasters:
+                rasters[key] = raster.glyph(*key) + (raster.pen_advance(*key),)
+            rows, left, top, advance = rasters[key]
             first, lifts = len(coords), []
             for contour in trace(rows, left, top):
                 for x, y in contour:
@@ -351,28 +370,24 @@ def build_font(raster, out_path, family, scale, rasters):
                     ink = y * scale * upem // ppem
                     top_ink, bottom_ink = max(top_ink, ink), min(bottom_ink, ink)
                 ends.append(len(coords) - 1)
-            sets.append((ppem, first, lifts))
-        if not coords and scale != 1:  # an empty glyph (space) can't hold a program: one point that draws nothing
+            sets.append((ppem, first, lifts, advance))
+        if not coords:  # an empty glyph (space) can't hold a program: one point that draws nothing
             coords, flags, ends = [(0, 0)], [1], [0]
         glyph = Glyph()
         glyph.numberOfContours = len(ends)
-        program = []
-        if coords:
-            glyph.coordinates, glyph.flags, glyph.endPtsOfContours = GlyphCoordinates(coords), bytearray(flags), ends
-            program = [SVTCA_Y] + _push([len(coords)], words=True) + [SRP0]  # rp0: the origin (phantom point 1)
-            for ppem, first, lifts in sets:
-                block = []
-                if verdana_points:
-                    block += _push([0, verdana_points], words=True) + _push([0]) + [CALL]
-                if lifts:
-                    block += (_push(reversed(lifts)) + _push([first, len(lifts)], words=True) + _push([1]) + [CALL])
-                    deepest_stack = max(deepest_stack, len(lifts) + 8)
-                if scale != 1:  # the advance (phantom point 2): scale times the advance of the pixels' own size
-                    advance = 64 * scale * raster.advance(name, ppem // scale)
-                    block += [SVTCA_X] + _push([len(coords) + 1, advance], words=True) + [MSIRP, SVTCA_Y]
-                if block:
-                    program += [MPPEM] + _push([ppem]) + [EQ, IF] + block + [EIF]
-            most_points = max(most_points, len(coords))
+        glyph.coordinates, glyph.flags, glyph.endPtsOfContours = GlyphCoordinates(coords), bytearray(flags), ends
+        program = [SVTCA_Y] + _push([len(coords)], words=True) + [SRP0]  # rp0: the origin (phantom point 1)
+        for ppem, first, lifts, advance in sets:
+            block = []
+            if verdana_points:
+                block += _push([0, verdana_points], words=True) + _push([0]) + [CALL]
+            if lifts:
+                block += (_push(reversed(lifts)) + _push([first, len(lifts)], words=True) + _push([1]) + [CALL])
+                deepest_stack = max(deepest_stack, len(lifts) + 8)
+            # the advance (phantom point 2): scale times the pen advance of the pixels' own size
+            block += [SVTCA_X] + _push([len(coords) + 1, 64 * scale * advance], words=True) + [MSIRP, SVTCA_Y]
+            program += [MPPEM] + _push([ppem]) + [EQ, IF] + block + [EIF]
+        most_points = max(most_points, len(coords))
         glyph.program = ttProgram.Program()
         glyph.program.fromBytecode(bytes(program))
         longest_program = max(longest_program, len(program))
@@ -412,16 +427,15 @@ def build_font(raster, out_path, family, scale, rasters):
     fb.setupHead(unitsPerEm=upem, fontRevision=2.0, lowestRecPPEM=sizes[0], created=now, modified=now)
     font = fb.font
     font["head"].flags |= 1 << 3  # whole-pixel sizes: a fractional size (UI scaling) snaps to the nearest one
-    if scale != 1:
-        font["head"].flags |= 1 << 4  # the glyph programs set the advances
+    font["head"].flags |= 1 << 4  # the glyph programs set the advances
     fpgm = newTable("fpgm")
     fpgm.program = ttProgram.Program()
     fpgm.program.fromBytecode(bytes(_functions(scale)))
     font["fpgm"] = fpgm
     prep = newTable("prep")
     prep.program = ttProgram.Program()
-    # Notum Grotesk 200: v40 keeps the advances its glyph programs set (INSTCTRL selector 3, value 4)
-    prep.program.fromBytecode(bytes(([] if scale == 1 else _push([4, 3]) + [INSTCTRL]) + [SVTCA_Y]))
+    # v40 keeps the advances the glyph programs set (INSTCTRL selector 3, value 4)
+    prep.program.fromBytecode(bytes(_push([4, 3]) + [INSTCTRL, SVTCA_Y]))
     font["prep"] = prep
     gasp = newTable("gasp")
     gasp.version, gasp.gaspRange = 1, {0xFFFF: 0x000F}

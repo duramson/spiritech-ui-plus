@@ -1,0 +1,20 @@
+--- a/UI/Packages/Core/icon_grid.lua
++++ b/UI/Packages/Core/icon_grid.lua
+@@ -9,7 +9,7 @@
+ 
+ 	function Grid:size(columns, rows, scrollbar)
+ 		local step = self.cell + self.spacing
+-		return columns * step - self.spacing + 16 + (scrollbar and 12 or 0), rows * step - self.spacing + 40
++		return columns * step - self.spacing + 14 + (scrollbar and 12 or 0), rows * step - self.spacing + 36
+ 	end
+ 
+ 	local SLOT_CELL, SLOT_SPACING = 54, 4
+@@ -24,7 +24,7 @@
+ 		local chosen_width, chosen_height, chosen_columns, chosen_rows
+ 		for columns = 1, self.maximum do
+ 			local maximum_rows = math.ceil(self.maximum / columns)
+-			local rows = math.max(1, math.min(maximum_rows, math.floor((height - 40 + self.spacing) / step + 0.5)))
++			local rows = math.max(1, math.min(maximum_rows, math.floor((height - 36 + self.spacing) / step + 0.5)))
+ 			local candidate_width, candidate_height = self:size(columns, rows, content_count > columns * rows)
+ 			local candidate_distance = math.abs(candidate_width - width)
+ 			if candidate_distance < distance then

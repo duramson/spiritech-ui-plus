@@ -1,0 +1,17 @@
+--- a/UI/Packages/Core/window.lua
++++ b/UI/Packages/Core/window.lua
+@@ -6,10 +6,10 @@
+ 	local Window = {}
+ 	Window.__index = Window
+ 	Window.MINIMUM_WIDTH = Grid.slots(3):size(3, 1, true)
+-	Window.CONTENT_SIDES = 11
+-	local CONTENT_ENDS = 33
+-	local ICON_WITH_BORDER, TITLE_BORDER, TABS_BORDER = 17, 3, 3
+-	local PIN_WITH_BORDER, CLOSE_WITH_BORDER, FRAME = 18, 19, 6
++	Window.CONTENT_SIDES = 9
++	local CONTENT_ENDS = 29
++	local ICON_WITH_BORDER, TITLE_BORDER, TABS_BORDER = 18, 3, 3
++	local PIN_WITH_BORDER, CLOSE_WITH_BORDER, FRAME = 18, 18, 4
+ 	local TITLEBAR_FURNITURE = ICON_WITH_BORDER + TITLE_BORDER + TABS_BORDER + PIN_WITH_BORDER + CLOSE_WITH_BORDER + FRAME
+ 
+ 	function Window.create(options)

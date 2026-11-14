@@ -1,4 +1,4 @@
-# Local test tooling: copies this repository into one's own client, so it holds one's own paths.
-/sync
-/state/
+# The whole patched files to edit (tools/dev.py fork).
+/work/
+__pycache__/
 .DS_Store

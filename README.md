@@ -1,121 +1,90 @@
 # duramson UI+ for Spiritech
 
-Spiritech, Project Rubi-Ka's new client, brings Anarchy Online to today's computers. UI+ brings back the look of
-the original client's interface: window frames built to its measurements, windows laid out as it laid them out,
-and its crisp pixel text. It fixes flaws in Spiritech's bundled UI on the way, and adds a few things of its own.
-
-**[Install](#install)** · **[Progress](#progress)** · **[What you get](#what-you-get)** ·
-**[Changelog](CHANGELOG.md)** · **[Every change in pictures](docs/changes.md)**
+The look of the original Anarchy Online interface for Spiritech, Project Rubi-Ka's new client: its window frames,
+its layouts and its crisp pixel text. With a few fixes and additions of its own.
 
 ![Nano Programs: Anarchy Online, Spiritech as shipped, Spiritech with UI+](docs/images/nano-programs-bundled.png)
 
-UI+ 0.1.0 · made for Spiritech client 0.2.1 · Windows, macOS, Linux
+## Install
+
+1. **[Download UI+](https://github.com/duramson/spiritech-ui-plus/archive/refs/heads/main.zip)** and unpack it.
+2. **Windows:** double-click `install.bat`.\
+   **macOS, Linux:** run `python3 install.py` in a terminal.
+3. Press Enter to install, then log in a character.
+4. In Options → Interface & HUD → UI packages, set **Inventory containers** and **Nano Programs** to **UI+**, and
+   log in again.
+
+> [!IMPORTANT]
+> Before the launcher updates the game, start the installer again and choose Uninstall. Install again after the
+> update.
+
+<details>
+<summary>Help with installing</summary>
+
+- **Windows warns about a script from the internet:** choose More info → Run anyway.
+- **macOS:** open Terminal (⌘ Space, type `Terminal`, Enter). Type `python3` and a space, drag `install.py` from
+  the unpacked folder into the Terminal window, and press Enter. If macOS offers to install its command line
+  developer tools, let it, then do it again.
+- **The installer doesn't find the game:** it asks for the client folder, the one with `PRK.Client` in it. You can
+  drag the folder into its window.
+- **Updating UI+:** download it again and install. It replaces the old one.
+- **Removing UI+:** start the installer and choose Uninstall. The client's own files come back.
+
+</details>
 
 ## Progress
 
-One part at a time gets the original client's look. 100 % means its first pass is done, not that it's finished
-for good.
+### Windows
 
-| Part | First pass | Status |
-| --- | --- | --- |
-| Window frame | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done |
-| Nano Programs | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done |
-| NCU | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done |
-| Scroll bar | `▰▰▰▰▰▰▰▰▱▱` 80 % | In three windows so far |
-| Inventory | `▰▰▰▱▱▱▱▱▱▱` 30 % | **In progress** |
-| Wear | `▱▱▱▱▱▱▱▱▱▱` 0 % | Next |
+Every window a UI package can replace. 2 of 41 have had their first pass.
 
-Still to come:
+`▰▰▰▰▰▰▰▰▰▰` Nano Programs · 100 %\
+`▰▰▰▰▰▰▰▰▰▰` NCU · 100 %\
+`▰▰▰▱▱▱▱▱▱▱` Inventory containers · 30 %\
+`▱▱▱▱▱▱▱▱▱▱` Wear · next
 
-- **Inventory:** the rest of the window. Its search, slot count and full rows are done.
-- **Scroll bar:** the other windows' lists, and a less stretched bar picture.
-- **Wear:** after the Inventory. Its tab labels come out too wide with Notum Grotesk ("Imp" for "Impl").
-- **Nano Programs:** a second round for the list view.
-- **Item tooltips** in the inventory, bags, bank, Wear and Trade windows still show at once: the client draws them
-  itself.
-- **Notum Grotesk** in the Windows installer.
+<details>
+<summary>37 more, not started</summary>
 
-What is known and open is in the [issues](https://github.com/duramson/spiritech-ui-plus/issues).
+Actions · Agg/Def · Chat · Chat configuration · Chat windows · Combat timer stack · Compass · Control Center ·
+Faction · Floating combat text · Friends · Info · Logout progress · Market · Mission Terminal · Missions ·
+Nameplates · NPC dialogue · Perks · Pets · Planet map · Playfield map · Player status bars · Raid · Raid bars ·
+Shortcut bars · Skills · Sneak indicator · Stats · Target NCU · Target panels · Team · Team invitations ·
+Team search · Telegraph · Trade · Tradeskills
 
-## What you get
+</details>
 
-These show by themselves from the next character login:
+### Elements
 
-| Part | What changes |
-| --- | --- |
-| **Window frame** | Every window's frame, title tab, icon, pin and close button at the original client's sizes, distances and opacity. |
-| **NCU** | Slots, their spacing and the margins as in the original client's NCU window. |
-| **Tooltips** | They wait until the pointer has rested for a second and a half, instead of popping up the moment it passes. |
-| **Scroll bar** | The original client's scroll bar, from its own pictures, in the NCU, Nano Programs and Inventory windows. |
+Pieces the windows share: how close each is to the original, and how many windows have it.
 
-These are switched on once, in Options → Interface & HUD → UI packages; then log the character in again:
+`▰▰▰▰▰▰▰▰▰▰` Window frame · 100 % · every window\
+`▰▰▰▰▰▰▰▰▱▱` Scroll bar · 80 % · 3 of 20 windows
 
-- **Inventory containers** → `External [duramson.inventory] — UI+`<br>
-  The inventory, bags and banks with the search and the slot count in frames, and only sizes whose rows are all
-  full.
-- **Nano Programs** → `External [duramson.nano] — UI+`<br>
-  School buttons, tiles and search as the original client draws them, or a new School Tabs layout. The window's
-  menu (the i icon) switches between the two.
+### Features
 
-And the interface font, [Notum Grotesk](#notum-grotesk): the original client's pixel text.
+New with UI+.
 
-![Inventory: Anarchy Online, Spiritech as shipped, Spiritech with UI+](docs/images/inventory.png)
+- [Notum Grotesk](docs/notum-grotesk.md), the original client's pixel text as a font
+- School Tabs, a second layout for Nano Programs
+- Tooltips that wait until the pointer rests
 
-**[Every change in pictures](docs/changes.md)**, beside the original client and Spiritech as shipped.
+### Bug fixes
 
-## Install
+Bugs in Spiritech, fixed here until the client fixes them itself.
 
-1. **Download** this repository (Code → Download ZIP) and unpack it anywhere.
-2. **Start the installer** and press Enter to install:
+- Inventory: resizing left the last row short of slots
+- Inventory: the search's tooltip covered the slot count
 
-   - **Windows:** double-click `install.bat`. If Windows warns about a script from the internet, choose
-     More info → Run anyway.
-   - **macOS:** open Terminal (⌘ Space, type `Terminal`, Enter). Type `python3` and a space, drag `install.py`
-     from the unpacked folder into the Terminal window, and press Enter. If macOS offers to install its command
-     line developer tools for `python3`, let it, then do it again.
-   - **Linux:** the same in a terminal: `python3`, a space, the path to `install.py`.
+---
 
-3. **Log in a character** and switch on what you want, as listed under [What you get](#what-you-get). The window
-   frame changes by itself.
-
-The installer finds the game in the usual places; if it doesn't, it asks for the client folder (the one with
-`PRK.Client` in it), and you can drag the folder into its window. `install.py` also asks whether to generate
-Notum Grotesk; the first time it fetches two Python packages for that, about 20 MB.
-
-> [!IMPORTANT]
-> **Uninstall before the launcher updates the game** (2 in the installer's menu), and install again after the
-> update. The launcher patches the client's own files and expects them unchanged.
-
-- **To update UI+**, download the new version and install it; it replaces the old one.
-- **To remove UI+**, uninstall. The client's own files come back from the copies the installer kept.
-
-## Notum Grotesk
-
-<img src="docs/images/notum-grotesk-specimen.png" width="800" alt="Notum Grotesk: its name at 11 pixels, one line at every size from 9 to 16 pixels, and its letters and digits">
-
-UI+'s own font: a modern, scalable take on the pixelated Verdana the original client draws its interface with.
-Spiritech draws its text smoothed; Notum Grotesk brings the pixels back, at any size. Verdana belongs to Microsoft,
-so the installer builds the font on your computer, from the Verdana that is already there.
-
-1. Say yes when the installer asks to generate it (only `install.py` so far).
-2. In Options, type "font" into the search and pick the interface font:
-   - **Notum Grotesk** on a normal screen (100 % scaling),
-   - **Notum Grotesk 200** on a Retina screen or at 200 % scaling.
-
-[How it is made, and what is still being worked on](docs/notum-grotesk.md)
-
-## More
-
-- [Changelog](CHANGELOG.md): what changed, the newest first.
-- [Every change in pictures](docs/changes.md): each window beside the original client and Spiritech as shipped.
-- [How it works](docs/how-it-works.md): UI+ ships patches, none of Project Rubi-Ka's files.
-- [Contributing](CONTRIBUTING.md): how to change something, and the rules for branches and pull requests.
+[Changelog](CHANGELOG.md) · [Every change in pictures](docs/changes.md) ·
+[Issues](https://github.com/duramson/spiritech-ui-plus/issues) · [Contributing](CONTRIBUTING.md)
 
 ## License
 
-UI+'s own work (the patches, the installers, the tools, the documentation and its pictures) is licensed under
-[CC BY-NC-SA 4.0](LICENSE): share and change it freely, name duramson UI+ as its source, keep the same license,
-and don't sell it or use it commercially without permission.
+UI+'s own work is licensed under [CC BY-NC-SA 4.0](LICENSE): share and change it, name duramson UI+ as its source,
+keep the same license, and don't use it commercially without permission.
 
-Anarchy Online is a trademark of Funcom. Project Rubi-Ka and Spiritech belong to their owners, and the files
-the patches apply to are theirs. This is an unofficial fan project, not made or endorsed by either.
+An unofficial fan project, not made or endorsed by Funcom or Project Rubi-Ka. Anarchy Online is a trademark of
+Funcom; Spiritech and the files the patches apply to belong to their owners.

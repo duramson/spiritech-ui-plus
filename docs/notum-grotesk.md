@@ -9,14 +9,14 @@ the pixels back, at any size.
 
 ![Text at four times its size: Anarchy Online, Spiritech as shipped, Spiritech with Notum Grotesk](images/notum-grotesk.png)
 
-## Turning it on
+## Setup
 
 1. Say yes when the installer asks to generate it (only `install.py` so far; the first time it fetches two Python
    packages for that, about 20 MB).
 2. In Options, type "font" into the search and pick Notum Grotesk as the interface font, or Notum Grotesk 200 on a
    Retina screen or at 200 % scaling.
 
-## How it is made
+## Built from your Verdana
 
 Verdana belongs to Microsoft, so a font made from it can't be shipped. Instead the installer builds the font on your
 computer, from the Verdana that is already there: it draws every letter the way the original client
@@ -25,14 +25,14 @@ hinting program picks the right set for the size Spiritech asks for, so the text
 and interface scale. Nothing made from Verdana is in this repository; `fonts/ao-pixels.json` holds only checksums of
 the original client's letters, to tell whether a Verdana gives the same pixels (macOS's gives all 610 at 11 px).
 
-## Retina and 200 %: Notum Grotesk 200
+## Notum Grotesk 200
 
 On a Retina screen, or with Windows' display scaling at 200 %, Spiritech draws text at twice the resolution, so
 Notum Grotesk's pixels come out half as big: sharp, but much finer than the original client's text, as in the
 picture above (taken on a Retina Mac). For those screens the installer builds a second font beside it, Notum Grotesk
 200, which draws each pixel as 2 × 2 so the letters come out at the original client's size; pick it instead.
 
-## Still being worked on
+## Open
 
 Both fonts are still being worked on. At a normal resolution (100 % scaling) plain Notum Grotesk's pixels should be
 the original client's; that hasn't been tested yet, because UI+ is made on a Mac. Pictures from such a screen are

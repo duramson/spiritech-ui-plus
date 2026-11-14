@@ -2,7 +2,7 @@
 
 Fixes, reworked windows and pictures are welcome, as pull requests or as issues with a screenshot.
 
-## The rules in short
+## Rules
 
 1. **`main` is what players download.** Nobody commits or pushes to it. It changes only when a pull request is
    merged.
@@ -23,17 +23,15 @@ git config core.hooksPath .githooks
 
 ## Branches
 
-| Type | For | Example |
-| --- | --- | --- |
-| `feat/` | Something new a player sees. | `feat/wear-window` |
-| `fix/` | Something wrong put right. | `fix/options-too-see-through` |
-| `docs/` | The README, the changelog, pictures and nothing else. | `docs/install-steps` |
-| `chore/` | The rest: tools, a new client version, housekeeping. | `chore/client-0.2.2` |
+- **`feat/`** for something new a player sees: `feat/wear-window`
+- **`fix/`** for something wrong put right: `fix/options-too-see-through`
+- **`docs/`** for the README, the changelog and pictures, and nothing else: `docs/install-steps`
+- **`chore/`** for the rest, such as tools or a new client version: `chore/client-0.2.2`
 
 The short name is lower-case letters, digits and hyphens, and says what the branch is for. Besides `main` only
 `issue-pictures` stays for good: it holds the pictures the issues show and is never merged.
 
-## A change, step by step
+## Steps
 
 1. **Start a branch from the current `main`.**
 
@@ -42,10 +40,9 @@ The short name is lower-case letters, digits and hyphens, and says what the bran
    git switch -c fix/<short-name> origin/main
    ```
 
-2. **Make the change** (see [Editing the patches](#editing-the-patches)) and commit as often as you like. The
-   commits are squashed, so they needn't be tidy.
-3. **Add what belongs to it:** the changelog line, the picture, the README's tables (see
-   [What a pull request holds](#what-a-pull-request-holds)).
+2. **Make the change** (see [Patches](#patches)) and commit as often as you like. The commits are squashed, so
+   they needn't be tidy.
+3. **Add what belongs to it** (see [Checklist](#checklist)).
 4. **Push the branch and open a pull request.**
 
    ```bash
@@ -73,15 +70,13 @@ git push --force-with-lease
 Two branches that both add a changelog line collide at the top of that file. Keep both lines, the later one on
 top.
 
-### Several changes at once
-
-Each change gets a folder of its own beside the repository, so none gets in another's way:
+Several changes at once each get a folder of their own beside the repository, so none gets in another's way:
 
 ```bash
 git worktree add ../spiritech-ui-plus.wt/<short-name> -b fix/<short-name> origin/main
 ```
 
-Each such folder has its own `work/`. The client holds whatever was synced last. When the branch is merged:
+Each such folder has its own `work/`, and the client holds whatever was synced last. When the branch is merged:
 `git worktree remove ../spiritech-ui-plus.wt/<short-name>`.
 
 ## Pull requests
@@ -92,17 +87,28 @@ Each such folder has its own `work/`. The client holds whatever was synced last.
   It becomes the commit's body.
 - **One change each.** Two fixes are two branches and two pull requests.
 
-### What a pull request holds
+## Checklist
 
-| The change | Comes with |
-| --- | --- |
-| Anything a player notices | A line at the top of [CHANGELOG.md](CHANGELOG.md). |
-| Anything one can see | A picture in `docs/images/`, and its section at the top of [docs/changes.md](docs/changes.md). |
-| A part got further | The Progress table and "Still to come" in [README.md](README.md). |
-| A new window, or something new to switch on | "What you get" in [README.md](README.md). |
-| A new UI+ version or client version | The line under the README's first picture. |
+- **A player notices it:** a line at the top of [CHANGELOG.md](CHANGELOG.md).
+- **One can see it:** a picture in `docs/images/`, and its section at the top of
+  [docs/changes.md](docs/changes.md).
+- **Something got further:** its place under Progress in [README.md](README.md) (see below).
 
 Tools, refactoring and changes to the documentation alone get no changelog line.
+
+### Progress in the README
+
+The README stays short: the picture, installing, progress. Anything longer goes into `docs/` and gets a link. No
+tables. Progress has four groups:
+
+- **Windows:** every window a UI package can replace, as the client lists them under Options → Interface & HUD →
+  UI packages. A window that is started gets a bar with its per cent; the others are named in the folded list.
+  Keep the counts in the two lines above and below the bars right.
+- **Elements:** pieces the windows share, such as the window frame or the scroll bar. The bar says how close the
+  piece is to the original client's, and the count how many windows have it.
+- **Features:** what is new with UI+, such as a font or a layout the client doesn't have.
+- **Bug fixes:** bugs in Spiritech itself that UI+ fixes until the client does. A bug of UI+'s own is fixed and
+  gets a changelog line, not an entry here.
 
 ### The changelog line
 
@@ -121,10 +127,11 @@ A change one can see gets a picture: the window before and after, and the origin
 Crop screenshots to the windows: no character names or chat. In [docs/changes.md](docs/changes.md) the newest
 change comes first too: a new section goes on top, and a section that is changed moves to the top.
 
-## Editing the patches
+## Patches
 
-The repository holds only patches against Project Rubi-Ka's files, never a whole file of theirs or Funcom's.
-`tools/dev.py` turns the patches into whole files to edit, and edited files back into patches:
+The repository holds only patches against Project Rubi-Ka's files, never a whole file of theirs or Funcom's
+([docs/patches.md](docs/patches.md)). `tools/dev.py` turns the patches into whole files to edit, and edited files
+back into patches:
 
 ```bash
 python3 tools/dev.py fork      # work/: the client's files with UI+'s patches applied
@@ -136,27 +143,19 @@ python3 tools/dev.py sync      # patches from work/, then install into the clien
    back in to see the change.
 3. Commit what `sync` wrote to `core/` and `packages/`.
 
-| Command | Does |
-| --- | --- |
-| `python3 tools/dev.py new <name> <BundledPackage>` | Starts a window from one of the client's bundled packages (the folder name in the client's `UI/Packages`). Give its `package.xml` its own id, `duramson.<short>`, and the name `UI+`, so it shows beside the bundled window in the UI package list. |
-| `python3 tools/dev.py core <file>` | Starts patching another file of the client's `UI/Packages/Core`. |
-| `python3 tools/dev.py diff` | Writes the patches from `work/` without installing. |
-| `python3 tools/dev.py preview` | Shows a layout file (XML) without logging out: it installs a preview package (restart the game once after it), whose windows are copies of the window frame, the NCU window and the scroll bar, built from the layout files on disk. Each `sync` builds them again within a second; a change to Lua still needs a login. `preview off` removes it. |
+More of `tools/dev.py`:
+
+- **`new <name> <BundledPackage>`** starts a window from one of the client's bundled packages (the folder name in
+  the client's `UI/Packages`). Give its `package.xml` its own id, `duramson.<short>`, and the name `UI+`, so it
+  shows beside the bundled window in the UI package list.
+- **`core <file>`** starts patching another file of the client's `UI/Packages/Core`.
+- **`diff`** writes the patches from `work/` without installing.
+- **`preview`** shows a layout file (XML) without logging out. It installs a preview package (restart the game
+  once after it), whose windows are copies of the window frame, the NCU window and the scroll bar, built from the
+  layout files on disk. Each `sync` builds them again within a second; a change to Lua still needs a login.
+  `preview off` removes it.
 
 `install.py` and `install.ps1` do the same and stay in step: a change to one goes into the other.
-[docs/how-it-works.md](docs/how-it-works.md) says what they do.
-
-## Where things are written down
-
-| File | Holds | Order |
-| --- | --- | --- |
-| [README.md](README.md) | What a player needs at first sight: progress, what UI+ gives, installing. | |
-| [CHANGELOG.md](CHANGELOG.md) | Every change in a line. | Newest first |
-| [docs/changes.md](docs/changes.md) | Every change in pictures, with its measurements. | Newest first |
-| [docs/notum-grotesk.md](docs/notum-grotesk.md) | The font: how it is made and what is open. | |
-| [docs/how-it-works.md](docs/how-it-works.md) | Patches and the installers. | |
-
-The README stays short. What takes more than a few lines goes into `docs/` and gets a link.
 
 ## License of contributions
 

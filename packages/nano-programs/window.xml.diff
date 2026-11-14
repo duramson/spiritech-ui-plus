@@ -1,6 +1,6 @@
 --- a/UI/Packages/NanoPrograms/window.xml
 +++ b/UI/Packages/NanoPrograms/window.xml
-@@ -1,21 +1,48 @@
+@@ -1,21 +1,50 @@
  <?xml version="1.0" encoding="utf-8"?>
  <root>
 +  <!-- Two layouts, picked in the window menu ("School Tabs"); main.lua moves the list and the grid between them. -->
@@ -45,12 +45,11 @@
 -    <ScrollView name="nano_grid_scroll" visible="false" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1" weight="1">
 -      <ScrollViewChild name="nano_grid" view_layout="grid" grid_columns="60" min_columns="1" grid_spacing="4" h_alignment="left" layout_borders="Rect(0,4,0,0)" />
 -    </ScrollView>
-+    <!-- The bundled window's layout, unchanged: the search and the school buttons over the list. -->
++    <!-- The bundled window's layout: its school buttons over the list, and the search under it as in the Inventory
++         window. -->
 +    <View name="bundled_layout" view_layout="vertical" weight="1" visible="false">
 +      <View name="toolbar" view_layout="vertical" layout_borders="Rect(6,4,6,6)">
 +        <View name="toolbar_row" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)">
-+          <TextView name="search_label" value="Search:" font_size="12" color="FFFFFF" v_alignment="center" />
-+          <TextInputView name="bundled_search" font_size="12" max_length="64" weight="1" v_alignment="center" />
 +          <Button name="school_favorites" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_FAVOURITES" gfxid_hover="GFX_GUI_NANO_FAVOURITES" gfxid_pressed="GFX_GUI_NANO_FAVOURITES_PRESSED" gfxid_selected="GFX_GUI_NANO_FAVOURITES_PRESSED" />
 +          <Button name="school_combat" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_COMBAT" gfxid_hover="GFX_GUI_NANO_COMBAT" gfxid_pressed="GFX_GUI_NANO_COMBAT_PRESSED" gfxid_selected="GFX_GUI_NANO_COMBAT_PRESSED" />
 +          <Button name="school_medical" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_MEDICAL" gfxid_hover="GFX_GUI_NANO_MEDICAL" gfxid_pressed="GFX_GUI_NANO_MEDICAL_PRESSED" gfxid_selected="GFX_GUI_NANO_MEDICAL_PRESSED" />
@@ -60,6 +59,9 @@
 +        </View>
 +      </View>
 +      <View name="bundled_body" view_layout="vertical" weight="1" />
++      <View name="bundled_footer" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(2.5,1,2.5,3)">
++        <TextInputView name="bundled_search" placeholder="Search" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" tooltip="Nano name" />
++      </View>
 +    </View>
    </View>
  </root>

@@ -69,10 +69,11 @@
 +-- The narrowest window that shows every tab.
 +local TABS_MINIMUM_WIDTH = math.max(Window.MINIMUM_WIDTH, tabs_width + Window.CONTENT_SIDES + INSET_SIDES)
 +
-+-- Bundled: the search and the buttons in a toolbar that wraps into more rows as the window narrows.
-+local SEARCH_LABEL_WIDTH, SEARCH_FIELD_MINIMUM, BUTTON_HEIGHT, BUTTON_GAP, ROW_GAP = 50, 100, 16, 8, 4
++-- Bundled: the buttons in a toolbar that wraps into more rows as the window narrows, and the search row under the
++-- list, built as the Inventory window's (FOOTER: the field's 22 pixels, 1 above it and 3 below).
++local BUTTON_HEIGHT, BUTTON_GAP, ROW_GAP = 16, 8, 4
  local TOOLBAR_SIDES, TOOLBAR_ENDS = 12, 10
- ui.size(ui.find(content, "search_label"), SEARCH_LABEL_WIDTH, CONTROL_HEIGHT)
+-ui.size(ui.find(content, "search_label"), SEARCH_LABEL_WIDTH, CONTROL_HEIGHT)
 -ui.size(search, -1, CONTROL_HEIGHT)
 +ui.size(searches.bundled, -1, CONTROL_HEIGHT)
  local toolbar_buttons = {
@@ -83,13 +84,25 @@
  end
  local toolbar_rows = { first_row }
 -local toolbar_height = CONTROL_HEIGHT + TOOLBAR_ENDS
-+local toolbar_height = style == "tabs" and TABS_TOOLBAR or CONTROL_HEIGHT + TOOLBAR_ENDS
++local toolbar_height = style == "tabs" and TABS_TOOLBAR or CONTROL_HEIGHT + TOOLBAR_ENDS + FOOTER
  local function toolbar_row(index)
  	if not toolbar_rows[index] then
  		toolbar_rows[index] = ui.load("toolbar_row.xml")
-@@ -70,8 +126,9 @@
+@@ -52,7 +108,7 @@
+ 		return
  	end
- 	toolbar_height = row * CONTROL_HEIGHT + (row - 1) * ROW_GAP + TOOLBAR_ENDS
+ 	local room = width - Window.CONTENT_SIDES - TOOLBAR_SIDES
+-	local row, used = 1, SEARCH_LABEL_WIDTH + SEARCH_FIELD_MINIMUM
++	local row, used = 1, 0
+ 	local appended = false
+ 	for _, button in ipairs(toolbar_buttons) do
+ 		local needed = button.width + BUTTON_GAP
+@@ -68,10 +124,11 @@
+ 	for index, view in ipairs(toolbar_rows) do
+ 		ui.visible(view, index <= row)
+ 	end
+-	toolbar_height = row * CONTROL_HEIGHT + (row - 1) * ROW_GAP + TOOLBAR_ENDS
++	toolbar_height = row * CONTROL_HEIGHT + (row - 1) * ROW_GAP + TOOLBAR_ENDS + FOOTER
  end
 -local school, frame, populate, set_mode
 +local school, frame, populate, set_mode, set_style
@@ -130,7 +143,7 @@
  end
  
  local function reconcile()
-@@ -138,38 +214,74 @@
+@@ -138,38 +214,76 @@
  end
  
  local function layout(window, width, height)
@@ -200,7 +213,9 @@
 +			ui.borders(list, 4, 4, 4, 4)
 +			ui.borders(grid_scroll, 4, 1, 4, 4)
 +		else
-+			ui.borders(list, 4, 0, 4, 4)
++			-- The list ends 4 pixels above the search field, as the grid's tiles do (Grid.size's 3 under them and the
++			-- search row's 1).
++			ui.borders(list, 4, 0, 4, 3)
 +			-- The tiles 4 pixels clear of the window's frame on both sides, from the 5 pixels Grid.size counts besides
 +			-- the grid (the content area starts right inside the frame's left line, and one pixel short of its right
 +			-- one). The bundled window leaves them all right of the grid.
@@ -216,7 +231,7 @@
  
  populate = function()
  	selected, matches = {}, {}
-@@ -203,6 +315,22 @@
+@@ -203,6 +317,22 @@
  	ui.publish("view_mode", mode)
  end
  
@@ -239,7 +254,7 @@
  frame = Window.create({
  	title = "Nano Programs",
  	content = content,
-@@ -219,29 +347,50 @@
+@@ -219,29 +349,50 @@
  				set_mode(mode == "list" and "grid" or "list")
  			end,
  		},

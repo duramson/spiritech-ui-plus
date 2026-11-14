@@ -1,37 +1,90 @@
 --- a/UI/Packages/Inventory/window.xml
 +++ b/UI/Packages/Inventory/window.xml
-@@ -1,15 +1,29 @@
+@@ -1,38 +1,55 @@
  <root>
-   <View name="inventory_body" view_layout="vertical" h_alignment="center" v_alignment="center">
-     <View name="inventory_root" view_layout="stacked" weight="1">
+-  <View name="inventory_body" view_layout="vertical" h_alignment="center" v_alignment="center">
+-    <View name="inventory_root" view_layout="stacked" weight="1">
 -      <ScrollView name="inventory_content" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1">
 -        <ScrollViewChild name="inventory_grid" view_layout="grid" grid_columns="1" min_columns="1" grid_spacing="4" h_alignment="center" layout_borders="Rect(0,4,0,0)" />
 -      </ScrollView>
-+      <!-- Darker and bluer than other windows, as the original client draws its inventory: the tab background over the
-+           window's at half strength, tinted as the frame's (a BorderView would draw lines round it). It reaches the
-+           frame's lines: the content starts half a pixel inside the side lines and a pixel under the title's. -->
-+      <BitmapView name="inventory_background" image="gfx://GFX_GUI_TAB_BACKGROUND" graphic_mode="tinted" alpha="0.5" layout_borders="Rect(-0.5,-1,-0.5,0)" />
-+      <!-- The grid's scroll view without the client's own scroll bar: main.lua puts the original client's beside it
-+           (core.scroll_bar), and the view gives up the bar's width while the bar shows. -->
-+      <View name="inventory_grid_holder" view_layout="horizontal">
-+        <ScrollView name="inventory_content" capture_input="true" weight="1">
-+          <!-- The slots' outlines 5 pixels clear of the window's left line and 4 under the title's line, as in the
-+               original client: the content starts half a pixel right of that line and a pixel under the title's, and
-+               each slot picture has a dark pixel around its outline at the sides. main.lua sizes the window so that
-+               they stand as far from the right line, or 4 from the scroll bar. -->
-+          <ScrollViewChild name="inventory_grid" view_layout="grid" grid_columns="1" min_columns="1" grid_spacing="4" h_alignment="left" layout_borders="Rect(3.5,3,0,0)" />
-+        </ScrollView>
-+      </View>
-       <View name="inventory_list" view_layout="vertical" visible="false" />
-     </View>
-+    <!-- The search and the slot count have no tooltip: the bundled window's only repeated what they show, and the
-+         search's opened over the slot count and ran past the window's edge. -->
-     <View name="footer" view_layout="horizontal" visible="false" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(2.5,1,2.5,3)">
+-      <View name="inventory_list" view_layout="vertical" visible="false" />
+-    </View>
+-    <View name="footer" view_layout="horizontal" visible="false" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(2.5,1,2.5,3)">
 -      <TextInputView name="search_query" placeholder="Search" visible="false" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" tooltip="Item name, at least three letters, then Enter" />
-+      <TextInputView name="search_query" placeholder="Search" visible="false" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" />
-       <HLayoutSpacer name="footer_spacer" />
+-      <HLayoutSpacer name="footer_spacer" />
 -      <BorderView name="slot_count_frame" border_style="input" view_layout="stacked" visible="false" min_size="Point(-1,22)" max_size="Point(-1,22)" v_alignment="center" layout_borders="Rect(4,0,0,0)" tooltip="Slots holding an item, of all slots">
-+      <BorderView name="slot_count_frame" border_style="input" view_layout="stacked" visible="false" min_size="Point(-1,22)" max_size="Point(-1,22)" v_alignment="center" layout_borders="Rect(4,0,0,0)">
-         <TextView name="slot_count" value="" font_size="12" color="Text" v_alignment="center" layout_borders="Rect(6,0,6,0)" />
-       </BorderView>
+-        <TextView name="slot_count" value="" font_size="12" color="Text" v_alignment="center" layout_borders="Rect(6,0,6,0)" />
+-      </BorderView>
+-    </View>
+-    <View name="credits_section" view_layout="vertical" visible="false" layout_borders="Rect(2.5,0,2.5,3)">
+-      <BorderView name="credits_divider" fill_color="0x50A0A0A0" min_size="Point(-1,1)" max_size="Point(-1,1)" layout_borders="Rect(0,1,0,4)" />
+-      <View view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)">
+-        <BorderView name="credits_balance_frame" border_style="input" view_layout="horizontal" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center">
+-          <TextView name="credits_balance_label" value="Balance" font_size="12" color="Text" v_alignment="center" layout_borders="Rect(6,0,6,0)" />
+-          <HLayoutSpacer />
+-          <TextView name="credits_balance" value="0" font_size="13" v_alignment="center" layout_borders="Rect(0,0,6,0)" />
++  <View name="inventory_body" view_layout="stacked" h_alignment="center" v_alignment="center">
++    <!-- Darker and bluer than other windows, as the original client draws its inventory: the tab background over the
++         window's at half strength, tinted as the frame's (a BorderView would draw lines round it), under the grid,
++         the search and the slot count alike. It reaches the frame's lines: the content starts half a pixel inside the
++         side lines and a pixel under the title's, and stops on the bottom line. -->
++    <BitmapView name="inventory_background" image="gfx://GFX_GUI_TAB_BACKGROUND" graphic_mode="tinted" alpha="0.5" layout_borders="Rect(-0.5,-1,-0.5,0)" />
++    <View name="inventory_column" view_layout="vertical">
++      <View name="inventory_root" view_layout="stacked" weight="1">
++        <!-- The grid's scroll view without the client's own scroll bar: main.lua puts the original client's beside it
++             (core.scroll_bar), and the view gives up the bar's width while the bar shows. -->
++        <View name="inventory_grid_holder" view_layout="horizontal">
++          <ScrollView name="inventory_content" capture_input="true" weight="1">
++            <!-- The slots' outlines 5 pixels clear of the window's left line and 4 under the title's line, as in the
++                 original client: the content starts half a pixel right of that line and a pixel under the title's, and
++                 each slot picture has a dark pixel around its outline at the sides. main.lua sizes the window so that
++                 they stand as far from the right line, or 4 from the scroll bar. -->
++            <ScrollViewChild name="inventory_grid" view_layout="grid" grid_columns="1" min_columns="1" grid_spacing="4" h_alignment="left" layout_borders="Rect(3.5,3,0,0)" />
++          </ScrollView>
++        </View>
++        <View name="inventory_list" view_layout="vertical" visible="false" />
++      </View>
++      <!-- The search and the slot count have no tooltip: the bundled window's only repeated what they show, and the
++           search's opened over the slot count and ran past the window's edge. -->
++      <View name="footer" view_layout="horizontal" visible="false" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(2.5,1,2.5,3)">
++        <TextInputView name="search_query" placeholder="Search" visible="false" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" />
++        <HLayoutSpacer name="footer_spacer" />
++        <BorderView name="slot_count_frame" border_style="input" view_layout="stacked" visible="false" min_size="Point(-1,22)" max_size="Point(-1,22)" v_alignment="center" layout_borders="Rect(4,0,0,0)">
++          <TextView name="slot_count" value="" font_size="12" color="Text" v_alignment="center" layout_borders="Rect(6,0,6,0)" />
+         </BorderView>
+-        <View name="credits_choice" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)">
+-          <Button name="credits_deposit" label="Deposit" font_size="12" min_size="Point(76,22)" max_size="Point(76,22)" v_alignment="center" layout_borders="Rect(4,0,0,0)" />
+-          <Button name="credits_withdraw" label="Withdraw" font_size="12" min_size="Point(76,22)" max_size="Point(76,22)" v_alignment="center" layout_borders="Rect(4,0,0,0)" />
++      </View>
++      <View name="credits_section" view_layout="vertical" visible="false" layout_borders="Rect(2.5,0,2.5,3)">
++        <BorderView name="credits_divider" fill_color="0x50A0A0A0" min_size="Point(-1,1)" max_size="Point(-1,1)" layout_borders="Rect(0,1,0,4)" />
++        <View view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)">
++          <BorderView name="credits_balance_frame" border_style="input" view_layout="horizontal" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center">
++            <TextView name="credits_balance_label" value="Balance" font_size="12" color="Text" v_alignment="center" layout_borders="Rect(6,0,6,0)" />
++            <HLayoutSpacer />
++            <TextView name="credits_balance" value="0" font_size="13" v_alignment="center" layout_borders="Rect(0,0,6,0)" />
++          </BorderView>
++          <View name="credits_choice" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)">
++            <Button name="credits_deposit" label="Deposit" font_size="12" min_size="Point(76,22)" max_size="Point(76,22)" v_alignment="center" layout_borders="Rect(4,0,0,0)" />
++            <Button name="credits_withdraw" label="Withdraw" font_size="12" min_size="Point(76,22)" max_size="Point(76,22)" v_alignment="center" layout_borders="Rect(4,0,0,0)" />
++          </View>
+         </View>
+-      </View>
+-      <View name="credits_entry" view_layout="horizontal" visible="false" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(0,4,0,0)">
+-        <BorderView name="credits_amount_frame" border_style="input" view_layout="horizontal" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center">
+-          <TextView name="credits_entry_label" value="Deposit" font_size="12" color="Text" v_alignment="center" layout_borders="Rect(6,0,0,0)" />
+-          <TextInputView name="credits_amount" draw_border="false" font_size="13" max_length="13" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" />
+-        </BorderView>
+-        <Button name="credits_cancel" label="Cancel" font_size="12" min_size="Point(76,22)" max_size="Point(76,22)" v_alignment="center" layout_borders="Rect(4,0,0,0)" />
+-        <Button name="credits_transfer" label="Deposit" font_size="12" min_size="Point(76,22)" max_size="Point(76,22)" v_alignment="center" layout_borders="Rect(4,0,0,0)" />
++        <View name="credits_entry" view_layout="horizontal" visible="false" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(0,4,0,0)">
++          <BorderView name="credits_amount_frame" border_style="input" view_layout="horizontal" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center">
++            <TextView name="credits_entry_label" value="Deposit" font_size="12" color="Text" v_alignment="center" layout_borders="Rect(6,0,0,0)" />
++            <TextInputView name="credits_amount" draw_border="false" font_size="13" max_length="13" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" />
++          </BorderView>
++          <Button name="credits_cancel" label="Cancel" font_size="12" min_size="Point(76,22)" max_size="Point(76,22)" v_alignment="center" layout_borders="Rect(4,0,0,0)" />
++          <Button name="credits_transfer" label="Deposit" font_size="12" min_size="Point(76,22)" max_size="Point(76,22)" v_alignment="center" layout_borders="Rect(4,0,0,0)" />
++        </View>
+       </View>
      </View>
+   </View>

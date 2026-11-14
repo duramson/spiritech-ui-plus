@@ -1,7 +1,10 @@
 --- a/UI/Packages/Core/ncu_view.lua
 +++ b/UI/Packages/Core/ncu_view.lua
-@@ -6,6 +6,13 @@
+@@ -4,14 +4,26 @@
+ 	local Grid = ui.require("core.icon_grid")
+ 	local Table = ui.require("core.table")
  	local Presentation = ui.require("ncu.presentation")
++	local ScrollBar = ui.require("core.scroll_bar")
  	local View = {}
  	View.__index = View
 +
@@ -14,7 +17,17 @@
  
  	function View.create(options)
  		local self = setmetatable({}, View)
-@@ -86,8 +93,8 @@
+ 		self.content = ui.shared_layout("ncu_window.xml")
+ 		self.grid = ui.find(self.content, "ncu_grid")
+ 		self.grid_scroll = ui.find(self.content, "ncu_content")
++		-- The original client's scroll bar over the grid's right edge, its arrows a row at a time: its arrows reach
++		-- from the title's line to a pixel above the bottom line, a pixel clear of the right one, as there.
++		self.scroll_bar = ScrollBar.attach(self.grid_scroll, self.content,
++			{ step = SLOT_HEIGHT, borders = { 0, 0, 0, 1 } })
+ 		self.list = ui.find(self.content, "ncu_list")
+ 		self.entries, self.snapshot, self.capacity = {}, {}, 12
+ 		self.target, self.title = options.target, options.title
+@@ -86,8 +98,8 @@
  			content = self.content,
  			x = 10,
  			y = 174,
@@ -25,7 +38,20 @@
  			layout = function(window, width, height)
  				self:layout(window, width, height)
  			end,
-@@ -112,13 +119,15 @@
+@@ -95,10 +107,12 @@
+ 		})
+ 		ui.root(self.frame.root)
+ 		ui.visible(self.grid_scroll, self.mode == "grid")
++		self.scroll_bar:enable(self.mode == "grid")
+ 		ui.visible(self.list, self.mode == "list")
+ 		ui.publish("view_mode", self.mode)
+ 		Security.on_unlock(function()
+ 			ui.visible(self.grid_scroll, self.mode == "grid")
++			self.scroll_bar:enable(self.mode == "grid")
+ 			ui.visible(self.list, self.mode == "list")
+ 			ui.publish("view_mode", self.mode)
+ 			self.frame:resize(ui.chosen_width(self.frame.root), ui.chosen_height(self.frame.root))
+@@ -112,13 +126,15 @@
  			width, height = math.max(160, math.min(1000, width)), math.max(90, math.min(1200, height))
  			window:fit_title(width, true)
  		else
@@ -47,3 +73,11 @@
  			window:fit_title(width, columns >= 3)
  		end
  		ui.request_size(window.root, width, height)
+@@ -152,6 +168,7 @@
+ 		self.table:clear()
+ 		self.mode = mode
+ 		ui.visible(self.grid_scroll, mode == "grid")
++		self.scroll_bar:enable(mode == "grid")
+ 		ui.visible(self.list, mode == "list")
+ 		ui.menu.checked(self.frame.icon, self.mode_menu, mode == "list")
+ 		self.frame:resize(ui.chosen_width(self.frame.root), ui.chosen_height(self.frame.root))

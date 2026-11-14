@@ -15,7 +15,8 @@ for good.
 | --- | --- | --- |
 | Nano Programs | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done. The list view gets a second round later. |
 | NCU | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done. |
-| Wear | `▱▱▱▱▱▱▱▱▱▱` 0 % | After the scroll bar. |
+| Inventory | `▱▱▱▱▱▱▱▱▱▱` 0 % | Next: the inventory, bags and banks. |
+| Wear | `▱▱▱▱▱▱▱▱▱▱` 0 % | After the Inventory. |
 
 ### Elements
 

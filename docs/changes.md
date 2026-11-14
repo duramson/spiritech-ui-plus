@@ -132,6 +132,19 @@ below). The rest of the window is the bundled one.
 - [15d653f](https://github.com/duramson/spiritech-ui-plus/commit/15d653f) feat(inventory): offer an Inventory window
   without the search and slot tooltips
 
+## Inventory: full rows
+
+Resized, the Inventory window takes only sizes whose rows are all full. Spiritech's takes any number of columns and as
+many rows as the slots need, so most widths left the last row short: with 30 slots, 7 across gave four full rows and
+two slots in a fifth, 4 across two slots in the eighth. Now the columns always divide the slots (for 30: 1, 2, 3, 5,
+6, 10, 15 or 30 across), with or without the scroll bar. The bank keeps its smallest size of 6 by 4 with credits. The
+picture shows the short row as it was, in UI+'s Inventory, which sized its grid as Spiritech's does.
+
+![Inventory at 7 by 5: four full rows and two slots in the fifth](images/inventory-short-row.png)
+
+- [7090d98](https://github.com/duramson/spiritech-ui-plus/commit/7090d98) fix(inventory): fill every row when the
+  window is resized
+
 ## Scroll bar
 
 The scroll bar of the NCU window, the Nano Programs grid and the Inventory window. Spiritech draws its own: arrows in

@@ -14,7 +14,7 @@
  local list_host = ui.find(content, "inventory_list")
  local search_query = ui.find(content, "search_query")
  local FOOTER_HEIGHT = 26
-@@ -150,12 +154,30 @@
+@@ -150,12 +154,53 @@
  		cells:show(entries)
  	end
  end
@@ -27,6 +27,29 @@
 +	function slots:size(columns, rows, scrollbar)
 +		local width, height = Grid.size(self, columns, rows, scrollbar)
 +		return width + (scrollbar and 1 or 2), height - 1
++	end
++	-- Grid.resolve, but only with as many columns as divide the slots, from the fewest the window allows: every row
++	-- full, with no empty space after the last slot (30 slots: 1, 2, 3, 5, 6, 10, 15 or 30 across, never 7 by 5).
++	-- Grid.resolve takes any column count and caps the rows at what the slots need, so most widths left the last
++	-- row short.
++	function slots:resolve(width, height, content_count, fewest_columns)
++		local step = self.cell + self.spacing
++		local distance = math.huge
++		local chosen_width, chosen_height, chosen_columns, chosen_rows
++		for columns = math.min(fewest_columns or 1, self.maximum), self.maximum do
++			if self.maximum % columns == 0 then
++				local fitting = math.floor((height - 36 + self.spacing) / step + 0.5)
++				local rows = math.max(1, math.min(math.floor(self.maximum / columns), fitting))
++				local candidate_width, candidate_height = self:size(columns, rows, content_count > columns * rows)
++				local candidate_distance = math.abs(candidate_width - width)
++				if candidate_distance < distance then
++					distance = candidate_distance
++					chosen_width, chosen_height = candidate_width, candidate_height
++					chosen_columns, chosen_rows = columns, rows
++				end
++			end
++		end
++		return chosen_width, chosen_height, chosen_columns, chosen_rows
 +	end
 +	return slots
 +end
@@ -46,14 +69,28 @@
  	ui.visible(footer, shown)
  	ui.visible(search_query, searchable)
  	ui.visible(footer_spacer, not searchable)
-@@ -178,8 +200,12 @@
+@@ -170,7 +215,12 @@
+ 	else
+ 		local fewest_columns, fewest_rows, fewest_scroll = 1, 1, false
+ 		if credits_shown then
+-			fewest_columns, fewest_rows = ACCOUNT_BANK_MINIMUM_COLUMNS, ACCOUNT_BANK_MINIMUM_ROWS
++			-- The fewest columns that still fill every row (see slot_sizing).
++			fewest_columns = math.min(ACCOUNT_BANK_MINIMUM_COLUMNS, capacity)
++			while capacity % fewest_columns ~= 0 do
++				fewest_columns = fewest_columns + 1
++			end
++			fewest_rows = math.min(ACCOUNT_BANK_MINIMUM_ROWS, math.floor(capacity / fewest_columns))
+ 			fewest_scroll = capacity > fewest_columns * fewest_rows
+ 		end
+ 		local min_width, min_height = sizing:size(fewest_columns, fewest_rows, fewest_scroll)
+@@ -178,8 +228,12 @@
  		local _, max_height = sizing:size(1, capacity, true)
  		ui.limits(window.root, min_width, min_height + reserved_height, max_width, max_height + reserved_height)
  		width, height = math.max(width, min_width), math.max(height, min_height + reserved_height)
 -		local columns
 -		width, height, columns = sizing:resolve(width, height - reserved_height, capacity)
 +		local columns, rows
-+		width, height, columns, rows = sizing:resolve(width, height - reserved_height, capacity)
++		width, height, columns, rows = sizing:resolve(width, height - reserved_height, capacity, fewest_columns)
 +		-- The scroll bar only where the window leaves room for it. Otherwise, shown while the window grows to a size
 +		-- whose columns hold every slot, it took its width from the grid, a column moved down, and the slots needed
 +		-- the bar again: three columns spread over the width of four.
@@ -61,7 +98,7 @@
  		height = height + reserved_height
  		title_visible = columns >= 3
  		ui.size(grid, columns * 58 - 4, -1)
-@@ -200,7 +226,7 @@
+@@ -200,7 +254,7 @@
  	list:clear()
  	mode = value
  	selected, splitting, split_count = -1, -1, ""
@@ -70,7 +107,7 @@
  	ui.visible(list_host, mode == "list")
  	ui.menu.checked(frame.icon, 1, mode == "list")
  	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
-@@ -230,14 +256,14 @@
+@@ -230,14 +284,14 @@
  	},
  })
  ui.root(frame.root)
@@ -87,7 +124,7 @@
  	ui.grid_columns(grid, capacity)
  	ui.text(ui.find(frame.root, "window_title"), configuration.title)
  	ui.place(frame.root, configuration.x, configuration.y)
-@@ -265,7 +291,8 @@
+@@ -265,7 +319,8 @@
  			occupied[#occupied + 1] = entry
  		end
  	end
@@ -97,7 +134,7 @@
  	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
  	reconcile()
  end
-@@ -336,6 +363,7 @@
+@@ -336,6 +391,7 @@
  		return
  	end
  	credits_shown = available
@@ -105,7 +142,7 @@
  	ui.visible(credits_section, available)
  	choose_credits("")
  	if not available then
-@@ -358,7 +386,7 @@
+@@ -358,7 +414,7 @@
  		bind_credits_transfer()
  	end
  	ui.grid_columns(grid, capacity)

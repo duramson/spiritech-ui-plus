@@ -7,7 +7,7 @@ interface with. That client sets its text in Verdana, hinted and in black and wh
 pixels. Spiritech draws its text smoothed, so even Verdana comes out softer and thicker there. Notum Grotesk brings
 the pixels back, at any size.
 
-![Text at four times its size: Anarchy Online, Spiritech as shipped, Spiritech with Notum Grotesk](images/notum-grotesk.png)
+![Text at four times its size: Anarchy Online, Spiritech as shipped, Spiritech with Notum Grotesk 200](images/notum-grotesk.png)
 
 ## Setup
 
@@ -28,9 +28,9 @@ the original client's letters, to tell whether a Verdana gives the same pixels (
 ## Notum Grotesk 200
 
 On a Retina screen, or with Windows' display scaling at 200 %, Spiritech draws text at twice the resolution, so
-Notum Grotesk's pixels come out half as big: sharp, but much finer than the original client's text, as in the
-picture above (taken on a Retina Mac). For those screens the installer builds a second font beside it, Notum Grotesk
-200, which draws each pixel as 2 × 2 so the letters come out at the original client's size; pick it instead.
+Notum Grotesk's pixels come out half as big: sharp, but much finer than the original client's text. For those screens
+the installer builds a second font beside it, Notum Grotesk 200, which draws each pixel as 2 × 2 so the letters come
+out at the original client's size, as in the picture above (taken on a Retina Mac); pick it instead.
 
 ## Open
 

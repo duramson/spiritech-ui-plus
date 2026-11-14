@@ -123,13 +123,13 @@ The installer offers Notum Grotesk, the original client's interface text: Verdan
 the player's computer from the Verdana already there (nothing made from Verdana is in this repository). Picked as the
 interface font, it draws Spiritech's text in crisp pixels instead of soft antialiased type. On a Retina screen or at
 200 % display scaling Spiritech draws text at twice the resolution, so the pixels come out much finer than the
-original client's (as in these pictures, taken on a Retina Mac). For those screens the installer also builds Notum
-Grotesk 200, which draws each of the font's pixels as 2 × 2; both are still being worked on. At 100 % plain Notum
-Grotesk should give the original's pixels; that is untested so far.
+original client's (as in the Inventory picture, taken on a Retina Mac). For those screens the installer also builds
+Notum Grotesk 200, which draws each of the font's pixels as 2 × 2, as in the second picture; both are still being
+worked on. At 100 % plain Notum Grotesk should give the original's pixels; that is untested so far.
 
 ![Inventory: Anarchy Online, Spiritech as shipped, Spiritech with UI+](images/inventory.png)
 
-![Text at four times its size: Anarchy Online, Spiritech as shipped, Spiritech with Notum Grotesk](images/notum-grotesk.png)
+![Text at four times its size: Anarchy Online, Spiritech as shipped, Spiritech with Notum Grotesk 200](images/notum-grotesk.png)
 
 ## Not done yet
 

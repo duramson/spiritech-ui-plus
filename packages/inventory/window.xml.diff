@@ -1,0 +1,17 @@
+--- a/UI/Packages/Inventory/window.xml
++++ b/UI/Packages/Inventory/window.xml
+@@ -6,10 +6,12 @@
+       </ScrollView>
+       <View name="inventory_list" view_layout="vertical" visible="false" />
+     </View>
++    <!-- The search and the slot count have no tooltip: the bundled window's only repeated what they show, and the
++         search's opened over the slot count and ran past the window's edge. -->
+     <View name="footer" view_layout="horizontal" visible="false" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(2.5,1,2.5,3)">
+-      <TextInputView name="search_query" placeholder="Search" visible="false" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" tooltip="Item name, at least three letters, then Enter" />
++      <TextInputView name="search_query" placeholder="Search" visible="false" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" />
+       <HLayoutSpacer name="footer_spacer" />
+-      <BorderView name="slot_count_frame" border_style="input" view_layout="stacked" visible="false" min_size="Point(-1,22)" max_size="Point(-1,22)" v_alignment="center" layout_borders="Rect(4,0,0,0)" tooltip="Slots holding an item, of all slots">
++      <BorderView name="slot_count_frame" border_style="input" view_layout="stacked" visible="false" min_size="Point(-1,22)" max_size="Point(-1,22)" v_alignment="center" layout_borders="Rect(4,0,0,0)">
+         <TextView name="slot_count" value="" font_size="12" color="Text" v_alignment="center" layout_borders="Rect(6,0,6,0)" />
+       </BorderView>
+     </View>

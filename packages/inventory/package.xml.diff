@@ -1,0 +1,9 @@
+--- a/UI/Packages/Inventory/package.xml
++++ b/UI/Packages/Inventory/package.xml
+@@ -1,4 +1,5 @@
+-<Package>
++<Package id="duramson.inventory" name="UI+">
++  <Provides role="prk.inventory" />
+   <Script src="main.lua" />
+   <InteractionScript src="interaction.lua" />
+ </Package>

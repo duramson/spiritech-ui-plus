@@ -1,0 +1,12 @@
+--- a/UI/Packages/Inventory/main.lua
++++ b/UI/Packages/Inventory/main.lua
+@@ -265,7 +265,8 @@
+ 			occupied[#occupied + 1] = entry
+ 		end
+ 	end
+-	ui.text(slot_count, "Slots: " .. #occupied .. " / " .. capacity)
++	-- The count alone, "24 / 30", without the bundled window's "Slots: " in front: it says what it is on its own.
++	ui.text(slot_count, #occupied .. " / " .. capacity)
+ 	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
+ 	reconcile()
+ end

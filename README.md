@@ -1,7 +1,7 @@
 # duramson UI+ for Spiritech
 
 Additions to Project Rubi-Ka's Spiritech client: fixes for flaws in its bundled UI, reworked windows, and new
-things of its own.
+things of its own. [The changes in pictures](docs/changes.md), beside the original client and Spiritech as shipped.
 
 ## Layout
 
@@ -19,5 +19,9 @@ copied; everything else stays the client's own.
 
 So the history shows exactly what differs from the bundled version, and a newer client's files can be brought in
 under the changes.
+
+A change one can see gets a picture: the window before and after (and the original client's, where it has one) in
+`docs/images/`, with a section in [docs/changes.md](docs/changes.md) that links its commits. The picture comes with
+the change, or right after it once the change has been seen in game.
 
 The copied files are Project Rubi-Ka's: ask them before publishing this.

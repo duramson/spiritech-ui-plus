@@ -1,6 +1,6 @@
 --- a/UI/Packages/Core/window.xml
 +++ b/UI/Packages/Core/window.xml
-@@ -1,13 +1,13 @@
+@@ -1,15 +1,15 @@
  <?xml version="1.0" standalone="yes"?>
  <root>
    <View name="window" capture_input="true" color="Default" composite_layer="true" interaction_scope="true" view_layout="stacked">
@@ -14,5 +14,8 @@
 -          <BorderView border_style="horizontal" border_gfx="GFX_GUI_TAB_ACTIVE" alpha="0.85" />
 +          <BorderView border_style="horizontal" border_gfx="GFX_GUI_TAB_ACTIVE" alpha="1" />
            <View view_layout="horizontal">
-             <TextView name="window_title" weight="1" layout_borders="Rect(4,0,0,0)" v_alignment="center" />
+-            <TextView name="window_title" weight="1" layout_borders="Rect(4,0,0,0)" v_alignment="center" />
++            <TextView name="window_title" weight="1" layout_borders="Rect(6,0,0,0)" v_alignment="center" />
              <HLayoutSpacer weight="0" min_size="Point(21,0)" max_size="Point(21,0)" />
+           </View>
+         </View>

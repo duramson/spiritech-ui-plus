@@ -1,4 +1,4 @@
-# duramson UI+ for Spiritech
+# duramson's UI+ for Spiritech
 
 The look of the original Anarchy Online interface for Spiritech, Project Rubi-Ka's new client: its window frames,
 its layouts and its crisp pixel text. With a few fixes and additions of its own.
@@ -84,8 +84,11 @@ Bugs in Spiritech, fixed here until the client fixes them itself.
 
 ## License
 
-UI+'s own work is licensed under [CC BY-NC-SA 4.0](LICENSE): share and change it, name duramson UI+ as its source,
+UI+'s own work is licensed under [CC BY-NC-SA 4.0](LICENSE): share and change it, name duramson's UI+ as its source,
 keep the same license, and don't use it commercially without permission.
+
+Project Rubi-Ka may use, change and ship any part of UI+ in the Spiritech client under their own terms, as long as
+they credit duramson's UI+.
 
 An unofficial fan project, not made or endorsed by Funcom or Project Rubi-Ka. Anarchy Online is a trademark of
 Funcom; Spiritech and the files the patches apply to belong to their owners.

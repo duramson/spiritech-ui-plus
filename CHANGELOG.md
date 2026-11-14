@@ -3,6 +3,11 @@
 What changed for players, the newest first. Each line links the pull request or the commits that made the change;
 [docs/changes.md](docs/changes.md) shows the changes in pictures.
 
+## 2026-11-15
+
+- **Name:** UI+ is called duramson's UI+ now, in the installer too.
+  ([#6](https://github.com/duramson/spiritech-ui-plus/pull/6))
+
 ## 2026-11-14
 
 - **Inventory:** the search and the slot count sit in mirrored frames like the Nano Programs window's second frame,

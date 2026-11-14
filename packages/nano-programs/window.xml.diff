@@ -1,9 +1,10 @@
 --- a/UI/Packages/NanoPrograms/window.xml
 +++ b/UI/Packages/NanoPrograms/window.xml
-@@ -1,21 +1,29 @@
+@@ -1,21 +1,48 @@
  <?xml version="1.0" encoding="utf-8"?>
  <root>
--  <View name="nano_programs" view_layout="vertical" weight="1">
++  <!-- Two layouts, picked in the window menu ("School Tabs"); main.lua moves the list and the grid between them. -->
+   <View name="nano_programs" view_layout="vertical" weight="1">
 -    <View name="toolbar" view_layout="vertical" layout_borders="Rect(6,4,6,6)">
 -      <View name="toolbar_row" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)">
 -        <TextView name="search_label" value="Search:" font_size="12" color="FFFFFF" v_alignment="center" />
@@ -14,35 +15,51 @@
 -        <Button name="school_prot" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_PROT" gfxid_hover="GFX_GUI_NANO_PROT" gfxid_pressed="GFX_GUI_NANO_PROT_PRESSED" gfxid_selected="GFX_GUI_NANO_PROT_PRESSED" />
 -        <Button name="school_psi" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_PSI" gfxid_hover="GFX_GUI_NANO_PSI" gfxid_pressed="GFX_GUI_NANO_PSI_PRESSED" gfxid_selected="GFX_GUI_NANO_PSI_PRESSED" />
 -        <Button name="school_space" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_SPACE" gfxid_hover="GFX_GUI_NANO_SPACE" gfxid_pressed="GFX_GUI_NANO_SPACE_PRESSED" gfxid_selected="GFX_GUI_NANO_SPACE_PRESSED" />
--      </View>
-+  <View name="nano_programs" view_layout="vertical" weight="1" layout_borders="Rect(3,6,2,3)">
-+    <!-- The schools as tabs over a tab frame, built like the Wear window's (the selected tab drawn on top, neighbours
-+         overlapping). Each tab's width is set from its text in main.lua. -->
-+    <View name="nano_tabs" view_layout="horizontal" selected_on_top="true" paint_on_top="true" min_size="Point(-1,17)" max_size="Point(-1,17)" layout_borders="Rect(0,0,0,-1)">
-+      <TabButton name="tab_all" label="All" font_size="12" layout_borders="Rect(0,0,-6,0)" />
-+      <TabButton name="tab_combat" label="Combat" font_size="12" layout_borders="Rect(0,0,-6,0)" />
-+      <TabButton name="tab_medical" label="Medical" font_size="12" layout_borders="Rect(0,0,-6,0)" />
-+      <TabButton name="tab_prot" label="Prot" font_size="12" layout_borders="Rect(0,0,-6,0)" />
-+      <TabButton name="tab_psi" label="Psi" font_size="12" layout_borders="Rect(0,0,-6,0)" />
-+      <TabButton name="tab_space" label="Space" font_size="12" />
++    <View name="tab_layout" view_layout="vertical" weight="1" layout_borders="Rect(3,6,2,3)">
++      <!-- The schools as tabs over a tab frame, built like the Wear window's (the selected tab drawn on top, neighbours
++           overlapping). Each tab's width is set from its text in main.lua. -->
++      <View name="nano_tabs" view_layout="horizontal" selected_on_top="true" paint_on_top="true" min_size="Point(-1,17)" max_size="Point(-1,17)" layout_borders="Rect(0,0,0,-1)">
++        <TabButton name="tab_all" label="All" font_size="12" layout_borders="Rect(0,0,-6,0)" />
++        <TabButton name="tab_combat" label="Combat" font_size="12" layout_borders="Rect(0,0,-6,0)" />
++        <TabButton name="tab_medical" label="Medical" font_size="12" layout_borders="Rect(0,0,-6,0)" />
++        <TabButton name="tab_prot" label="Prot" font_size="12" layout_borders="Rect(0,0,-6,0)" />
++        <TabButton name="tab_psi" label="Psi" font_size="12" layout_borders="Rect(0,0,-6,0)" />
++        <TabButton name="tab_space" label="Space" font_size="12" />
++      </View>
++      <BorderView name="nano_frame" view_layout="vertical" weight="1"
++                  tl_gfx="GFX_GUI_TAB_BORDER_TL" tr_gfx="GFX_GUI_TAB_BORDER_TR"
++                  bl_gfx="GFX_GUI_TAB_BORDER_BL" br_gfx="GFX_GUI_TAB_BORDER_BR"
++                  left_gfx="GFX_GUI_TAB_BORDER_LEFT" top_gfx="GFX_GUI_TAB_BORDER_TOP"
++                  right_gfx="GFX_GUI_TAB_BORDER_RIGHT" bottom_gfx="GFX_GUI_TAB_BORDER_BOTTOM" bg_gfx="GFX_GUI_TAB_BACKGROUND">
++        <View name="nano_list" view_layout="vertical" weight="1" layout_borders="Rect(4,4,4,4)" />
++        <ScrollView name="nano_grid_scroll" visible="false" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1" weight="1" layout_borders="Rect(3,0,3,3)">
++          <ScrollViewChild name="nano_grid" view_layout="grid" grid_columns="60" min_columns="1" grid_spacing="4" h_alignment="left" layout_borders="Rect(0,4,0,0)" />
++        </ScrollView>
++      </BorderView>
++      <!-- The search under the frame, as in the Inventory window. -->
++      <View name="footer" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(0,4,0,0)">
++        <TextInputView name="search" placeholder="Search" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" tooltip="Nano name" />
+       </View>
      </View>
 -    <View name="nano_list" view_layout="vertical" weight="1" layout_borders="Rect(4,0,4,4)" />
 -    <ScrollView name="nano_grid_scroll" visible="false" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1" weight="1">
 -      <ScrollViewChild name="nano_grid" view_layout="grid" grid_columns="60" min_columns="1" grid_spacing="4" h_alignment="left" layout_borders="Rect(0,4,0,0)" />
 -    </ScrollView>
-+    <BorderView name="nano_frame" view_layout="vertical" weight="1"
-+                tl_gfx="GFX_GUI_TAB_BORDER_TL" tr_gfx="GFX_GUI_TAB_BORDER_TR"
-+                bl_gfx="GFX_GUI_TAB_BORDER_BL" br_gfx="GFX_GUI_TAB_BORDER_BR"
-+                left_gfx="GFX_GUI_TAB_BORDER_LEFT" top_gfx="GFX_GUI_TAB_BORDER_TOP"
-+                right_gfx="GFX_GUI_TAB_BORDER_RIGHT" bottom_gfx="GFX_GUI_TAB_BORDER_BOTTOM" bg_gfx="GFX_GUI_TAB_BACKGROUND">
-+      <View name="nano_list" view_layout="vertical" weight="1" layout_borders="Rect(4,4,4,4)" />
-+      <ScrollView name="nano_grid_scroll" visible="false" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1" weight="1" layout_borders="Rect(3,0,3,3)">
-+        <ScrollViewChild name="nano_grid" view_layout="grid" grid_columns="60" min_columns="1" grid_spacing="4" h_alignment="left" layout_borders="Rect(0,4,0,0)" />
-+      </ScrollView>
-+    </BorderView>
-+    <!-- The search under the frame, as in the Inventory window. -->
-+    <View name="footer" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(0,4,0,0)">
-+      <TextInputView name="search" placeholder="Search" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" tooltip="Nano name" />
++    <!-- The bundled window's layout, unchanged: the search and the school buttons over the list. -->
++    <View name="bundled_layout" view_layout="vertical" weight="1" visible="false">
++      <View name="toolbar" view_layout="vertical" layout_borders="Rect(6,4,6,6)">
++        <View name="toolbar_row" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)">
++          <TextView name="search_label" value="Search:" font_size="12" color="FFFFFF" v_alignment="center" />
++          <TextInputView name="bundled_search" font_size="12" max_length="64" weight="1" v_alignment="center" />
++          <Button name="school_favorites" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_FAVOURITES" gfxid_hover="GFX_GUI_NANO_FAVOURITES" gfxid_pressed="GFX_GUI_NANO_FAVOURITES_PRESSED" gfxid_selected="GFX_GUI_NANO_FAVOURITES_PRESSED" />
++          <Button name="school_combat" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_COMBAT" gfxid_hover="GFX_GUI_NANO_COMBAT" gfxid_pressed="GFX_GUI_NANO_COMBAT_PRESSED" gfxid_selected="GFX_GUI_NANO_COMBAT_PRESSED" />
++          <Button name="school_medical" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_MEDICAL" gfxid_hover="GFX_GUI_NANO_MEDICAL" gfxid_pressed="GFX_GUI_NANO_MEDICAL_PRESSED" gfxid_selected="GFX_GUI_NANO_MEDICAL_PRESSED" />
++          <Button name="school_prot" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_PROT" gfxid_hover="GFX_GUI_NANO_PROT" gfxid_pressed="GFX_GUI_NANO_PROT_PRESSED" gfxid_selected="GFX_GUI_NANO_PROT_PRESSED" />
++          <Button name="school_psi" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_PSI" gfxid_hover="GFX_GUI_NANO_PSI" gfxid_pressed="GFX_GUI_NANO_PSI_PRESSED" gfxid_selected="GFX_GUI_NANO_PSI_PRESSED" />
++          <Button name="school_space" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_SPACE" gfxid_hover="GFX_GUI_NANO_SPACE" gfxid_pressed="GFX_GUI_NANO_SPACE_PRESSED" gfxid_selected="GFX_GUI_NANO_SPACE_PRESSED" />
++        </View>
++      </View>
++      <View name="bundled_body" view_layout="vertical" weight="1" />
 +    </View>
    </View>
  </root>

@@ -6,10 +6,16 @@ and its crisp pixel text. It fixes flaws in Spiritech's bundled UI on the way, a
 
 ![Inventory: Anarchy Online, Spiritech as shipped, Spiritech with UI+](docs/images/inventory.png)
 
-- **Every window:** frame, title tab, icon, pin and close button at the original client's sizes, distances and
-  opacity, measured from pictures of its windows.
-- **Nano Programs:** the school buttons, tiles and search as the original draws them, or a new School Tabs layout.
-- **Notum Grotesk:** the original client's pixel text as a font, made on your computer (see below).
+## What works now
+
+| | What it does | How to turn it on |
+| --- | --- | --- |
+| **Window frame** | Every window's frame, title tab, icon, pin and close button at the original client's sizes, distances and opacity, measured from pictures of its windows. | Nothing to do: it shows from the next character login. |
+| **Nano Programs** | School buttons, tiles and search as the original client draws them, or a new School Tabs layout. | Once: Options → Interface & HUD → UI packages, set Nano Programs to `External [duramson.nano] — UI+`, then log the character in again. The window's menu (the i icon) switches between the two layouts. |
+| **Notum Grotesk** | The original client's crisp pixel text as a font, made on your computer ([more below](#notum-grotesk)). Still too fine on Retina and at 200 % scaling. | Say yes when the installer asks to generate it (only `install.py` so far), then pick Notum Grotesk as the interface font in Options (type "font" into its search). |
+
+Not done yet: the Wear window (its tab labels come out too wide with Notum Grotesk: "Imp" for "Impl"), the other
+windows, and Notum Grotesk in the Windows installer.
 
 **[Every change in pictures](docs/changes.md)**, beside the original client and Spiritech as shipped. That page
 grows with each change UI+ makes.
@@ -49,12 +55,10 @@ made on a Mac. Pictures from such a screen are welcome.
    - **Linux:** the same in a terminal: `python3`, a space, the path to `install.py`.
 3. Press Enter to install. The installer finds the game in the usual places; if it doesn't, it asks for the
    client folder (the one with `PRK.Client` in it), and you can drag the folder into its window.
-4. Log in a character. The window frame changes by itself; the reworked windows are picked in
-   Options → Interface & HUD → UI packages, where they show as `External [duramson.<window>] — UI+`.
-5. Before installing, the installer asks whether to generate **Notum Grotesk**: the original client's crisp
-   pixel text as a font, made from the Verdana on your computer (the first time it fetches two Python
-   packages for that). Pick it in Options as the interface font. So far only `install.py` offers it, not the
-   Windows installer.
+4. `install.py` asks whether to generate **Notum Grotesk** (the first time it fetches two Python packages for
+   that, about 20 MB).
+5. Log in a character, and switch on what you want as listed under [What works now](#what-works-now). The
+   window frame changes by itself.
 
 Run the installer again for these:
 

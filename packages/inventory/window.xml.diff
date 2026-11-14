@@ -1,12 +1,16 @@
 --- a/UI/Packages/Inventory/window.xml
 +++ b/UI/Packages/Inventory/window.xml
-@@ -1,15 +1,25 @@
+@@ -1,15 +1,29 @@
  <root>
    <View name="inventory_body" view_layout="vertical" h_alignment="center" v_alignment="center">
      <View name="inventory_root" view_layout="stacked" weight="1">
 -      <ScrollView name="inventory_content" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1">
 -        <ScrollViewChild name="inventory_grid" view_layout="grid" grid_columns="1" min_columns="1" grid_spacing="4" h_alignment="center" layout_borders="Rect(0,4,0,0)" />
 -      </ScrollView>
++      <!-- Darker and bluer than other windows, as the original client draws its inventory: the tab background over the
++           window's at half strength, tinted as the frame's (a BorderView would draw lines round it). It reaches the
++           frame's lines: the content starts half a pixel inside the side lines and a pixel under the title's. -->
++      <BitmapView name="inventory_background" image="gfx://GFX_GUI_TAB_BACKGROUND" graphic_mode="tinted" alpha="0.5" layout_borders="Rect(-0.5,-1,-0.5,0)" />
 +      <!-- The grid's scroll view without the client's own scroll bar: main.lua puts the original client's beside it
 +           (core.scroll_bar), and the view gives up the bar's width while the bar shows. -->
 +      <View name="inventory_grid_holder" view_layout="horizontal">

@@ -38,7 +38,7 @@
 +      </BorderView>
 +      <!-- The search under the frame, as in the Inventory window. -->
 +      <View name="footer" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(0,4,0,0)">
-+        <TextInputView name="search" placeholder="Search" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" tooltip="Nano name" />
++        <TextInputView name="search" placeholder="Search" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" />
        </View>
      </View>
 -    <View name="nano_list" view_layout="vertical" weight="1" layout_borders="Rect(4,0,4,4)" />
@@ -73,7 +73,7 @@
 +                  right_gfx="GFX_GUI_TAB_BORDER_RIGHT" bottom_gfx="GFX_GUI_TAB_BORDER_BOTTOM" bg_gfx="GFX_GUI_TAB_BACKGROUND">
 +        <View name="bundled_body" view_layout="vertical" weight="1" />
 +        <View name="bundled_footer" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(5,0,5,5)">
-+          <TextInputView name="bundled_search" placeholder="Search" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" tooltip="Nano name" />
++          <TextInputView name="bundled_search" placeholder="Search" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" />
 +        </View>
 +      </BorderView>
 +    </View>

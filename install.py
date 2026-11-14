@@ -24,8 +24,6 @@ nothing else.
 Before installing, it asks whether to generate Notum Grotesk too: the original client's crisp pixel text as a font,
 with Notum Grotesk 200 beside it for Retina screens and 200 % display scaling, made by fonts/pixelfont.py from the
 Verdana on this computer (it fetches the two Python packages it needs the first time). Uninstalling removes them again.
-It also asks how many seconds the pointer rests on a button before its tooltip shows (1, about the original client's
-wait; 0 for at once, as Spiritech shows them), and writes the answer into UI/Packages/Core/ui_plus_settings.xml.
 """
 import difflib
 import hashlib
@@ -49,8 +47,6 @@ SKIP = {".DS_Store", "Thumbs.db", "desktop.ini"}
 NONL = "\0"  # marks a last line without a line break while diffing
 FONT_TOOL = HERE / "fonts" / "pixelfont.py"
 FONTS = ["Notum Grotesk", "Notum Grotesk 200"]  # what pixelfont.py install puts into the user's font folder
-SETTINGS = "ui_plus_settings.xml"  # in UI/Packages/Core: the settings the installer asks for, read by Core's Lua
-TOOLTIP_DELAY = 1000  # milliseconds the pointer rests before a tooltip shows, about the original client's wait
 
 
 class PatchError(Exception):
@@ -179,6 +175,8 @@ def apply_diff(old, diff, reverse=False):
             old_start = new_start
         want = [text for mark, text in body if mark != "+"]
         give = [text for mark, text in body if mark != "-"]
+        if not want and old_start == 0 and a:  # a patch adding a whole file has no lines to find: it would fit anywhere
+            raise PatchError("the patch adds this file, but there is one already")
         expected = old_start - 1 if want else old_start
         spots = [i for i in range(pos, len(a) - len(want) + 1) if a[i:i + len(want)] == want]
         if not spots:
@@ -334,6 +332,7 @@ def plan_core(client, state, diffs):
             except PatchError:
                 raise PatchError(f"UI/Packages/Core/{name}: {error}. The client's file is not the one this version of "
                                  f"UI+ was made for (client {MADE_FOR}).") from None
+            created = created or not base  # nothing of the client's left in it: a file UI+ made
         plan.append((name, diff, base, style, new, created))
     return plan
 
@@ -517,70 +516,9 @@ def install_font(client, state):
         say("Notum Grotesk was not installed. UI+ itself is.")
 
 
-# ---- settings: one file in Core, read by its Lua ---------------------------------------------------------------------
-
-def tooltip_delay(state):
-    """The tooltip delay chosen at the last install, in milliseconds."""
-    return state.get("tooltip_delay", TOOLTIP_DELAY)
-
-
-def ask_tooltip_delay(state):
-    """The question before installing: how long the pointer rests on a button before its tooltip shows. Only asked
-    when someone is there to answer; otherwise the last answer stays."""
-    current = tooltip_delay(state)
-    if not sys.stdin.isatty():
-        return current
-    say("Spiritech shows a tooltip the moment the pointer touches a button; the original client waited until the")
-    say("pointer had rested there for about a second. UI+ makes them wait (not yet the item tooltips in the")
-    say("inventory, bags, bank and Wear window, which the client draws itself).")
-    while True:
-        answer = input(f"Seconds before a tooltip shows, 0 for at once [{current / 1000:g}]: ").strip()
-        if not answer:
-            say()
-            return current
-        try:
-            seconds = float(answer.replace(",", "."))
-        except ValueError:
-            seconds = -1
-        if 0 <= seconds <= 5:
-            say()
-            return round(seconds * 1000)
-        say("A number of seconds from 0 to 5, please.")
-
-
-def settings_xml(state):
-    """ui_plus_settings.xml. Lua can read a view's size but not its text, so each setting is a view's width;
-    install.ps1 writes the same bytes."""
-    return ('<?xml version="1.0" encoding="utf-8"?>\n<root>\n'
-            "  <!-- duramson UI+'s settings, written by its installer: run it again to change them. The width of\n"
-            "       tooltip_delay is how many milliseconds the pointer rests on a view before its tooltip shows\n"
-            "       (tooltip_delay.lua); 0 shows them at once, as Spiritech does. -->\n"
-            f'  <View name="tooltip_delay" min_size="Point({tooltip_delay(state)},0)" />\n'
-            "</root>\n")
-
-
-def write_settings(client, state):
-    path = client / "UI" / "Packages" / "Core" / SETTINGS
-    data = settings_xml(state).encode("utf-8")
-    if path.exists() and path.read_bytes() == data:
-        return 0
-    path.write_bytes(data)
-    say(f"  wrote UI/Packages/Core/{SETTINGS}")
-    return 1
-
-
-def remove_settings(client, state):
-    state.pop("tooltip_delay", None)
-    path = client / "UI" / "Packages" / "Core" / SETTINGS
-    if path.exists():
-        path.unlink()
-        say(f"  removed UI/Packages/Core/{SETTINGS}")
-
-
 def install(client):
     state = load_state(client)
     font = ask_font()
-    state["tooltip_delay"] = ask_tooltip_delay(state)
     say(f"Installing {TITLE} {version()} into {client}")
     if client_version(client) != MADE_FOR:
         say(f"  note: this is client {client_version(client)}, UI+ was made for {MADE_FOR}. It installs what still "
@@ -593,7 +531,7 @@ def install(client):
     except PatchError as error:
         sys.exit(f"Nothing was changed. {error}")
     try:
-        changed = write_core(client, state, core) + write_settings(client, state)
+        changed = write_core(client, state, core)
         for name, files in packages:
             changed += write_package(client, state, name, files)
         for name in sorted(set(state["core"]) - {p.name[:-len('.diff')] for p in repo_core()}):
@@ -627,7 +565,6 @@ def uninstall(client):
         remove_core(client, state, name)
     for name in sorted(state["packages"]):
         remove_package(state, name)
-    remove_settings(client, state)
     fonts = installed_fonts(state)
     state.pop("font", None)
     state.pop("fonts", None)
@@ -666,8 +603,6 @@ def status(client):
         entry = state["packages"].get(source.name)
         say(f"  window {source.name}: " + (f"installed as {package_dir() / entry['folder']}" if entry else
                                           "not installed yet"))
-    delay = tooltip_delay(state)
-    say(f"  tooltips: after {delay / 1000:g} s" if delay else "  tooltips: at once, as Spiritech shows them")
     for font in installed_fonts(state):
         say(f"  font {font}: installed")
     if note:

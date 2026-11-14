@@ -1,0 +1,13 @@
+--- a/UI/Packages/Core/dockable.lua
++++ b/UI/Packages/Core/dockable.lua
+@@ -82,7 +82,9 @@
+ 		local content = self.frame.content
+ 		self.content_min_width, self.content_min_height = ui.minimum_width(content), ui.minimum_height(content)
+ 		self.content_max_width, self.content_max_height = ui.maximum_width(content), ui.maximum_height(content)
+-		self.content_height = math.max(1, self.float_height - 33, ui.desired_height(content))
++		-- The floating window's height less its title bar and frame: 29 pixels with UI+'s frame (window.lua's
++		-- CONTENT_ENDS), where the client's frame takes 33.
++		self.content_height = math.max(1, self.float_height - 29, ui.desired_height(content))
+ 	end
+ 
+ 	function Dockable.attach(frame, floating, header, title)

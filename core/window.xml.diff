@@ -15,7 +15,7 @@
 +          <BorderView border_style="horizontal" border_gfx="GFX_GUI_TAB_ACTIVE" alpha="1" />
            <View view_layout="horizontal">
 -            <TextView name="window_title" weight="1" layout_borders="Rect(4,0,0,0)" v_alignment="center" />
-+            <TextView name="window_title" weight="1" layout_borders="Rect(6,0,0,0)" v_alignment="center" />
++            <TextView name="window_title" weight="1" layout_borders="Rect(6,1,0,-1)" v_alignment="center" />
              <HLayoutSpacer weight="0" min_size="Point(21,0)" max_size="Point(21,0)" />
            </View>
          </View>

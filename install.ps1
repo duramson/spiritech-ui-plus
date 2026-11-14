@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Installs duramson UI+ into a Spiritech client, updates it, or takes it out again.
+Installs duramson's UI+ into a Spiritech client, updates it, or takes it out again.
 
 .DESCRIPTION
 The Windows twin of install.py, for players without Python: it reads the same patches and writes the same files and
@@ -30,7 +30,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
 
 $Here = $PSScriptRoot
-$Title = 'duramson UI+ for Spiritech'
+$Title = "duramson's UI+ for Spiritech"
 $MadeFor = '0.2.1'   # the client version the patches were made against
 $StateName = 'ui-plus.json'
 $BackupSuffix = '.ui-plus-backup'

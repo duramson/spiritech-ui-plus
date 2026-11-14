@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Installs duramson UI+ into a Spiritech client, updates it, or takes it out again.
+"""Installs duramson's UI+ into a Spiritech client, updates it, or takes it out again.
 
     python3 install.py                a menu
     python3 install.py install        install, or update to this copy's version
@@ -37,7 +37,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-TITLE = "duramson UI+ for Spiritech"
+TITLE = "duramson's UI+ for Spiritech"
 MADE_FOR = "0.2.1"  # the client version the patches were made against
 STATE = "ui-plus.json"
 BACKUP = ".ui-plus-backup"

@@ -18,6 +18,10 @@ its windows. [The changes in pictures](docs/changes.md), beside the original cli
    client folder (the one with `PRK.Client` in it), and you can drag the folder into its window.
 4. Log in a character. The window frame changes by itself; the reworked windows are picked in
    Options → Interface & HUD → UI packages, where they show as `External [duramson.<window>] — UI+`.
+5. Before installing, the installer asks whether to generate **Notum Grotesk**: the original client's crisp
+   pixel text as a font, made from the Verdana on your computer (the first time it fetches two Python
+   packages for that). Pick it in Options as the interface font. So far only `install.py` offers it, not the
+   Windows installer.
 
 Run the installer again for these:
 

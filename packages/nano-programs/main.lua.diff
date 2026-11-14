@@ -46,9 +46,9 @@
 +local TABS_TOOLBAR = INSET_ENDS + TAB_HEIGHT + FRAME_ENDS + FOOTER
 +-- Tabs, grid mode: the tiles stand 4 pixels clear of the tab frame's lines on every side, as the Inventory's tiles do
 +-- of the window's frame (nano_grid_scroll's borders: 4 at the sides and bottom, and 1 at the top over the grid's own
-+-- 4). Across, Grid.size counts 5 spare pixels, which the bundled window leaves empty right of the grid; here they hold
-+-- the tab layout's insets, so only the scroll view's sides widen the window. Down, Grid.size counts the bundled
-+-- grid's 4 above and 3 below it, two fewer than here.
++-- 4). Across, Grid.size counts 5 pixels besides the grid and the window's content sides; here they hold the tab
++-- layout's insets, so only the scroll view's sides widen the window. Down, Grid.size counts the bundled grid's 4 above
++-- and 3 below it, two fewer than here.
 +local GRID_SIDES, GRID_ENDS = 4 + 4, (1 + 4 + 4) - (4 + 3)
 +local TABS_GRID_TOOLBAR = INSET_ENDS + TAB_HEIGHT + GRID_ENDS + FOOTER
 +ui.size(searches.tabs, -1, CONTROL_HEIGHT)
@@ -129,7 +129,7 @@
  end
  
  local function reconcile()
-@@ -138,38 +213,71 @@
+@@ -138,38 +213,74 @@
  end
  
  local function layout(window, width, height)
@@ -200,7 +200,10 @@
 +			ui.borders(grid_scroll, 4, 1, 4, 4)
 +		else
 +			ui.borders(list, 4, 0, 4, 4)
-+			ui.borders(grid_scroll, 0, 0, 0, 0)
++			-- The tiles 4 pixels clear of the window's frame on both sides, from the 5 pixels Grid.size counts besides
++			-- the grid (the content area starts right inside the frame's left line, and one pixel short of its right
++			-- one). The bundled window leaves them all right of the grid.
++			ui.borders(grid_scroll, 3, 0, 2, 0)
 +		end
 +		placed = style
 +	end
@@ -212,7 +215,7 @@
  
  populate = function()
  	selected, matches = {}, {}
-@@ -203,6 +311,22 @@
+@@ -203,6 +314,22 @@
  	ui.publish("view_mode", mode)
  end
  
@@ -235,7 +238,7 @@
  frame = Window.create({
  	title = "Nano Programs",
  	content = content,
-@@ -219,29 +343,50 @@
+@@ -219,29 +346,50 @@
  				set_mode(mode == "list" and "grid" or "list")
  			end,
  		},

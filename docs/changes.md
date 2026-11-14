@@ -1,7 +1,7 @@
 # Changes, in pictures
 
 What this repository changes in Spiritech's UI, shown beside the original client and Spiritech as shipped. Each
-section lists the commits that make the change; their diffs are against Project Rubi-Ka's own files.
+section lists the commits that make the change, in the patches against Project Rubi-Ka's files.
 
 ## Window frame
 

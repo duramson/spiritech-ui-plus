@@ -1,6 +1,54 @@
 --- a/UI/Packages/Inventory/main.lua
 +++ b/UI/Packages/Inventory/main.lua
-@@ -265,7 +265,8 @@
+@@ -2,9 +2,13 @@
+ local Security = ui.require("core.security")
+ local Grid = ui.require("core.icon_grid")
+ local Table = ui.require("core.table")
++local ScrollBar = ui.require("core.scroll_bar")
+ local content = ui.load("window.xml")
+ local grid = ui.find(content, "inventory_grid")
+ local grid_scroll = ui.find(content, "inventory_content")
++local grid_holder = ui.find(content, "inventory_grid_holder")
++-- The original client's scroll bar beside the grid (core.scroll_bar), its arrows a row of slots at a time.
++local scroll_bar = ScrollBar.attach(grid_scroll, grid_holder, { step = 58, borders = { 0, 0, 0.5, 0 } })
+ local list_host = ui.find(content, "inventory_list")
+ local search_query = ui.find(content, "search_query")
+ local FOOTER_HEIGHT = 26
+@@ -154,8 +158,15 @@
+ local function footer_height(search)
+ 	return (search or counts_slots) and FOOTER_HEIGHT or 0
+ end
++-- The bar's arrows a pixel under the title's line and a pixel clear of the right line, as in the original client:
++-- the content ends half a pixel short of that line. Down, a pixel clear of the search field or the credits under the
++-- grid, or of the window's bottom line.
++local function place_scroll_bar()
++	scroll_bar:borders(0, 0, 0.5, (searchable or counts_slots or credits_shown) and 0 or 1)
++end
+ local function show_footer()
+ 	local shown = searchable or counts_slots
++	place_scroll_bar()
+ 	ui.visible(footer, shown)
+ 	ui.visible(search_query, searchable)
+ 	ui.visible(footer_spacer, not searchable)
+@@ -200,7 +211,7 @@
+ 	list:clear()
+ 	mode = value
+ 	selected, splitting, split_count = -1, -1, ""
+-	ui.visible(grid_scroll, mode == "grid")
++	ui.visible(grid_holder, mode == "grid")
+ 	ui.visible(list_host, mode == "list")
+ 	ui.menu.checked(frame.icon, 1, mode == "list")
+ 	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
+@@ -230,7 +241,7 @@
+ 	},
+ })
+ ui.root(frame.root)
+-ui.visible(grid_scroll, mode == "grid")
++ui.visible(grid_holder, mode == "grid")
+ ui.visible(list_host, mode == "list")
+ ui.publish("view_mode", mode)
+ 
+@@ -265,7 +276,8 @@
  			occupied[#occupied + 1] = entry
  		end
  	end
@@ -10,3 +58,20 @@
  	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
  	reconcile()
  end
+@@ -336,6 +348,7 @@
+ 		return
+ 	end
+ 	credits_shown = available
++	place_scroll_bar()
+ 	ui.visible(credits_section, available)
+ 	choose_credits("")
+ 	if not available then
+@@ -358,7 +371,7 @@
+ 		bind_credits_transfer()
+ 	end
+ 	ui.grid_columns(grid, capacity)
+-	ui.visible(grid_scroll, mode == "grid")
++	ui.visible(grid_holder, mode == "grid")
+ 	ui.visible(list_host, mode == "list")
+ 	ui.publish("view_mode", mode)
+ 	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))

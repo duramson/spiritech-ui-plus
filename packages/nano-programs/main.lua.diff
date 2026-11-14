@@ -28,7 +28,7 @@
  local favorites = ui.find(content, "school_favorites")
  ui.enabled(favorites, false)
  ui.tooltip(favorites, "Not implemented")
-@@ -23,23 +42,71 @@
+@@ -23,23 +42,83 @@
  local toolbar = ui.find(content, "toolbar")
  local first_row = ui.find(content, "toolbar_row")
  local LIST_MINIMUM_HEIGHT = 168
@@ -77,11 +77,23 @@
 +-- from the window's frame; a button goes on to the next row when its row would leave fewer than 4 pixels for each of
 +-- its buttons. A row's free width is shared out equally among its buttons, half of each share on either side, so the
 +-- gap between two buttons is twice the margin at the row's ends and a lone one is centred. The rows show 4 pixels under
-+-- the frame and 4 apart, and the list 7 under them. (The bundled window drew pictures of the buttons instead, each with
-+-- its label baked in at a fixed width, packed to the left.) Under the list the search row, built as the Inventory
-+-- window's (FOOTER: the field's 22 pixels, 1 above it and 3 below).
++-- the frame and 4 apart. (The bundled window drew pictures of the buttons instead, each with its label baked in at a
++-- fixed width, packed to the left.) Under them the list and the grid in a frame of their own, as the original client
++-- draws it (bundled_frame in window.xml), with the search in it under the list.
 +local BUTTON_PADDING, BUTTON_HEIGHT, BUTTON_ROOM, ROW_GAP = 19, 20, 4, 4
 +local TOOLBAR_SIDES, TOOLBAR_ENDS = 2, 6
++-- The frame's share of the window, as measured in the client: across, its insets (1 and 0; its lines take no room of
++-- their own); down, everything besides the grid that Grid.size doesn't count (its 4 above the grid and 3 below): the
++-- frame's insets and lines, and in it the search row (the field's 22 pixels and 5 under it, its outline reaching one
++-- past the field) with 3 between it and the grid's scroll view. That view is one pixel taller than the grid, so 4 show
++-- between the tiles and the field: the client places windows on half pixels, and a grid one pixel taller than its
++-- scroll view brings up the scroll bar, which takes a column away.
++local BUNDLED_SIDES = 1 + 0
++local BUNDLED_FOOTER = 29
++-- Grid mode: the tiles 4 pixels clear of the frame's lines at the sides and 3 under its top line, as the original
++-- client has them (nano_grid_scroll's borders 4 at the sides and 1 at the top, so that scrolled tiles stay under the
++-- line, over the grid's own 3). Grid.size counts 5 pixels besides the grid across; the rest goes to the frame's share.
++local BUNDLED_GRID_SIDES = BUNDLED_SIDES + 4 + 4 - 5
 +ui.size(searches.bundled, -1, CONTROL_HEIGHT)
  local toolbar_buttons = {
 -	{ view = favorites, width = 121, row = 1 },
@@ -107,11 +119,11 @@
  end
  local toolbar_rows = { first_row }
 -local toolbar_height = CONTROL_HEIGHT + TOOLBAR_ENDS
-+local toolbar_height = style == "tabs" and TABS_TOOLBAR or BUTTON_HEIGHT + TOOLBAR_ENDS + FOOTER
++local toolbar_height = style == "tabs" and TABS_TOOLBAR or BUTTON_HEIGHT + TOOLBAR_ENDS + BUNDLED_FOOTER
  local function toolbar_row(index)
  	if not toolbar_rows[index] then
  		toolbar_rows[index] = ui.load("toolbar_row.xml")
-@@ -52,26 +119,45 @@
+@@ -52,26 +131,45 @@
  		return
  	end
  	local room = width - Window.CONTENT_SIDES - TOOLBAR_SIDES
@@ -160,7 +172,7 @@
 +		ui.visible(view, index <= #rows)
  	end
 -	toolbar_height = row * CONTROL_HEIGHT + (row - 1) * ROW_GAP + TOOLBAR_ENDS
-+	toolbar_height = #rows * BUTTON_HEIGHT + (#rows - 1) * ROW_GAP + TOOLBAR_ENDS + FOOTER
++	toolbar_height = #rows * BUTTON_HEIGHT + (#rows - 1) * ROW_GAP + TOOLBAR_ENDS + BUNDLED_FOOTER
  end
 -local school, frame, populate, set_mode
 +local school, frame, populate, set_mode, set_style
@@ -169,7 +181,7 @@
  local cells = Grid.cells({
  	host = grid,
  	template = "slot.xml",
-@@ -119,14 +205,35 @@
+@@ -119,14 +217,32 @@
  		populate()
  	end,
  })
@@ -189,10 +201,7 @@
 +-- size too).
 +function sizing:size(columns, rows, scrollbar)
 +	local width, height = Grid.size(self, columns, rows, scrollbar)
-+	if style == "tabs" then
-+		width = width + GRID_SIDES
-+	end
-+	return width, height
++	return width + (style == "tabs" and GRID_SIDES or BUNDLED_GRID_SIDES), height
 +end
 +local function minimum_columns()
 +	local columns = 1
@@ -210,7 +219,7 @@
  end
  
  local function reconcile()
-@@ -138,38 +245,76 @@
+@@ -138,38 +254,75 @@
  end
  
  local function layout(window, width, height)
@@ -262,7 +271,7 @@
  		ui.size(grid, columns * step - spacing, -1)
  	end
 -	list_table.width = width - 19
-+	list_table.width = width - 19 - (tabbed and FRAME_SIDES + INSET_SIDES or 0)
++	list_table.width = width - 19 - (tabbed and FRAME_SIDES + INSET_SIDES or BUNDLED_SIDES)
  	window:fit_title(width, true)
  	ui.request_size(window.root, width, height)
  	window:fit_content(width, height)
@@ -279,14 +288,13 @@
 +		if tabbed then
 +			ui.borders(list, 4, 4, 4, 4)
 +			ui.borders(grid_scroll, 4, 1, 4, 4)
++			ui.borders(grid, 0, 4, 0, 0)
 +		else
-+			-- The list ends 4 pixels above the search field, as the grid's tiles do (Grid.size's 3 under them and the
-+			-- search row's 1).
-+			ui.borders(list, 4, 0, 4, 3)
-+			-- The tiles 4 pixels clear of the window's frame on both sides, from the 5 pixels Grid.size counts besides
-+			-- the grid (the content area starts right inside the frame's left line, and one pixel short of its right
-+			-- one). The bundled window leaves them all right of the grid.
-+			ui.borders(grid_scroll, 3, 0, 2, 0)
++			-- In the frame: the list and the tiles 4 pixels clear of its lines at the sides, and 4 above the search
++			-- field's outline (for the grid, its scroll view's 3 and the pixel to spare in it).
++			ui.borders(list, 4, 3, 4, 4)
++			ui.borders(grid_scroll, 4, 1, 4, 3)
++			ui.borders(grid, 0, 3, 0, 0)
 +		end
 +		placed = style
 +	end
@@ -298,7 +306,7 @@
  
  populate = function()
  	selected, matches = {}, {}
-@@ -203,8 +348,24 @@
+@@ -203,8 +356,24 @@
  	ui.publish("view_mode", mode)
  end
  
@@ -324,7 +332,7 @@
  	content = content,
  	x = 10,
  	y = 174,
-@@ -219,29 +380,58 @@
+@@ -219,29 +388,58 @@
  				set_mode(mode == "list" and "grid" or "list")
  			end,
  		},

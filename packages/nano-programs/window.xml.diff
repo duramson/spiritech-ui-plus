@@ -1,6 +1,6 @@
 --- a/UI/Packages/NanoPrograms/window.xml
 +++ b/UI/Packages/NanoPrograms/window.xml
-@@ -1,21 +1,52 @@
+@@ -1,21 +1,64 @@
  <?xml version="1.0" encoding="utf-8"?>
  <root>
 +  <!-- Two layouts, picked in the window menu ("School Tabs"); main.lua moves the list and the grid between them. -->
@@ -60,10 +60,22 @@
 +          <Button name="school_space" label="Space" font_size="12" v_alignment="center" />
 +        </View>
 +      </View>
-+      <View name="bundled_body" view_layout="vertical" weight="1" />
-+      <View name="bundled_footer" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(2.5,1,2.5,3)">
-+        <TextInputView name="bundled_search" placeholder="Search" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" tooltip="Nano name" />
-+      </View>
++      <!-- The list and the grid in a frame of their own under the buttons, as the original client draws it: a line
++           one pixel clear of the window's frame at the sides and the bottom (the content area starts right inside the
++           window's left and bottom lines, one pixel short of its right one), 4 pixels under the buttons. Inside it the
++           tab background, a little darker and bluer than the window's, as there (without one the client fills a
++           BorderView near-black). The search
++           sits in it under the list, lined up with the tiles; its outline reaches a pixel past the field, hence 5. -->
++      <BorderView name="bundled_frame" view_layout="vertical" weight="1" layout_borders="Rect(1,1,0,1)"
++                  tl_gfx="GFX_GUI_TAB_BORDER_TL" tr_gfx="GFX_GUI_TAB_BORDER_TR"
++                  bl_gfx="GFX_GUI_TAB_BORDER_BL" br_gfx="GFX_GUI_TAB_BORDER_BR"
++                  left_gfx="GFX_GUI_TAB_BORDER_LEFT" top_gfx="GFX_GUI_TAB_BORDER_TOP"
++                  right_gfx="GFX_GUI_TAB_BORDER_RIGHT" bottom_gfx="GFX_GUI_TAB_BORDER_BOTTOM" bg_gfx="GFX_GUI_TAB_BACKGROUND">
++        <View name="bundled_body" view_layout="vertical" weight="1" />
++        <View name="bundled_footer" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(5,0,5,5)">
++          <TextInputView name="bundled_search" placeholder="Search" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" tooltip="Nano name" />
++        </View>
++      </BorderView>
 +    </View>
    </View>
  </root>

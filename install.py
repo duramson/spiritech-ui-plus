@@ -179,6 +179,8 @@ def apply_diff(old, diff, reverse=False):
             old_start = new_start
         want = [text for mark, text in body if mark != "+"]
         give = [text for mark, text in body if mark != "-"]
+        if not want and old_start == 0 and a:  # a patch adding a whole file has no lines to find: it would fit anywhere
+            raise PatchError("the patch adds this file, but there is one already")
         expected = old_start - 1 if want else old_start
         spots = [i for i in range(pos, len(a) - len(want) + 1) if a[i:i + len(want)] == want]
         if not spots:
@@ -334,6 +336,7 @@ def plan_core(client, state, diffs):
             except PatchError:
                 raise PatchError(f"UI/Packages/Core/{name}: {error}. The client's file is not the one this version of "
                                  f"UI+ was made for (client {MADE_FOR}).") from None
+            created = created or not base  # nothing of the client's left in it: a file UI+ made
         plan.append((name, diff, base, style, new, created))
     return plan
 

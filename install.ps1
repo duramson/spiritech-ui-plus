@@ -160,6 +160,10 @@ function Invoke-Patch([string]$Old, [string]$Diff, [bool]$Reverse = $false) {
             if ($hunk.Marks[$k] -cne $added) { $want.Add($hunk.Texts[$k]) }
             if ($hunk.Marks[$k] -cne $removed) { $give.Add($hunk.Texts[$k]) }
         }
+        # a patch adding a whole file has no lines to find: it would fit anywhere
+        if ($want.Count -eq 0 -and $start -eq 0 -and $a.Count -gt 0) {
+            throw "the patch adds this file, but there is one already"
+        }
         $expected = $start
         if ($want.Count -gt 0) { $expected = $start - 1 }
         $best = -1
@@ -383,6 +387,8 @@ function Get-CorePlan([string]$ClientDir, $State) {
             } catch {
                 throw "UI/Packages/Core/${name}: $problem. The client's file is not the one this version of UI+ was made for (client $MadeFor)."
             }
+            # nothing of the client's left in it: a file UI+ made
+            if ([string]::IsNullOrEmpty($base.Text)) { $base.Created = $true }
         }
         $plan.Add(@{ Name = $name; Diff = $diff; Base = $base; New = $new })
     }

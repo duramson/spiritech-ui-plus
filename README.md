@@ -36,6 +36,7 @@ Pieces many windows share. Each gets the original client's look once, for every 
 | **Nano Programs** | School buttons, tiles and search as the original client draws them, or a new School Tabs layout. | Once: Options → Interface & HUD → UI packages, set Nano Programs to `External [duramson.nano] — UI+`, then log the character in again. The window's menu (the i icon) switches between the two layouts. |
 | **NCU** | Slots, their spacing and the margins as in the original client's NCU window. | Nothing to do: it shows from the next character login. |
 | **Scroll bar** | The original client's scroll bar, from its own pictures: smooth arrows, a pixel clear of the frame's lines, 3 pixels from the bar. In the NCU, Nano Programs and Inventory windows so far. | Comes with those windows. |
+| **Tooltips** | Tooltips wait until the pointer has rested on a button or slot for a second, as in the original client, instead of popping up the moment it passes: on the shortcut bars, in grids and lists, on the health and nano bars. The item tooltips in the inventory, bags, bank and Wear window and those of the client's own windows (Options) still show at once: the client draws them itself. | Nothing to do: it works from the next character login. The installer asks how many seconds to wait; 0 shows tooltips at once again. |
 | **Notum Grotesk** | UI+'s own font: a modern, scalable take on the pixelated Verdana the original client draws its interface with, made on your computer ([more below](#notum-grotesk)). Notum Grotesk 200 is the same for Retina screens and 200 % scaling. | Say yes when the installer asks to generate it (only `install.py` so far), then pick Notum Grotesk as the interface font in Options (type "font" into its search), or Notum Grotesk 200 on a Retina screen or at 200 % scaling. |
 
 Not done yet: the Wear window (its tab labels come out too wide with Notum Grotesk: "Imp" for "Impl"), the other
@@ -88,7 +89,9 @@ Pictures from such a screen are welcome.
    client folder (the one with `PRK.Client` in it), and you can drag the folder into its window.
 4. `install.py` asks whether to generate **Notum Grotesk**; yes builds Notum Grotesk and Notum Grotesk 200 (the
    first time it fetches two Python packages for that, about 20 MB).
-5. Log in a character, and switch on what you want as listed under [What works now](#what-works-now). The
+5. The installer asks how many seconds a **tooltip** waits for the pointer to rest on a button. Enter keeps a
+   second, about as long as the original client waits; 0 shows tooltips at once, as Spiritech does.
+6. Log in a character, and switch on what you want as listed under [What works now](#what-works-now). The
    window frame changes by itself.
 
 Run the installer again for these:
@@ -96,6 +99,7 @@ Run the installer again for these:
 - **Before the launcher updates the game, uninstall** (2 in the menu). The launcher patches the client's own
   files and expects them unchanged. Install again after the update.
 - **To update UI+**, download the new version and install it; it replaces the old one.
+- **To change how long tooltips wait**, install again and give the new number of seconds.
 - **To remove UI+**, uninstall. The client's own files come back from the copies the installer kept.
 
 ## How it works

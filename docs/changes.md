@@ -154,7 +154,30 @@ the Inventory window in all three.
 - [3e4521f](https://github.com/duramson/spiritech-ui-plus/commit/3e4521f) fix(inventory): give the grid the original
   client's scroll bar
 
+## Tooltips
+
+The shortcut bars and most windows. Spiritech shows a tooltip the moment the pointer touches a button, a slot or a bar,
+so sweeping the pointer over the shortcut bars pops one up after another. The original client waited until the pointer
+had rested on a button for about a second. Spiritech has no such delay of its own, so UI+ adds one in Core, which every
+window package loads: a tooltip set from Lua shows only once the pointer has rested on its button for a second, and
+sweeping over the bars shows none. That covers the shortcut bars (the client draws their descriptions, but Lua switches
+them on and off), the grids and lists of the Actions, NCU and Nano Programs windows, the health and nano bars and the
+target panels. The installer asks how many seconds to wait; 0 shows tooltips at once, as Spiritech does. A delay shows
+in no picture, so this section has none.
+
+The client draws the item tooltips in the inventory, bags, bank, Wear and Trade windows itself, and Lua can hold them
+back only by unbinding the item, which would also stop clicks and drags; those still show at once. So do the tooltips
+a layout file sets directly and those of the client's own windows, such as Options.
+
+- [6a2372d](https://github.com/duramson/spiritech-ui-plus/commit/6a2372d) feat(core): show tooltips only once the
+  pointer rests on them
+- [27a0a9d](https://github.com/duramson/spiritech-ui-plus/commit/27a0a9d) feat: ask how long tooltips wait for the
+  pointer to rest
+
 ## Not done yet
+
+- **Item tooltips.** The inventory, bags, bank, Wear and Trade windows still show item tooltips at once: the client
+  draws them itself, and Lua can't make them wait (see Tooltips above).
 
 - **Wear.** Its tab labels are set at 12 pixels where the original client draws 11, so with Notum Grotesk "Impl" is
   cut to "Imp". ("Socia" is cut in the original client too.)

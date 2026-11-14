@@ -25,17 +25,17 @@ Pieces many windows share. Each gets the original client's look once, for every 
 | Element | Progress | |
 | --- | --- | --- |
 | Window frame | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done. |
-| Scroll bar | `▰▰▰▰▰▰▰▱▱▱` 70 % | In the NCU and Nano Programs windows: the original client's own pictures, smooth arrows, placed as there. The Inventory next. |
+| Scroll bar | `▰▰▰▰▰▰▰▰▱▱` 80 % | In the NCU, Nano Programs and Inventory windows: the original client's own pictures, smooth arrows, placed as there. Other windows' lists and a less stretched bar picture still to come. |
 
 ## What works now
 
 | | What it does | How to turn it on |
 | --- | --- | --- |
 | **Window frame** | Every window's frame, title tab, icon, pin and close button at the original client's sizes, distances and opacity, measured from pictures of its windows. | Nothing to do: it shows from the next character login. |
-| **Inventory** | The inventory, bags and banks without the tooltips that only repeated their search field and slot count, and the count as just "24 / 30". | Once: Options → Interface & HUD → UI packages, set Inventory containers to `External [duramson.inventory] — UI+`, then log the character in again. |
+| **Inventory** | The inventory, bags and banks with the original client's scroll bar, without the tooltips that only repeated their search field and slot count, and the count as just "24 / 30". | Once: Options → Interface & HUD → UI packages, set Inventory containers to `External [duramson.inventory] — UI+`, then log the character in again. |
 | **Nano Programs** | School buttons, tiles and search as the original client draws them, or a new School Tabs layout. | Once: Options → Interface & HUD → UI packages, set Nano Programs to `External [duramson.nano] — UI+`, then log the character in again. The window's menu (the i icon) switches between the two layouts. |
 | **NCU** | Slots, their spacing and the margins as in the original client's NCU window. | Nothing to do: it shows from the next character login. |
-| **Scroll bar** | The original client's scroll bar, from its own pictures: smooth arrows, a pixel clear of the frame's lines, 3 pixels from the bar. In the NCU and Nano Programs windows so far. | Comes with those windows. |
+| **Scroll bar** | The original client's scroll bar, from its own pictures: smooth arrows, a pixel clear of the frame's lines, 3 pixels from the bar. In the NCU, Nano Programs and Inventory windows so far. | Comes with those windows. |
 | **Notum Grotesk** | UI+'s own font: a modern, scalable take on the pixelated Verdana the original client draws its interface with, made on your computer ([more below](#notum-grotesk)). Notum Grotesk 200 is the same for Retina screens and 200 % scaling. | Say yes when the installer asks to generate it (only `install.py` so far), then pick Notum Grotesk as the interface font in Options (type "font" into its search), or Notum Grotesk 200 on a Retina screen or at 200 % scaling. |
 
 Not done yet: the Wear window (its tab labels come out too wide with Notum Grotesk: "Imp" for "Impl"), the other

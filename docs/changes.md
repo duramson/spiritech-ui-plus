@@ -121,24 +121,25 @@ as shipped. The original client's picture has no nano running.
 ## Inventory: search and slot count
 
 UI+ replaces the Inventory window (Options > Interface & HUD > UI packages, "duramson.inventory"), the one package the
-client draws the inventory, bags, banks and loot with. So far it only takes out what got in the way: the tooltips on the
+client draws the inventory, bags, banks and loot with. So far it takes out what got in the way: the tooltips on the
 search field ("Item name, at least three letters, then Enter") and on the slot count ("Slots holding an item, of all
 slots") only repeated what they show, and the search's opened right over the slot count and ran far past the window's
-edge. The count reads "24 / 30", without "Slots: " in front. The rest of the window is the bundled one. There is no
-picture of it yet.
+edge. The count reads "24 / 30", without "Slots: " in front. The scroll bar is the original client's (see Scroll bar
+below). The rest of the window is the bundled one.
 
 - [15d653f](https://github.com/duramson/spiritech-ui-plus/commit/15d653f) feat(inventory): offer an Inventory window
   without the search and slot tooltips
 
 ## Scroll bar
 
-The scroll bar of the NCU window and of the Nano Programs grid. Spiritech draws its own: arrows in three steps, 2 pixels
-under the frame's line and 5 from the bar. UI+ puts the original client's in its place, built from its own pictures
-(GFX_GUI_SIMPLE_SB_*, which Spiritech has too): the arrows are smooth triangles 11 pixels wide and 6 high, a pixel
-under the frame's line and a pixel clear of the line on the right, 3 pixels from the bar. The arrows scroll a row and
-repeat while held, a press above or below the bar pages that way, and the bar can be dragged. The bar picture is
-stretched to its length, a little softer than in the original client. The Inventory window keeps Spiritech's scroll bar
-for now, so the picture shows the original client's and Spiritech's Inventory beside UI+'s Nano Programs.
+The scroll bar of the NCU window, the Nano Programs grid and the Inventory window. Spiritech draws its own: arrows in
+three steps, 2 pixels under the frame's line and 5 from the bar. UI+ puts the original client's in its place, built
+from its own pictures (GFX_GUI_SIMPLE_SB_*, which Spiritech has too): the arrows are smooth triangles 11 pixels wide
+and 6 high, a pixel under the frame's line and a pixel clear of the line on the right, 3 pixels from the bar. The arrows
+scroll a row and repeat while held, a press above or below the bar pages that way, and the bar can be dragged. The bar
+picture is stretched to its length, a little softer than in the original client. In the Inventory the bar stands 4
+pixels clear of the slots, as there, and the grid gives up the bar's width only while the bar shows. The picture shows
+the Inventory window in all three.
 
 ![Scroll bar at eight times its size: Anarchy Online, Spiritech as shipped, Spiritech with UI+](images/scroll-bar.png)
 
@@ -148,6 +149,8 @@ for now, so the picture shows the original client's and Spiritech's Inventory be
   client's scroll bar
 - [aead52d](https://github.com/duramson/spiritech-ui-plus/commit/aead52d) fix(nano-programs): give the grid the
   original client's scroll bar
+- [3e4521f](https://github.com/duramson/spiritech-ui-plus/commit/3e4521f) fix(inventory): give the grid the original
+  client's scroll bar
 
 ## Not done yet
 

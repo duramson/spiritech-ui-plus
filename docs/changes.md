@@ -47,6 +47,8 @@ Grotesk should give the original's pixels; that is untested so far.
   client 0.2.0
 - [00e2dac](https://github.com/duramson/spiritech-ui-plus/commit/00e2dac) fix(core): keep a docked window's content
   as tall as when it floated
+- [852f4fb](https://github.com/duramson/spiritech-ui-plus/commit/852f4fb) fix(fonts): close the wide gap after "m" in
+  Spiritech's chat
 
 ## Nano Programs: the bundled layout
 

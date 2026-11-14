@@ -1,6 +1,13 @@
 --- a/UI/Packages/Core/package.xml
 +++ b/UI/Packages/Core/package.xml
-@@ -11,6 +11,7 @@
+@@ -1,5 +1,6 @@
+ <Package>
+   <Script src="ui.lua" />
++  <Script src="tooltip_delay.lua" />
+   <Script src="modules.lua" />
+   <Script src="interaction.lua" />
+   <Script src="security.lua" />
+@@ -11,6 +12,7 @@
    <Script src="hud_column.lua" />
    <Script src="dockable.lua" />
    <Script src="window.lua" />

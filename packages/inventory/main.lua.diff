@@ -30,7 +30,22 @@
  	ui.visible(footer, shown)
  	ui.visible(search_query, searchable)
  	ui.visible(footer_spacer, not searchable)
-@@ -200,7 +211,7 @@
+@@ -178,8 +189,12 @@
+ 		local _, max_height = sizing:size(1, capacity, true)
+ 		ui.limits(window.root, min_width, min_height + reserved_height, max_width, max_height + reserved_height)
+ 		width, height = math.max(width, min_width), math.max(height, min_height + reserved_height)
+-		local columns
+-		width, height, columns = sizing:resolve(width, height - reserved_height, capacity)
++		local columns, rows
++		width, height, columns, rows = sizing:resolve(width, height - reserved_height, capacity)
++		-- The scroll bar only where the window leaves room for it. Otherwise, shown while the window grows to a size
++		-- whose columns hold every slot, it took its width from the grid, a column moved down, and the slots needed
++		-- the bar again: three columns spread over the width of four.
++		scroll_bar:enable(capacity > columns * rows)
+ 		height = height + reserved_height
+ 		title_visible = columns >= 3
+ 		ui.size(grid, columns * 58 - 4, -1)
+@@ -200,7 +215,7 @@
  	list:clear()
  	mode = value
  	selected, splitting, split_count = -1, -1, ""
@@ -39,7 +54,7 @@
  	ui.visible(list_host, mode == "list")
  	ui.menu.checked(frame.icon, 1, mode == "list")
  	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
-@@ -230,7 +241,7 @@
+@@ -230,7 +245,7 @@
  	},
  })
  ui.root(frame.root)
@@ -48,7 +63,7 @@
  ui.visible(list_host, mode == "list")
  ui.publish("view_mode", mode)
  
-@@ -265,7 +276,8 @@
+@@ -265,7 +280,8 @@
  			occupied[#occupied + 1] = entry
  		end
  	end
@@ -58,7 +73,7 @@
  	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
  	reconcile()
  end
-@@ -336,6 +348,7 @@
+@@ -336,6 +352,7 @@
  		return
  	end
  	credits_shown = available
@@ -66,7 +81,7 @@
  	ui.visible(credits_section, available)
  	choose_credits("")
  	if not available then
-@@ -358,7 +371,7 @@
+@@ -358,7 +375,7 @@
  		bind_credits_transfer()
  	end
  	ui.grid_columns(grid, capacity)

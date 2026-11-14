@@ -1,8 +1,41 @@
 # duramson UI+ for Spiritech
 
-Additions to Project Rubi-Ka's Spiritech client: fixes for flaws in its bundled UI, reworked windows, and new
-things of its own. Most of it brings back the original Anarchy Online client's look, measured from pictures of
-its windows. [The changes in pictures](docs/changes.md), beside the original client and Spiritech as shipped.
+Spiritech, Project Rubi-Ka's new client, brings Anarchy Online to today's computers. UI+ brings back the look of
+the original client's interface: window frames built to its measurements, windows laid out as it laid them out,
+and its crisp pixel text. It fixes flaws in Spiritech's bundled UI on the way, and adds a few things of its own.
+
+![Inventory: Anarchy Online, Spiritech as shipped, Spiritech with UI+](docs/images/inventory.png)
+
+- **Every window:** frame, title tab, icon, pin and close button at the original client's sizes, distances and
+  opacity, measured from pictures of its windows.
+- **Nano Programs:** the school buttons, tiles and search as the original draws them, or a new School Tabs layout.
+- **Notum Grotesk:** the original client's pixel text as a font, made on your computer (see below).
+
+**[Every change in pictures](docs/changes.md)**, beside the original client and Spiritech as shipped. That page
+grows with each change UI+ makes.
+
+![Nano Programs: Spiritech as shipped, and UI+'s School Tabs layout](docs/images/nano-programs-tabs.png)
+
+## Notum Grotesk
+
+The original client draws its interface text in Verdana, hinted and in black and white: every letter is sharp
+pixels. Spiritech draws its text smoothed, so even Verdana comes out softer and thicker there. Notum Grotesk brings
+the pixels back.
+
+Verdana belongs to Microsoft, so a font made from it can't be shipped. Instead the installer builds the font on your
+computer, from the Verdana that is already there: it draws every letter the way the original client
+does, at every size from 6 to 72 pixels, and packs all those pixel sets into one TrueType font. The font's own
+hinting program picks the right set for the size Spiritech asks for, so the text stays pixel-sharp at any font size
+and interface scale. Nothing made from Verdana is in this repository; `fonts/ao-pixels.json` holds only checksums of
+the original client's letters, to tell whether a Verdana gives the same pixels (macOS's gives all 610 at 11 px).
+
+![Text at four times its size: Anarchy Online, Spiritech as shipped, Spiritech with Notum Grotesk](docs/images/notum-grotesk.png)
+
+**Still being worked on.** On a Retina screen, or with Windows' display scaling at 200 %, Spiritech draws text at
+twice the resolution, so Notum Grotesk comes out at twice the pixel size: sharp, but much finer than the original
+client's text, as in the picture above (taken on a Retina Mac). That is not the look UI+ is after yet. At a normal
+resolution (100 % scaling) its pixels should be the original client's; that hasn't been tested yet, because UI+ is
+made on a Mac. Pictures from such a screen are welcome.
 
 ## Installing
 

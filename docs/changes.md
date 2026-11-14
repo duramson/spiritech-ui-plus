@@ -12,14 +12,19 @@ Every window. The frame and title bar follow the original client's measurements,
 over a black and a white background: the outer frame is 3 pixels wide at 33 % (Spiritech draws 4 pixels at 85 %), the
 line under the title sits 23 pixels below the top edge, the title tab starts 7 pixels down and is drawn opaque, and
 the window icon, pin and close button stand 5 pixels below the top edge at 85 %. The title is set at 11 pixels, the
-original's size. Each window's content keeps its size, so windows come out 2 pixels narrower and 4 shorter.
+original's size. Each window's content keeps its size, so windows come out 2 pixels narrower and 4 shorter. The zooms
+under the windows show their top-left corners at four times their size.
 
 The installer offers Notum Grotesk, the original client's interface text: Verdana in black-and-white pixels, built on
 the player's computer from the Verdana already there (nothing made from Verdana is in this repository). Picked as the
-interface font, it draws Spiritech's text in crisp pixels instead of soft antialiased type. On a Retina screen
-Spiritech draws text at twice the resolution, so the pixels are finer than the original client's.
+interface font, it draws Spiritech's text in crisp pixels instead of soft antialiased type. Still being worked on:
+on a Retina screen or at 200 % display scaling Spiritech draws text at twice the resolution, so the pixels come out
+much finer than the original client's (as in these pictures, taken on a Retina Mac). At 100 % they should be the
+original's; that is untested so far.
 
 ![Inventory: Anarchy Online, Spiritech as shipped, Spiritech with UI+](images/inventory.png)
+
+![Text at four times its size: Anarchy Online, Spiritech as shipped, Spiritech with Notum Grotesk](images/notum-grotesk.png)
 
 - [d6c52ca](https://github.com/duramson/spiritech-ui-plus/commit/d6c52ca) fix(core): draw the window title tab opaque
 - [0e31786](https://github.com/duramson/spiritech-ui-plus/commit/0e31786) fix(core): draw the outer window frame as

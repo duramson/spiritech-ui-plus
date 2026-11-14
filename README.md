@@ -4,7 +4,7 @@ Spiritech, Project Rubi-Ka's new client, brings Anarchy Online to today's comput
 the original client's interface: window frames built to its measurements, windows laid out as it laid them out,
 and its crisp pixel text. It fixes flaws in Spiritech's bundled UI on the way, and adds a few things of its own.
 
-![Inventory: Anarchy Online, Spiritech as shipped, Spiritech with UI+](docs/images/inventory.png)
+![Nano Programs: Anarchy Online, Spiritech as shipped, Spiritech with UI+](docs/images/nano-programs-bundled.png)
 
 ## First pass, window by window
 
@@ -29,6 +29,8 @@ windows, and Notum Grotesk in the Windows installer.
 
 **[Every change in pictures](docs/changes.md)**, beside the original client and Spiritech as shipped. That page
 grows with each change UI+ makes.
+
+![Inventory: Anarchy Online, Spiritech as shipped, Spiritech with UI+](docs/images/inventory.png)
 
 ![Nano Programs: Spiritech as shipped, and UI+'s School Tabs layout](docs/images/nano-programs-tabs.png)
 

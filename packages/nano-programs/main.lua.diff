@@ -28,7 +28,7 @@
  local favorites = ui.find(content, "school_favorites")
  ui.enabled(favorites, false)
  ui.tooltip(favorites, "Not implemented")
-@@ -23,10 +42,39 @@
+@@ -23,10 +42,46 @@
  local toolbar = ui.find(content, "toolbar")
  local first_row = ui.find(content, "toolbar_row")
  local LIST_MINIMUM_HEIGHT = 168
@@ -40,10 +40,17 @@
 +-- (it starts one pixel inside its left and bottom lines, two inside its right one), hence the uneven insets
 +-- (tab_layout's borders in window.xml).
 +local INSET_SIDES, INSET_ENDS = 3 + 2, 6 + 3
-+-- Tabs: everything but the list or grid is the insets, the tab row (overlapping the frame by one), the tab frame's own
-+-- edges, and the search row under the frame with its gap. Fixed: unlike the bundled buttons, the tabs never wrap.
++-- Tabs, list mode: everything but the list is the insets, the tab row (overlapping the frame by one), the tab frame's
++-- own edges, and the search row under the frame with its gap. Fixed: unlike the bundled buttons, the tabs never wrap.
 +local TAB_HEIGHT, FRAME_ENDS, FRAME_SIDES, FOOTER = 16, 6, 6, 26
 +local TABS_TOOLBAR = INSET_ENDS + TAB_HEIGHT + FRAME_ENDS + FOOTER
++-- Tabs, grid mode: the tiles stand 4 pixels clear of the tab frame's lines on every side, as the Inventory's tiles do
++-- of the window's frame (nano_grid_scroll's borders: 4 at the sides and bottom, and 1 at the top over the grid's own
++-- 4). Across, Grid.size counts 5 spare pixels, which the bundled window leaves empty right of the grid; here they hold
++-- the tab layout's insets, so only the scroll view's sides widen the window. Down, Grid.size counts the bundled
++-- grid's 4 above and 3 below it, two fewer than here.
++local GRID_SIDES, GRID_ENDS = 4 + 4, (1 + 4 + 4) - (4 + 3)
++local TABS_GRID_TOOLBAR = INSET_ENDS + TAB_HEIGHT + GRID_ENDS + FOOTER
 +ui.size(searches.tabs, -1, CONTROL_HEIGHT)
 +-- Each tab as wide as its text: the text starts a few pixels in, and the tab's slanted right edge covers the last
 +-- part of it. Neighbours overlap as the Wear window's do.
@@ -70,7 +77,7 @@
  local toolbar_buttons = {
  	{ view = favorites, width = 121, row = 1 },
  	{ view = schools[1], width = 75, row = 1 },
-@@ -39,7 +87,7 @@
+@@ -39,7 +94,7 @@
  	ui.size(button.view, button.width, BUTTON_HEIGHT)
  end
  local toolbar_rows = { first_row }
@@ -79,7 +86,7 @@
  local function toolbar_row(index)
  	if not toolbar_rows[index] then
  		toolbar_rows[index] = ui.load("toolbar_row.xml")
-@@ -70,8 +118,9 @@
+@@ -70,8 +125,9 @@
  	end
  	toolbar_height = row * CONTROL_HEIGHT + (row - 1) * ROW_GAP + TOOLBAR_ENDS
  end
@@ -90,19 +97,19 @@
  local cells = Grid.cells({
  	host = grid,
  	template = "slot.xml",
-@@ -124,9 +173,28 @@
+@@ -124,9 +180,28 @@
  local maximum_extent = presentation.maximum_extent
  local maximum_columns = math.floor((maximum_extent - 16 + spacing) / step)
  local sizing = Grid.create(cell_size, spacing, 600)
 -local minimum_columns = 1
 -while sizing:size(minimum_columns + 1, 1, true) <= Window.MINIMUM_WIDTH do
 -	minimum_columns = minimum_columns + 1
-+-- In the tabs layout the grid sits inside the tab frame: its edges and insets widen the window (resolve goes through
-+-- this size too).
++-- In the tabs layout the grid sits inside the tab frame, whose borders widen the window (resolve goes through this
++-- size too).
 +function sizing:size(columns, rows, scrollbar)
 +	local width, height = Grid.size(self, columns, rows, scrollbar)
 +	if style == "tabs" then
-+		width = width + FRAME_SIDES + INSET_SIDES
++		width = width + GRID_SIDES
 +	end
 +	return width, height
 +end
@@ -122,14 +129,14 @@
  end
  
  local function reconcile()
-@@ -138,38 +206,71 @@
+@@ -138,38 +213,71 @@
  end
  
  local function layout(window, width, height)
 +	local tabbed = style == "tabs"
 +	local minimum_width = tabbed and TABS_MINIMUM_WIDTH or Window.MINIMUM_WIDTH
 +	if tabbed then
-+		toolbar_height = TABS_TOOLBAR
++		toolbar_height = mode == "list" and TABS_TOOLBAR or TABS_GRID_TOOLBAR
 +	end
  	if mode == "list" then
 -		reflow_toolbar(math.max(Window.MINIMUM_WIDTH, width))
@@ -190,7 +197,7 @@
 +		ui.add(tabbed and nano_frame or bundled_body, grid_scroll)
 +		if tabbed then
 +			ui.borders(list, 4, 4, 4, 4)
-+			ui.borders(grid_scroll, 3, 0, 3, 3)
++			ui.borders(grid_scroll, 4, 1, 4, 4)
 +		else
 +			ui.borders(list, 4, 0, 4, 4)
 +			ui.borders(grid_scroll, 0, 0, 0, 0)
@@ -205,7 +212,7 @@
  
  populate = function()
  	selected, matches = {}, {}
-@@ -203,6 +304,22 @@
+@@ -203,6 +311,22 @@
  	ui.publish("view_mode", mode)
  end
  
@@ -228,7 +235,7 @@
  frame = Window.create({
  	title = "Nano Programs",
  	content = content,
-@@ -219,29 +336,50 @@
+@@ -219,29 +343,50 @@
  				set_mode(mode == "list" and "grid" or "list")
  			end,
  		},

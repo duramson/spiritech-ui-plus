@@ -6,13 +6,23 @@ and its crisp pixel text. It fixes flaws in Spiritech's bundled UI on the way, a
 
 ![Inventory: Anarchy Online, Spiritech as shipped, Spiritech with UI+](docs/images/inventory.png)
 
+## First pass, window by window
+
+One window at a time gets the original client's look. 100 % means its first pass is done, not that it's finished
+for good.
+
+| Window | Progress | |
+| --- | --- | --- |
+| Nano Programs | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done. The list view gets a second round later. |
+| NCU | `▱▱▱▱▱▱▱▱▱▱` 0 % | Next. |
+
 ## What works now
 
 | | What it does | How to turn it on |
 | --- | --- | --- |
 | **Window frame** | Every window's frame, title tab, icon, pin and close button at the original client's sizes, distances and opacity, measured from pictures of its windows. | Nothing to do: it shows from the next character login. |
 | **Nano Programs** | School buttons, tiles and search as the original client draws them, or a new School Tabs layout. | Once: Options → Interface & HUD → UI packages, set Nano Programs to `External [duramson.nano] — UI+`, then log the character in again. The window's menu (the i icon) switches between the two layouts. |
-| **Notum Grotesk** | The original client's crisp pixel text as a font, made on your computer ([more below](#notum-grotesk)). Still too fine on Retina and at 200 % scaling. | Say yes when the installer asks to generate it (only `install.py` so far), then pick Notum Grotesk as the interface font in Options (type "font" into its search). |
+| **Notum Grotesk** | UI+'s own font: a modern, scalable take on the pixelated Verdana the original client draws its interface with, made on your computer ([more below](#notum-grotesk)). Notum Grotesk 200 is the same for Retina screens and 200 % scaling. | Say yes when the installer asks to generate it (only `install.py` so far), then pick Notum Grotesk as the interface font in Options (type "font" into its search), or Notum Grotesk 200 on a Retina screen or at 200 % scaling. |
 
 Not done yet: the Wear window (its tab labels come out too wide with Notum Grotesk: "Imp" for "Impl"), the other
 windows, and Notum Grotesk in the Windows installer.
@@ -24,9 +34,10 @@ grows with each change UI+ makes.
 
 ## Notum Grotesk
 
-The original client draws its interface text in Verdana, hinted and in black and white: every letter is sharp
+Notum Grotesk is UI+'s own font: a modern, scalable take on the pixelated Verdana the original client draws its
+interface with. That client sets its text in Verdana, hinted and in black and white, so every letter is sharp
 pixels. Spiritech draws its text smoothed, so even Verdana comes out softer and thicker there. Notum Grotesk brings
-the pixels back.
+the pixels back, at any size.
 
 Verdana belongs to Microsoft, so a font made from it can't be shipped. Instead the installer builds the font on your
 computer, from the Verdana that is already there: it draws every letter the way the original client
@@ -37,11 +48,13 @@ the original client's letters, to tell whether a Verdana gives the same pixels (
 
 ![Text at four times its size: Anarchy Online, Spiritech as shipped, Spiritech with Notum Grotesk](docs/images/notum-grotesk.png)
 
-**Still being worked on.** On a Retina screen, or with Windows' display scaling at 200 %, Spiritech draws text at
-twice the resolution, so Notum Grotesk comes out at twice the pixel size: sharp, but much finer than the original
-client's text, as in the picture above (taken on a Retina Mac). That is not the look UI+ is after yet. At a normal
-resolution (100 % scaling) its pixels should be the original client's; that hasn't been tested yet, because UI+ is
-made on a Mac. Pictures from such a screen are welcome.
+**Retina and 200 %: Notum Grotesk 200.** On a Retina screen, or with Windows' display scaling at 200 %, Spiritech
+draws text at twice the resolution, so Notum Grotesk's pixels come out half as big: sharp, but much finer than the
+original client's text, as in the picture above (taken on a Retina Mac). For those screens the installer builds a
+second font beside it, Notum Grotesk 200, which draws each pixel as 2 × 2 so the letters come out at the original
+client's size; pick it instead. Both are still being worked on. At a normal resolution (100 % scaling) plain Notum
+Grotesk's pixels should be the original client's; that hasn't been tested yet, because UI+ is made on a Mac.
+Pictures from such a screen are welcome.
 
 ## Installing
 
@@ -55,8 +68,8 @@ made on a Mac. Pictures from such a screen are welcome.
    - **Linux:** the same in a terminal: `python3`, a space, the path to `install.py`.
 3. Press Enter to install. The installer finds the game in the usual places; if it doesn't, it asks for the
    client folder (the one with `PRK.Client` in it), and you can drag the folder into its window.
-4. `install.py` asks whether to generate **Notum Grotesk** (the first time it fetches two Python packages for
-   that, about 20 MB).
+4. `install.py` asks whether to generate **Notum Grotesk**; yes builds Notum Grotesk and Notum Grotesk 200 (the
+   first time it fetches two Python packages for that, about 20 MB).
 5. Log in a character, and switch on what you want as listed under [What works now](#what-works-now). The
    window frame changes by itself.
 

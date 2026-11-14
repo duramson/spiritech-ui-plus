@@ -17,10 +17,11 @@ under the windows show their top-left corners at four times their size.
 
 The installer offers Notum Grotesk, the original client's interface text: Verdana in black-and-white pixels, built on
 the player's computer from the Verdana already there (nothing made from Verdana is in this repository). Picked as the
-interface font, it draws Spiritech's text in crisp pixels instead of soft antialiased type. Still being worked on:
-on a Retina screen or at 200 % display scaling Spiritech draws text at twice the resolution, so the pixels come out
-much finer than the original client's (as in these pictures, taken on a Retina Mac). At 100 % they should be the
-original's; that is untested so far.
+interface font, it draws Spiritech's text in crisp pixels instead of soft antialiased type. On a Retina screen or at
+200 % display scaling Spiritech draws text at twice the resolution, so the pixels come out much finer than the
+original client's (as in these pictures, taken on a Retina Mac). For those screens the installer also builds Notum
+Grotesk 200, which draws each of the font's pixels as 2 × 2; both are still being worked on. At 100 % plain Notum
+Grotesk should give the original's pixels; that is untested so far.
 
 ![Inventory: Anarchy Online, Spiritech as shipped, Spiritech with UI+](images/inventory.png)
 
@@ -38,6 +39,10 @@ original's; that is untested so far.
 - [b6fbd31](https://github.com/duramson/spiritech-ui-plus/commit/b6fbd31) feat(fonts): build Notum Grotesk, the
   original client's pixel text, from the player's Verdana
 - [30d9e51](https://github.com/duramson/spiritech-ui-plus/commit/30d9e51) feat: offer Notum Grotesk while installing
+- [265f4f1](https://github.com/duramson/spiritech-ui-plus/commit/265f4f1) feat(fonts): add Notum Grotesk 200, the
+  original pixels doubled for Retina and 200 % scaling
+- [a80993c](https://github.com/duramson/spiritech-ui-plus/commit/a80993c) feat: install Notum Grotesk 200 alongside
+  Notum Grotesk
 
 ## Nano Programs: the bundled layout
 
@@ -45,9 +50,13 @@ UI+ replaces the Nano Programs window (Options > Interface & HUD > UI packages, 
 brought close to the original client's. The window is called "Programs" as there. The school buttons are plain
 buttons drawn as the original draws them: each as wide as its label and about 10 pixels more on either side, each
 row's free width shared equally around its buttons, a lone one centred (Spiritech shows pictures with the label baked
-in, at fixed widths, packed to the left). The search sits under the grid as in the Inventory window. The tiles show
-the slot picture at 40 pixels, 2 apart, with the icon 4 pixels in, and stand 4 pixels clear of the frame on both
-sides. The middle picture has Psi picked, the others Medical.
+in, at fixed widths, packed to the left). Under the buttons the list and the grid sit in a second frame, as in the
+original client: its line one pixel clear of the window's frame at the sides and the bottom and 4 pixels under the
+buttons, the tab background inside it a little darker and bluer than the window's. The search sits in that frame
+under the grid, lined up with the tiles, as far from the frame on the left as on the right (it used to stand half a
+pixel closer to it on the left). The tiles show the slot picture at 40 pixels, 2 apart, with the icon 4 pixels in, and
+stand 4 pixels clear of the frame's lines at the sides and 3 under its top. The middle picture has Psi picked, the
+others Medical; the UI+ picture uses Notum Grotesk 200.
 
 ![Nano Programs: Anarchy Online, Spiritech as shipped, Spiritech with UI+](images/nano-programs-bundled.png)
 
@@ -63,6 +72,8 @@ sides. The middle picture has Psi picked, the others Medical.
   as the original client does
 - [24250e8](https://github.com/duramson/spiritech-ui-plus/commit/24250e8) fix(nano-programs): draw the tiles and the
   title as the original client does
+- [7ddbe9f](https://github.com/duramson/spiritech-ui-plus/commit/7ddbe9f) fix(nano-programs): frame the bundled
+  layout's grid as the original client does
 
 ## Nano Programs: school tabs
 

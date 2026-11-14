@@ -1,6 +1,6 @@
 --- a/UI/Packages/NanoPrograms/main.lua
 +++ b/UI/Packages/NanoPrograms/main.lua
-@@ -10,66 +10,39 @@
+@@ -10,66 +10,43 @@
  local grid_scroll = ui.find(content, "nano_grid_scroll")
  local grid = ui.find(content, "nano_grid")
  local search = ui.find(content, "search")
@@ -30,11 +30,15 @@
 -local TOOLBAR_SIDES, TOOLBAR_ENDS = 12, 10
 -ui.size(ui.find(content, "search_label"), SEARCH_LABEL_WIDTH, CONTROL_HEIGHT)
 +local CONTROL_HEIGHT = 22
-+-- Everything but the list or grid: the gap over the tabs, the tab row (overlapping the frame by one), the tab frame's
-+-- own edges, and the search row under the frame with its borders. Fixed: unlike the bundled window's buttons, the
-+-- tabs never wrap.
-+local TOP_GAP, TAB_HEIGHT, FRAME_ENDS, FRAME_SIDES, FOOTER = 4, 16, 6, 6, 29
-+local toolbar_height = TOP_GAP + TAB_HEIGHT + FRAME_ENDS + FOOTER
++-- The tab frame stands 4 pixels clear of the window's own inner frame on every side, as the Inventory's content
++-- does; flush against it, the two frames' lines ran together. The window's content area isn't centred in that frame
++-- (it starts one pixel inside its left and bottom lines, two inside its right one), hence the uneven insets
++-- (window.xml's root borders).
++local INSET_SIDES, INSET_ENDS = 3 + 2, 6 + 3
++-- Everything but the list or grid: the insets, the tab row (overlapping the frame by one), the tab frame's own edges,
++-- and the search row under the frame with its gap. Fixed: unlike the bundled window's buttons, the tabs never wrap.
++local TAB_HEIGHT, FRAME_ENDS, FRAME_SIDES, FOOTER = 16, 6, 6, 26
++local toolbar_height = INSET_ENDS + TAB_HEIGHT + FRAME_ENDS + FOOTER
  ui.size(search, -1, CONTROL_HEIGHT)
 -local toolbar_buttons = {
 -	{ view = favorites, width = 121, row = 1 },
@@ -92,18 +96,18 @@
 -	toolbar_height = row * CONTROL_HEIGHT + (row - 1) * ROW_GAP + TOOLBAR_ENDS
 -end
 +-- The narrowest window that shows every tab.
-+local MINIMUM_WIDTH = math.max(Window.MINIMUM_WIDTH, tabs_width + Window.CONTENT_SIDES)
++local MINIMUM_WIDTH = math.max(Window.MINIMUM_WIDTH, tabs_width + Window.CONTENT_SIDES + INSET_SIDES)
  local school, frame, populate, set_mode
  local entries, ordered, matches, terms = {}, {}, {}, {}
  local cells = Grid.cells({
-@@ -124,8 +97,14 @@
+@@ -124,8 +101,14 @@
  local maximum_extent = presentation.maximum_extent
  local maximum_columns = math.floor((maximum_extent - 16 + spacing) / step)
  local sizing = Grid.create(cell_size, spacing, 600)
-+-- The grid sits inside the tab frame: its edges widen the window (resolve goes through this size too).
++-- The grid sits inside the tab frame: its edges and insets widen the window (resolve goes through this size too).
 +function sizing:size(columns, rows, scrollbar)
 +	local width, height = Grid.size(self, columns, rows, scrollbar)
-+	return width + FRAME_SIDES, height
++	return width + FRAME_SIDES + INSET_SIDES, height
 +end
 +-- The fewest columns whose window still shows every tab.
  local minimum_columns = 1
@@ -112,7 +116,7 @@
  	minimum_columns = minimum_columns + 1
  end
  
-@@ -139,32 +118,22 @@
+@@ -139,32 +122,22 @@
  
  local function layout(window, width, height)
  	if mode == "list" then
@@ -145,11 +149,11 @@
  		ui.size(grid, columns * step - spacing, -1)
  	end
 -	list_table.width = width - 19
-+	list_table.width = width - 19 - FRAME_SIDES
++	list_table.width = width - 19 - FRAME_SIDES - INSET_SIDES
  	window:fit_title(width, true)
  	ui.request_size(window.root, width, height)
  	window:fit_content(width, height)
-@@ -231,17 +200,19 @@
+@@ -231,17 +204,19 @@
  	end
  	populate()
  end)

@@ -15,7 +15,7 @@
 -        <Button name="school_psi" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_PSI" gfxid_hover="GFX_GUI_NANO_PSI" gfxid_pressed="GFX_GUI_NANO_PSI_PRESSED" gfxid_selected="GFX_GUI_NANO_PSI_PRESSED" />
 -        <Button name="school_space" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_SPACE" gfxid_hover="GFX_GUI_NANO_SPACE" gfxid_pressed="GFX_GUI_NANO_SPACE_PRESSED" gfxid_selected="GFX_GUI_NANO_SPACE_PRESSED" />
 -      </View>
-+  <View name="nano_programs" view_layout="vertical" weight="1" layout_borders="Rect(0,4,0,0)">
++  <View name="nano_programs" view_layout="vertical" weight="1" layout_borders="Rect(3,6,2,3)">
 +    <!-- The schools as tabs over a tab frame, built like the Wear window's (the selected tab drawn on top, neighbours
 +         overlapping). Each tab's width is set from its text in main.lua. -->
 +    <View name="nano_tabs" view_layout="horizontal" selected_on_top="true" paint_on_top="true" min_size="Point(-1,17)" max_size="Point(-1,17)" layout_borders="Rect(0,0,0,-1)">
@@ -41,7 +41,7 @@
 +      </ScrollView>
 +    </BorderView>
 +    <!-- The search under the frame, as in the Inventory window. -->
-+    <View name="footer" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(0,4,0,3)">
++    <View name="footer" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(0,4,0,0)">
 +      <TextInputView name="search" placeholder="Search" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" tooltip="Nano name" />
 +    </View>
    </View>

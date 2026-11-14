@@ -15,7 +15,16 @@ for good.
 | --- | --- | --- |
 | Nano Programs | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done. The list view gets a second round later. |
 | NCU | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done. |
-| Wear | `▱▱▱▱▱▱▱▱▱▱` 0 % | Next. |
+| Wear | `▱▱▱▱▱▱▱▱▱▱` 0 % | After the scroll bar. |
+
+### Elements
+
+Pieces many windows share. Each gets the original client's look once, for every window that shows it.
+
+| Element | Progress | |
+| --- | --- | --- |
+| Window frame | `▰▰▰▰▰▰▰▰▰▰` 100 % | Done. |
+| Scroll bar | `▱▱▱▱▱▱▱▱▱▱` 0 % | Next. Spiritech draws its arrows as three steps; the original client's are smooth triangles from its own pictures (which Spiritech has too), a pixel higher, and 3 pixels from the bar instead of 5. |
 
 ## What works now
 

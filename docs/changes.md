@@ -8,6 +8,7 @@ pixel to match Spiritech's Retina pictures. The text in the UI+ pictures is [Not
 The newest change comes first. The [changelog](../CHANGELOG.md) lists every change in a line, with the pull
 request or the commits that made it.
 
+- [Inventory: backpacks and bank](#inventory-backpacks-and-bank)
 - [Window titles](#window-titles)
 - [Nano Programs: framed search](#nano-programs-framed-search)
 - [Inventory: search and slot count](#inventory-search-and-slot-count)
@@ -20,6 +21,22 @@ request or the commits that made it.
 - [Window frame and text](#window-frame-and-text)
 - [Not done yet](#not-done-yet)
 
+## Inventory: backpacks and bank
+
+The client draws the inventory, backpacks, the bank, loot and overflow with one package, so UI+'s Inventory window is
+all five. Measured against the original client's, a backpack and the bank are the same window as there: the frame, the
+slots as far from its lines and from each other, the bank's scroll bar, the count on a stack 3 pixels from the slot's
+right line and 5 under its top one, and each window as wide as the original's to the pixel (186 at three columns, 197
+with the scroll bar). Spiritech's own additions remain: the slot count under a backpack, and the search and the slot
+count under the bank. The original client has neither, so at the same number of rows these windows are 28 pixels
+taller than its.
+
+The original's windows are set over the same wall and floor as Spiritech's, from a pair of its pictures over black and
+over white that gives every pixel's opacity.
+
+![A backpack and the bank: Anarchy Online, and Spiritech with UI+](images/inventory-backpack-bank.png)
+
+Loot and overflow haven't been compared yet.
 ## Window titles
 
 The original client writes every window's title in light grey, not white: 216 of 255, the same in its Inventory,
@@ -155,6 +172,9 @@ worked on. At 100 % plain Notum Grotesk should give the original's pixels; that 
 
 - **Item tooltips.** The inventory, bags, bank, Wear and Trade windows still show item tooltips at once: the client
   draws them itself, and Lua can't make them wait (see [Tooltips](#tooltips) above).
+
+- **Stack counts.** The original client writes the count on a stack with a narrower 1 and its digits a pixel closer
+  together. The client draws the count itself, in the interface font.
 
 - **Wear.** Its tab labels are set at 12 pixels where the original client draws 11, so with Notum Grotesk "Impl" is
   cut to "Imp". ("Socia" is cut in the original client too.)

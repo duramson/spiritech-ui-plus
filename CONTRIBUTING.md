@@ -103,7 +103,9 @@ tables. Progress has four groups:
 
 - **Windows:** every window a UI package can replace, as the client lists them under Options → Interface & HUD →
   UI packages. A window that is started gets a bar with its per cent; the others are named in the folded list.
-  Keep the counts in the two lines above and below the bars right.
+  Keep the counts in the two lines above and below the bars right. An entry that draws several windows names
+  them after its per cent (Inventory containers: the inventory, backpacks, the bank, loot and overflow), and the
+  per cent covers them all.
 - **Elements:** pieces the windows share, such as the window frame or the scroll bar. The bar says how close the
   piece is to the original client's, and the count how many windows have it.
 - **Features:** what is new with UI+, such as a font or a layout the client doesn't have.

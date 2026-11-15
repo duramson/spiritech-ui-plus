@@ -36,11 +36,13 @@ its layouts and its crisp pixel text. With a few fixes and additions of its own.
 
 ### Windows
 
-Every window that Options → Interface & HUD → UI packages can replace. 2 of 40 have had their first pass.
+Every entry that Options → Interface & HUD → UI packages can replace: a window, or several that the client draws
+with one package. 2 of 40 have had their first pass.
 
 ![100 %](docs/images/progress/100.svg) Nano programs · 100 %\
 ![100 %](docs/images/progress/100.svg) NCU · 100 %\
-![30 %](docs/images/progress/30.svg) Inventory containers · 30 %\
+![80 %](docs/images/progress/80.svg) Inventory containers · 80 % · 5 windows: inventory, backpacks, bank, loot,
+overflow\
 ![0 %](docs/images/progress/0.svg) Wear · next
 
 <details>

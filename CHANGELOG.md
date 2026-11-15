@@ -5,6 +5,9 @@ What changed for players, the newest first. Each line links the pull request or 
 
 ## 2026-11-15
 
+- **Client 0.2.2:** UI+ installs on it. The client now draws a nameplate's health bar as its filled and its empty
+  part side by side instead of one over the other, and UI+'s nameplates do the same.
+  ([#13](https://github.com/duramson/spiritech-ui-plus/pull/13))
 - **Planet Map:** the mouse wheel zooms the map, around the spot under the pointer: three turns to twice the size,
   from the whole planet in the window to twice the most detailed map's own size, the picture scaled between the
   map's own detail levels. The zoom buttons keep the middle of the map in place. Set **Planet Map** to **UI+** in

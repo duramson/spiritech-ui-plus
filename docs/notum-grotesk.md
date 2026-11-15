@@ -32,6 +32,14 @@ Notum Grotesk's pixels come out half as big: sharp, but much finer than the orig
 the installer builds a second font beside it, Notum Grotesk 200, which draws each pixel as 2 × 2 so the letters come
 out at the original client's size, as in the picture above (taken on a Retina Mac); pick it instead.
 
+## The names over the heads
+
+The names over the heads take the same pixels. Spiritech writes them with a font of its own that no package can
+change, so the font file can't help there: the installer writes Notum Grotesk's 13 px pixels into a table beside it,
+and UI+'s nameplates draw each run of them as a small rectangle, a pixel further apart than in the windows, as the
+original client does. Set Overhead nameplates to UI+ under UI packages; the interface font doesn't matter for them.
+The [picture page](changes.md#overhead-nameplates) shows them beside the original's.
+
 ## Open
 
 Both fonts are still being worked on. At a normal resolution (100 % scaling) plain Notum Grotesk's pixels should be

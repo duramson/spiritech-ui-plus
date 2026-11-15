@@ -8,6 +8,7 @@ pixel to match Spiritech's Retina pictures. The text in the UI+ pictures is [Not
 The newest change comes first. The [changelog](../CHANGELOG.md) lists every change in a line, with the pull
 request or the commits that made it.
 
+- [Overhead nameplates](#overhead-nameplates)
 - [Wear](#wear)
 - [Inventory: backpacks and bank](#inventory-backpacks-and-bank)
 - [Window titles](#window-titles)
@@ -21,6 +22,25 @@ request or the commits that made it.
 - [Nano Programs: school tabs](#nano-programs-school-tabs)
 - [Window frame and text](#window-frame-and-text)
 - [Not done yet](#not-done-yet)
+
+## Overhead nameplates
+
+The original client writes the names over the heads in pixels: Verdana at 13 pixels, the same pixels as the text in
+its windows but one pixel further apart, white and without an outline. Spiritech writes them in a smooth font of its
+own with a thick black outline, and a package can't give that text another font. UI+'s nameplates draw the name
+from [Notum Grotesk](notum-grotesk.md)'s 13 px pixels instead, one small rectangle for each run of them. Each of
+those pixels covers a whole number of screen pixels, so the name stays crisp, and it grows as you come closer, as
+the original's does. On a Retina screen a far name never gets finer than the original's pixels. Spiritech's layout
+already was the original's: where the name stands, the bar of 64 by 4 pixels under it, the brackets of a target.
+
+The pixels are made on your computer in the same step as Notum Grotesk; without them the nameplates keep Spiritech's
+font. What a package can't change: the font Spiritech writes with, which names are shown and when walls hide them,
+and the brackets, which come from the game's own pictures.
+
+The original client's picture shows an NPC, not selected, so it has no brackets and no bar; the guard in the other
+two is selected.
+
+![A name over a head: Anarchy Online, Spiritech as shipped, and Spiritech with UI+](images/nameplates.png)
 
 ## Wear
 

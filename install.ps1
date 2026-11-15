@@ -40,6 +40,10 @@ $Skip = @('.DS_Store', 'Thumbs.db', 'desktop.ini')
 $NoNl = [string][char]0   # marks a last line without a line break while patching
 $Utf8 = New-Object System.Text.UTF8Encoding($false)
 $StrictUtf8 = New-Object System.Text.UTF8Encoding($false, $true)
+# Files made on a computer that replace a placeholder of UI+'s when they are there: the nameplates' pixels, which
+# fonts/pixelfont.py makes from the player's Verdana together with Notum Grotesk (install.py runs it; this
+# installer takes what it made). Never part of the repository.
+$Generated = @{ 'nameplates|glyphs.lua' = (Join-Path $Here 'fonts/build/nameplate-glyphs.lua') }
 
 function Say([string]$Text = '') { Write-Host $Text }
 
@@ -489,6 +493,13 @@ function Get-PackageFiles([string]$ClientDir, $Source) {
             }
         } else {
             $files[$rel] = [IO.File]::ReadAllBytes($own[$rel])
+        }
+    }
+    foreach ($key in @($Generated.Keys)) {
+        $name, $rel = $key.Split('|')
+        if ($name -eq $Source.Name -and $files.ContainsKey($rel) -and
+            (Test-Path -LiteralPath $Generated[$key] -PathType Leaf)) {
+            $files[$rel] = [IO.File]::ReadAllBytes($Generated[$key])
         }
     }
     return , $files

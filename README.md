@@ -11,8 +11,8 @@ its layouts and its crisp pixel text. With a few fixes and additions of its own.
 2. **Windows:** double-click `install.bat`.\
    **macOS, Linux:** run `python3 install.py` in a terminal.
 3. Press Enter to install, then log in a character.
-4. In Options → Interface & HUD → UI packages, set **Inventory containers**, **Nano programs** and **Wear** to
-   **UI+**, and log in again.
+4. In Options → Interface & HUD → UI packages, set **Inventory containers**, **Nano programs**, **Wear** and
+   **Overhead nameplates** to **UI+**, and log in again.
 
 > [!IMPORTANT]
 > Before the launcher updates the game, start the installer again and choose Uninstall. Install again after the
@@ -43,13 +43,14 @@ with one package. 2 of 40 have had their first pass.
 ![100 %](docs/images/progress/100.svg) NCU · 100 %\
 ![80 %](docs/images/progress/80.svg) Inventory containers · 80 % · 5 windows: inventory, backpacks, bank, loot,
 overflow\
-![90 %](docs/images/progress/90.svg) Wear · 90 %
+![90 %](docs/images/progress/90.svg) Wear · 90 %\
+![90 %](docs/images/progress/90.svg) Overhead nameplates · 90 %
 
 <details>
-<summary>36 more, not started</summary>
+<summary>35 more, not started</summary>
 
 Info / Inspect · Planet Map · Local Map · Compass · Sneak indicator · Logout progress ·
-Telegraph announcements · Overhead nameplates · Floating combat text · Actions · Agg/Def · Chat content ·
+Telegraph announcements · Floating combat text · Actions · Agg/Def · Chat content ·
 Chat configuration · Chat windows · Control Center · Faction · Friends · NPC dialogue · Shortcut bars ·
 Global Market Interface · Missions · Mission terminal · Perks · Pets · Raid · Raid bars · Skills · Stats ·
 Player status bars · Target panels · Target NCU · Team · Team invitations · Combat timer stack ·

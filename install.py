@@ -24,6 +24,8 @@ nothing else.
 Before installing, it asks whether to generate Notum Grotesk too: the original client's crisp pixel text as a font,
 with Notum Grotesk 200 beside it for Retina screens and 200 % display scaling, made by fonts/pixelfont.py from the
 Verdana on this computer (it fetches the two Python packages it needs the first time). Uninstalling removes them again.
+The same step makes the nameplates' pixel text (fonts/build/nameplate-glyphs.lua), which the nameplates package
+takes in place of its empty glyphs.lua; without it the nameplates keep Spiritech's font.
 """
 import difflib
 import hashlib
@@ -47,6 +49,9 @@ SKIP = {".DS_Store", "Thumbs.db", "desktop.ini"}
 NONL = "\0"  # marks a last line without a line break while diffing
 FONT_TOOL = HERE / "fonts" / "pixelfont.py"
 FONTS = ["Notum Grotesk", "Notum Grotesk 200"]  # what pixelfont.py install puts into the user's font folder
+# Files made on this computer that replace a placeholder of UI+'s when they are there: the nameplates' pixels, which
+# pixelfont.py makes from the player's Verdana together with Notum Grotesk. Never part of the repository.
+GENERATED = {("nameplates", "glyphs.lua"): HERE / "fonts" / "build" / "nameplate-glyphs.lua"}
 
 
 class PatchError(Exception):
@@ -395,8 +400,9 @@ def remove_core(client, state, name):
 
 # ---- packages: forked from the client's bundled ones -----------------------------------------------------------------
 
-def build_package(client, source):
-    """{relative path: bytes} of a UI+ package: the bundled package it names, patched, plus UI+'s own files."""
+def build_package(client, source, generated=True):
+    """{relative path: bytes} of a UI+ package: the bundled package it names, patched, plus UI+'s own files, with the
+    files made on this computer in place of their placeholders (unless generated is False)."""
     files = {}
     stock_file = source / STOCK
     stock_name = stock_file.read_text(encoding="utf-8").strip() if stock_file.exists() else None
@@ -420,6 +426,9 @@ def build_package(client, source):
                                  f"version of UI+ was made for (client {MADE_FOR}).") from None
         else:
             files[rel] = path.read_bytes()
+    for (name, rel), made in GENERATED.items():
+        if generated and name == source.name and rel in files and made.is_file():
+            files[rel] = made.read_bytes()
     return files
 
 
@@ -495,7 +504,8 @@ def ask_font():
         return False
     say("Notum Grotesk is the original AO interface text as a font: crisp pixels at every size and interface scale.")
     say("Notum Grotesk 200 draws each of its pixels as 2 x 2, for Retina screens and 200 % display scaling.")
-    say("Both are generated from the Verdana on this computer and stay on it.")
+    say("The UI+ nameplates take their pixel text from the same step.")
+    say("All are generated from the Verdana on this computer and stay on it.")
     answer = input("Generate Notum Grotesk? [Y/n]: ").strip().lower()
     say()
     return answer in ("", "y", "yes")
@@ -513,12 +523,14 @@ def install_font(client, state):
         state["fonts"] = list(FONTS)
         save_state(client, state)
     else:
-        say("Notum Grotesk was not installed. UI+ itself is.")
+        say("Notum Grotesk was not installed. UI+ installs without it.")
+    say()
 
 
 def install(client):
     state = load_state(client)
-    font = ask_font()
+    if ask_font():  # first, so the nameplates package gets the pixels made with it
+        install_font(client, state)
     say(f"Installing {TITLE} {version()} into {client}")
     if client_version(client) != MADE_FOR:
         say(f"  note: this is client {client_version(client)}, UI+ was made for {MADE_FOR}. It installs what still "
@@ -551,8 +563,6 @@ def install(client):
     say("  after a restart of the game.")
     say("- Pick UI+'s windows in Options > Interface & HUD > UI packages, where they show as")
     say("  \"External [duramson.<window>] - UI+\": " + ", ".join(p.name for p in repo_packages()) + ".")
-    if font:
-        install_font(client, state)
 
 
 def uninstall(client):

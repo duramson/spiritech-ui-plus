@@ -43,7 +43,7 @@ def fork(client):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(ui.encode(new, style))
     for source in ui.repo_packages():
-        for rel, data in ui.build_package(client, source).items():
+        for rel, data in ui.build_package(client, source, generated=False).items():
             path = WORK / "packages" / source.name / rel
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(data)
@@ -86,6 +86,11 @@ def diff(client):
         keep = {ui.STOCK}
         for rel, path in ui.files_of(work).items():
             data = path.read_bytes()
+            if (work.name, rel) in ui.GENERATED:
+                # Made from the player's fonts, so never written into the repository: the placeholder there is
+                # edited by hand.
+                keep.add(rel)
+                continue
             if rel in stock:
                 original = stock[rel].read_bytes()
                 if data == original:

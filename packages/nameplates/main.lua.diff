@@ -331,6 +331,6 @@
          local filled = math.floor(style.bar_width * math.max(0, math.min(1, plate.health)))
 -        local left = layout.text_x - style.bar_width / 2
 +        local left = floor(layout.text_x - style.bar_width / 2 + 0.5)
-         canvas.rectangle(left, style.bar_top, style.bar_width, style.bar_height, style.empty_bar_color)
-         canvas.rectangle(left, style.bar_top, filled, style.bar_height, health_color(plate))
-     end
+         if filled > 0 then
+             canvas.rectangle(left, style.bar_top, filled, style.bar_height, health_color(plate))
+         end

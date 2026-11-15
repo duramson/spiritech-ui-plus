@@ -8,6 +8,7 @@ pixel to match Spiritech's Retina pictures. The text in the UI+ pictures is [Not
 The newest change comes first. The [changelog](../CHANGELOG.md) lists every change in a line, with the pull
 request or the commits that made it.
 
+- [Wear](#wear)
 - [Inventory: backpacks and bank](#inventory-backpacks-and-bank)
 - [Window titles](#window-titles)
 - [Nano Programs: framed search](#nano-programs-framed-search)
@@ -20,6 +21,23 @@ request or the commits that made it.
 - [Nano Programs: school tabs](#nano-programs-school-tabs)
 - [Window frame and text](#window-frame-and-text)
 - [Not done yet](#not-done-yet)
+
+## Wear
+
+The client's Wear window is 6 pixels wider and 9 taller than the original client's 202 by 348, and it sets the tab
+and slot labels a size larger, 12 pixels for 11, which cuts "Impl" to "Imp". UI+'s Wear window has the original's
+measures: the frame lines, the tabs' labels and every slot's name stand on the same pixels as there. The original
+writes a slot's name over the item worn in it too, and draws the tabs that aren't chosen fainter than the chosen
+one. UI+ does both.
+
+One thing differs on purpose. The original client cuts its last tab to "Socia"; UI+ writes "Social". The first three
+tabs are as narrow as their words allow, so the tabs after the first start 2, 4 and 6 pixels earlier than the
+original's, and the last has room for the whole word.
+
+![Wear: Anarchy Online, Spiritech as shipped, and Spiritech with UI+](images/wear.png)
+
+The original's picture is a single one from another spot, not a pair over black and white. So far the Weap tab is
+the one compared pixel for pixel; the other three are built the same way.
 
 ## Inventory: backpacks and bank
 
@@ -176,5 +194,6 @@ worked on. At 100 % plain Notum Grotesk should give the original's pixels; that 
 - **Stack counts.** The original client writes the count on a stack with a narrower 1 and its digits a pixel closer
   together. The client draws the count itself, in the interface font.
 
-- **Wear.** Its tab labels are set at 12 pixels where the original client draws 11, so with Notum Grotesk "Impl" is
-  cut to "Imp". ("Socia" is cut in the original client too.)
+- **Wear's tabs.** In the original client the world shows through the tabs that aren't chosen. The client draws
+  the window's background behind them, so UI+'s are darker than the original's over a bright scene, and they keep
+  the fine light edge the client gives every tab.

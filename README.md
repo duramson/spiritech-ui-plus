@@ -11,8 +11,8 @@ its layouts and its crisp pixel text. With a few fixes and additions of its own.
 2. **Windows:** double-click `install.bat`.\
    **macOS, Linux:** run `python3 install.py` in a terminal.
 3. Press Enter to install, then log in a character.
-4. In Options → Interface & HUD → UI packages, set **Inventory containers** and **Nano programs** to **UI+**, and
-   log in again.
+4. In Options → Interface & HUD → UI packages, set **Inventory containers**, **Nano programs** and **Wear** to
+   **UI+**, and log in again.
 
 > [!IMPORTANT]
 > Before the launcher updates the game, start the installer again and choose Uninstall. Install again after the
@@ -43,7 +43,7 @@ with one package. 2 of 40 have had their first pass.
 ![100 %](docs/images/progress/100.svg) NCU · 100 %\
 ![80 %](docs/images/progress/80.svg) Inventory containers · 80 % · 5 windows: inventory, backpacks, bank, loot,
 overflow\
-![0 %](docs/images/progress/0.svg) Wear · next
+![90 %](docs/images/progress/90.svg) Wear · 90 %
 
 <details>
 <summary>36 more, not started</summary>

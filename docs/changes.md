@@ -8,6 +8,7 @@ pixel to match Spiritech's Retina pictures. The text in the UI+ pictures is [Not
 The newest change comes first. The [changelog](../CHANGELOG.md) lists every change in a line, with the pull
 request or the commits that made it.
 
+- [Window titles](#window-titles)
 - [Nano Programs: framed search](#nano-programs-framed-search)
 - [Inventory: search and slot count](#inventory-search-and-slot-count)
 - [Inventory: full rows](#inventory-full-rows)
@@ -18,6 +19,14 @@ request or the commits that made it.
 - [Nano Programs: school tabs](#nano-programs-school-tabs)
 - [Window frame and text](#window-frame-and-text)
 - [Not done yet](#not-done-yet)
+
+## Window titles
+
+The original client writes every window's title in light grey, not white: 216 of 255, the same in its Inventory,
+backpack, Bank, NCU and Wear windows. Spiritech's text is white, and UI+'s window frame had left the title at that.
+Now the title has the original's grey. The picture shows the original client's title, then UI+'s before and now.
+
+![A window's title: Anarchy Online, Spiritech with UI+ before and now](images/window-title.png)
 
 ## Nano Programs: framed search
 

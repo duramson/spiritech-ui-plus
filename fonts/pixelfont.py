@@ -15,17 +15,24 @@ draws every pixel as 2 x 2: at 24 px it shows the 12 px pixels doubled, with twi
 the one below (25 px: 12 px doubled). A font only sees the pixel size it is drawn at, not the screen, so the player
 picks the one that fits.
 
+Beside the fonts, build writes a table of the 13 px pixels for UI+'s overhead nameplates (nameplate-glyphs.lua):
+the original client writes the names over the heads in Verdana at 13 px, a pixel further apart than in its
+windows. Spiritech draws them with a font of its own that no package can change, so UI+ draws them from these
+pixels, a rectangle for each run of them. The installer puts the table into the nameplates package.
+
 Nothing made from Verdana is shipped: the fonts are built where they are used, from the Verdana already there.
 
     pixelfont.py status                        the Verdana found, whether it gives the original pixels, what's installed
-    pixelfont.py build [options]               build both fonts (default: into build/ beside this script)
+    pixelfont.py build [options]               build both fonts and the nameplate table (default: into build/ beside
+                                               this script)
+    pixelfont.py glyphs [options]              only the nameplate table
     pixelfont.py check [--verdana PATH]        compare a Verdana with the original client's pixels
     pixelfont.py install [options]             build, then install into the user's font folder
     pixelfont.py uninstall [--fonts-dir DIR]   remove the installed fonts
 
 Options:
     --verdana PATH     use this Verdana instead of searching for one
-    --out DIR          where build puts the font
+    --out DIR          where build puts the fonts and the nameplate table
     --fonts-dir DIR    install into this folder instead of the user's font folder (no registry, no font cache)
 
 Needs Python 3.9+ with fonttools and freetype-py (requirements.txt). When they are missing, this tool puts them
@@ -56,6 +63,17 @@ CHECK_SIZE = 11  # the original client's interface size (AO's "NORMAL" font), wh
 ORIGINAL_SIZES = (11, 12)  # the sizes the original client draws its text at (windows, chat): its spacing is kept there
 # The fonts built: family, file and how many device pixels each of Verdana's pixels takes, across and down
 FONTS = [(FAMILY, "notum-grotesk.ttf", 1), (FAMILY + " 200", "notum-grotesk-200.ttf", 2)]
+# The nameplate table: its file, the sizes it holds, and the pixels it puts between letters beyond Verdana's advance.
+# The original client writes the names over the heads in Verdana at 13 px with strokes one pixel wide, into a
+# texture as large as the 128 x 32 selection brackets, one pixel further apart than its interface text: a name on a
+# clean background in its frames measures 61 texels, as these pixels give it, and matches them stroke for stroke
+# but for a taller N. (Verdana Bold 13 px comes to about the same width with strokes twice as thick.) 11 px is for
+# the organisation under the name, which Spiritech writes at 0.85 of the name's size.
+NAMEPLATE_GLYPHS = "nameplate-glyphs.lua"
+NAMEPLATE_SIZES = (13, 11)
+NAMEPLATE_SPACING = 1
+# Characters the nameplate table carries: what names, titles and organisations are written in
+NAMEPLATE_RANGES = [(0x20, 0x7E), (0xA0, 0x24F)]
 
 # Characters built into the fonts: Latin (with Extended-A/B), Greek, Cyrillic, punctuation, currency, letterlike
 # symbols, arrows, maths, box drawing and geometric shapes, as far as Verdana has them.
@@ -509,6 +527,92 @@ def make_checksums(path, sizes):
     print(f"wrote {CHECKSUMS.name}: {', '.join(f'{s} px: {len(t)} characters' for s, t in sizes_out.items())}")
 
 
+# --- the nameplate table -----------------------------------------------------------------------------------------
+
+def pixel_rectangles(rows, left, top):
+    """The set pixels as few rectangles (x, y, width, height), y down from the baseline: runs along each row, and a
+    run continued straight down where the next row has the same one (stems, the sides of "O")."""
+    done, open_runs = [], {}
+    for y, row in enumerate(rows):
+        runs, x = [], 0
+        while x < len(row):
+            if row[x] == "1":
+                start = x
+                while x < len(row) and row[x] == "1":
+                    x += 1
+                runs.append((start, x))
+            else:
+                x += 1
+        still = {}
+        for run in runs:
+            rect = open_runs.pop(run, None)
+            if rect:
+                rect[3] += 1
+            else:
+                rect = [left + run[0], y - top, run[1] - run[0], 1]
+            still[run] = rect
+        done += open_runs.values()
+        open_runs = still
+    done += open_runs.values()
+    return sorted(tuple(r) for r in done)
+
+
+def _lua_string(text):
+    """A Lua string literal: printable ASCII as it is, everything else (and quote and backslash) as \\ddd."""
+    out = []
+    for ch in text:
+        code = ord(ch)
+        out.append(ch if 0x20 <= code < 0x7F and ch not in '"\\' else f"\\{code:03d}")
+    return '"' + "".join(out) + '"'
+
+
+def nameplate_table(raster, version):
+    """Lua source of UIPLUS_PIXEL_FONT, a table for each size in NAMEPLATE_SIZES: for each character a string, its
+    advance and then four bytes per rectangle (x, y, width, height, y down from the baseline), each a number plus 64.
+    The nameplates package decodes a character when it first draws it."""
+    sizes, count = [], 0
+    for ppem in NAMEPLATE_SIZES:
+        glyphs = []
+        for code, name in sorted(raster.cmap.items()):
+            if not any(a <= code <= b for a, b in NAMEPLATE_RANGES):
+                continue
+            rows, left, top = raster.glyph(name, ppem)
+            boxes = pixel_rectangles(rows, left, top)
+            values = [raster.advance(name, ppem) + NAMEPLATE_SPACING] + [v for box in boxes for v in box]
+            if not all(-64 <= v < 192 for v in values):
+                sys.exit(f"U+{code:04X} at {ppem} px doesn't fit the nameplate table's bytes")
+            glyphs.append(f"[{code}]={_lua_string(''.join(chr(v + 64) for v in values))}")
+        count = len(glyphs)
+        lines, line = [], ""
+        for item in glyphs:
+            if len(line) + len(item) > 114:
+                lines.append(line)
+                line = ""
+            line += item + ","
+        lines.append(line)
+        sizes.append(f"  [{ppem}] = {{\n" + "".join(f"    {line}\n" for line in lines) + "  },\n")
+    return (f"-- Verdana's pixels as the original Anarchy Online client writes names over the heads, for UI+'s overhead\n"
+            f"-- nameplates: {count} characters at {' and '.join(str(s) for s in NAMEPLATE_SIZES)} px.\n"
+            f"-- Made by fonts/pixelfont.py from Verdana {version} on this computer. Not to be shared.\n"
+            "UIPLUS_PIXEL_FONT = {\n" + "".join(sizes) + "}\n")
+
+
+def write_nameplate_table(out_dir, path=None):
+    """Writes the nameplate table from Verdana, or says why not: without Verdana the nameplates keep Spiritech's
+    font."""
+    path, version = find_verdana(path)
+    dest = Path(out_dir) / NAMEPLATE_GLYPHS
+    if not path:
+        print("  no Verdana found: the nameplates keep Spiritech's font")
+        if dest.exists():
+            dest.unlink()
+        return None
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(nameplate_table(Rasteriser(path), version), encoding="utf-8")
+    print(f"  wrote the nameplate pixels ({' and '.join(str(s) for s in NAMEPLATE_SIZES)} px): {dest}")
+    return dest
+
+
 # --- installing --------------------------------------------------------------------------------------------------
 
 def user_font_dir():
@@ -591,12 +695,14 @@ def build_all(args):
     print(f"Verdana {version}: {path}")
     print_check(check(path))
     raster, rasters, built = Rasteriser(path), {}, []
+    out = Path(args.out) if args.out else HERE / "build"
     for family, filename, scale in FONTS:
-        dest = (Path(args.out) if args.out else HERE / "build") / filename
+        dest = out / filename
         print(f"Building {family} ...", flush=True)
         sizes = build_font(raster, dest, family, scale, rasters)
         print(f"  built {family} ({sizes[0]} to {sizes[-1]} px): {dest} ({dest.stat().st_size / 1e6:.1f} MB)")
         built.append((family, dest))
+    write_nameplate_table(out, path)
     return built
 
 
@@ -615,8 +721,9 @@ def status(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     usage="pixelfont.py {status,build,check,install,uninstall} [options]")
-    parser.add_argument("command", choices=["status", "build", "check", "install", "uninstall", "checksums"])
+                                     usage="pixelfont.py {status,build,glyphs,check,install,uninstall} [options]")
+    parser.add_argument("command", choices=["status", "build", "glyphs", "check", "install", "uninstall",
+                                            "checksums"])
     parser.add_argument("--verdana")
     parser.add_argument("--out")
     parser.add_argument("--fonts-dir")
@@ -627,6 +734,9 @@ def main():
         status(args)
     elif args.command == "build":
         build_all(args)
+    elif args.command == "glyphs":
+        if not write_nameplate_table(Path(args.out) if args.out else HERE / "build", args.verdana):
+            sys.exit(1)
     elif args.command == "check":
         path, version = find_verdana(args.verdana)
         if not path:

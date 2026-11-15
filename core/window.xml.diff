@@ -1,6 +1,6 @@
 --- a/UI/Packages/Core/window.xml
 +++ b/UI/Packages/Core/window.xml
-@@ -2,24 +2,24 @@
+@@ -2,24 +2,25 @@
  <root>
    <View name="window" capture_input="true" color="Default" composite_layer="true" interaction_scope="true" view_layout="stacked">
      <View name="window_floating" view_layout="stacked">
@@ -22,7 +22,8 @@
 +            <BorderView border_style="horizontal" border_gfx="GFX_GUI_TAB_ACTIVE" alpha="1" />
              <View view_layout="horizontal">
 -              <TextView name="window_title" weight="1" layout_borders="Rect(4,0,0,0)" v_alignment="center" />
-+              <TextView name="window_title" font_size="11" weight="1" layout_borders="Rect(6,0,0,0)" v_alignment="center" />
++              <!-- The title in the original client's light grey; the client's own text colour is white. -->
++              <TextView name="window_title" color="D8D8D8" font_size="11" weight="1" layout_borders="Rect(6,0,0,0)" v_alignment="center" />
                <HLayoutSpacer weight="0" min_size="Point(21,0)" max_size="Point(21,0)" />
              </View>
            </View>

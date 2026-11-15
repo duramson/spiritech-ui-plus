@@ -5,6 +5,8 @@ What changed for players, the newest first. Each line links the pull request or 
 
 ## 2026-11-15
 
+- **Window frame:** the window titles are the original client's light grey instead of white.
+  ([#8](https://github.com/duramson/spiritech-ui-plus/pull/8))
 - **Nano Programs:** the search under the grid sits in a frame like the window's second frame, as the Inventory's
   does: the same blue line on the dark background, its bottom corners cut as that frame's.
   ([#7](https://github.com/duramson/spiritech-ui-plus/pull/7))

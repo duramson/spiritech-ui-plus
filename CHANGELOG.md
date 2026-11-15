@@ -5,6 +5,10 @@ What changed for players, the newest first. Each line links the pull request or 
 
 ## 2026-11-15
 
+- **Planet Map:** the mouse wheel zooms the map, around the spot under the pointer: three turns to twice the size,
+  from the whole planet in the window to twice the most detailed map's own size, the picture scaled between the
+  map's own detail levels. The zoom buttons keep the middle of the map in place. Set **Planet Map** to **UI+** in
+  Options → Interface & HUD → UI packages. ([#14](https://github.com/duramson/spiritech-ui-plus/pull/14))
 - **Nameplates:** the names over the heads are written in the original client's pixels: Notum Grotesk at 13
   pixels, a pixel further apart, white and without the thick outline, crisp at every distance. Set
   **Overhead nameplates** to **UI+** in Options → Interface & HUD → UI packages.

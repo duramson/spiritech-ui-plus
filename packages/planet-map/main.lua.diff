@@ -1,0 +1,304 @@
+--- a/UI/Packages/PlanetMap/main.lua
++++ b/UI/Packages/PlanetMap/main.lua
+@@ -1,6 +1,8 @@
+ local Window = ui.require("core.window")
+ local content = ui.load("content.xml")
+ local surface = ui.find(content, "planet_tiles")
++local over = ui.find(content, "planet_over")
++local over_fill = ui.find(content, "planet_over_fill")
+ local zoom_row = ui.find(content, "planet_zoom_row")
+ local centre_row = ui.find(content, "planet_centre_row")
+ local zoom_in = ui.find(content, "planet_zoom_in")
+@@ -16,6 +18,12 @@
+ local opened, buttons, first_time = false, true, true
+ local first_pending, centre_pending = false, false
+ local zoom, records, revision, extras = 0, 0, -1, 0
++-- The zoom level counts steps of a third of an octave, three to twice the size, from the first record drawn at its
++-- own size. Each level draws the record whose own size is nearest, scaled by the surface to fit.
++local level, scale = 0, 1
++-- Each record's picture size, and where it draws the planet against the first record:
++-- x = sizes[r] * x0 + shifts[r], y = sizes[r] * y0.
++local widths, heights, sizes, shifts = {}, {}, {}, {}
+ local frame
+ local menu_character, menu_quest
+ local rebuild_menu
+@@ -117,9 +125,16 @@
+ 	rebuild_menu()
+ end
+ 
++local button_target, measured
++
+ local function refresh_buttons()
+-	ui.enabled(zoom_in, zoom < records - 1)
+-	ui.enabled(zoom_out, records > 0 and zoom > 0)
++	if button_target and measured and measured() then
++		ui.enabled(zoom_in, button_target(1) ~= nil)
++		ui.enabled(zoom_out, button_target(-1) ~= nil)
++	else
++		ui.enabled(zoom_in, zoom < records - 1)
++		ui.enabled(zoom_out, records > 0 and zoom > 0)
++	end
+ 	ui.enabled(character, game.planet_map.point("character") ~= 0)
+ 	ui.enabled(quest, game.planet_map.point("held_quest") ~= 0)
+ 	if menu_character ~= (game.planet_map.point("character") ~= 0)
+@@ -129,7 +144,148 @@
+ 	ui.menu.checked(frame.icon, 4, buttons)
+ end
+ 
+-local function change_zoom(step)
++local function log2(value)
++	return math.log(value) / math.log(2)
++end
++
++-- The selected record's picture size: a pan past its far corner stops at the edge. A side that fits into the map
++-- can't be measured this way and comes back as nil.
++local function picture_size()
++	local x, y = view.read("x"), view.read("y")
++	view.pan(1000000, 1000000)
++	local far_x, far_y = view.read("x"), view.read("y")
++	local width = far_x > 0 and far_x + view.read("width") or nil
++	local height = far_y > 0 and far_y + view.read("height") or nil
++	view.pan(x, y)
++	return width, height
++end
++
++-- The character's spot on the selected record, or the mission's when the character isn't on this map.
++local function landmark(name)
++	if game.planet_map.point(name) ~= 0 then
++		return game.planet_map.point(name .. "_x"), game.planet_map.point(name .. "_y")
++	end
++	return nil, nil
++end
++
++-- Measures each record once per map: its picture size while drawn eight times enlarged, so that it never fits,
++-- and where it draws the planet against the first record. The pictures are padded to whole tiles and the planet
++-- doesn't fill them, so that comes from one landmark seen on all records instead: the map files of every map the
++-- client brings start the planet at the top edge on each record and scale it evenly, so one spot gives both.
++local function measure_records()
++	widths, heights, sizes, shifts = {}, {}, {}, {}
++	local x, y = view.read("x"), view.read("y")
++	local name = "character"
++	game.planet_map.record(0)
++	if game.planet_map.point(name) == 0 then
++		name = "quest"
++	end
++	local first_x, first_y = landmark(name)
++	for index = 0, records - 1 do
++		game.planet_map.record(index)
++		view.zoom(8, 0, 0)
++		widths[index], heights[index] = picture_size()
++		local spot_x, spot_y = landmark(name)
++		if index == 0 then
++			sizes[index], shifts[index] = 1, 0
++		elseif first_y and spot_y and first_y > 16 then
++			sizes[index] = spot_y / first_y
++			shifts[index] = spot_x - sizes[index] * first_x
++		elseif widths[index] and widths[0] then
++			sizes[index], shifts[index] = widths[index] / widths[0], 0
++		end
++	end
++	game.planet_map.record(zoom)
++	view.zoom(scale, 0, 0)
++	view.pan(x, y)
++end
++
++measured = function()
++	for index = 0, records - 1 do
++		if not sizes[index] then
++			return false
++		end
++	end
++	return records > 0 and widths[0] ~= nil and heights[0] ~= nil
++end
++
++-- The magnifications the wheel may reach: out until the first record fits into the map, in to twice the size of
++-- the most detailed one.
++local function bounds()
++	local per_pixel = view.read("width") * scale / ui.width(surface)
++	local fit = math.min(ui.width(surface) * per_pixel / widths[0], ui.height(surface) * per_pixel / heights[0])
++	local largest = 1
++	for index = 0, records - 1 do
++		largest = math.max(largest, sizes[index])
++	end
++	return math.min(1, fit), 2 * largest
++end
++
++local function nearest_record(magnification)
++	local chosen, distance = 0, math.huge
++	for index = 0, records - 1 do
++		local apart = math.abs(log2(magnification / sizes[index]))
++		if apart < distance then
++			chosen, distance = index, apart
++		end
++	end
++	return chosen
++end
++
++-- Zooms to a level, keeping the spot under the anchor (in pixels from the map's top left corner) where it is;
++-- without an anchor the middle of the map stays.
++local function set_level(wanted, anchor_x, anchor_y)
++	local width, height = ui.width(surface), ui.height(surface)
++	if not measured() or width <= 0 or height <= 0 then
++		return
++	end
++	local lowest, highest = bounds()
++	local magnification = math.max(lowest, math.min(highest, 2 ^ (wanted / 3)))
++	level = 3 * log2(magnification)
++	anchor_x, anchor_y = anchor_x or width / 2, anchor_y or height / 2
++	local per_pixel = view.read("width") / width
++	-- The spot under the anchor, on the first record.
++	local spot_x = (view.read("x") + anchor_x * per_pixel - shifts[zoom]) / sizes[zoom]
++	local spot_y = (view.read("y") + anchor_y * per_pixel) / sizes[zoom]
++	local chosen = nearest_record(magnification)
++	if chosen ~= zoom then
++		zoom = chosen
++		game.planet_map.record(zoom)
++	end
++	scale = magnification / sizes[zoom]
++	view.zoom(scale, anchor_x, anchor_y)
++	per_pixel = view.read("width") / width
++	view.pan(spot_x * sizes[zoom] + shifts[zoom] - anchor_x * per_pixel, spot_y * sizes[zoom] - anchor_y * per_pixel)
++	refresh_buttons()
++	publish(true)
++end
++
++-- The buttons go to the next record's own size, or out to the whole map.
++button_target = function(direction)
++	if not measured() then
++		return nil
++	end
++	local magnification = 2 ^ (level / 3)
++	local target
++	for index = 0, records - 1 do
++		local size = sizes[index]
++		if direction > 0 and size > magnification * 1.01 and (not target or size < target) then
++			target = size
++		elseif direction < 0 and size < magnification / 1.01 and (not target or size > target) then
++			target = size
++		end
++	end
++	if not target and direction < 0 then
++		local lowest = bounds()
++		if lowest < magnification / 1.01 then
++			target = lowest
++		end
++	end
++	return target and 3 * log2(target)
++end
++
++-- Without measured records the buttons step through them as the client's own window does.
++local function step_record(step)
+ 	local chosen = math.max(0, math.min(records - 1, zoom + step))
+ 	if records == 0 or chosen == zoom then
+ 		return
+@@ -142,8 +298,19 @@
+ 	publish(true)
+ end
+ 
+-ui.on_click(zoom_in, function() change_zoom(1) end)
+-ui.on_click(zoom_out, function() change_zoom(-1) end)
++local function press(direction)
++	if not measured() then
++		step_record(direction)
++		return
++	end
++	local target = button_target(direction)
++	if target then
++		set_level(target)
++	end
++end
++
++ui.on_click(zoom_in, function() press(1) end)
++ui.on_click(zoom_out, function() press(-1) end)
+ ui.on_click(character, function() planet_map_centre("character") end)
+ ui.on_click(quest, function() planet_map_centre("quest") end)
+ 
+@@ -172,9 +339,13 @@
+ 	if revision ~= current_revision then
+ 		revision = current_revision
+ 		zoom = math.max(0, math.min(zoom, records - 1))
++		scale = 1
+ 		if records > 0 then
+ 			game.planet_map.record(zoom)
++			measure_records()
+ 		end
++		level = measured() and 3 * log2(sizes[zoom]) or 0
++		view.zoom(1, 0, 0)
+ 		view.pan(0, 0)
+ 		centre_pending = true
+ 		publish(false)
+@@ -199,6 +370,74 @@
+ 	view.markers_end()
+ end
+ 
++-- The map's surface keeps the wheel to itself, so an empty scroll view lies over it, padded above and below: the
++-- wheel scrolls that, and each frame turns how far it went into zoom steps and puts it back to the middle. It takes
++-- the presses as well, so it drags the map and opens its menu itself.
++local REST, NOTCH = 1000, 35.1
++local fill_width, fill_height = 0, 0
++local settled = false
++local turns = 0
++local pointer_x, pointer_y
++local drag
++
++local function pointer_anchor()
++	if not pointer_x then
++		return nil, nil
++	end
++	return pointer_x - ui.x(surface), pointer_y - ui.y(surface)
++end
++
++ui.on_pointer(over, function(phase, x, y)
++	if phase == "hover" or phase == "start" or phase == "move" then
++		pointer_x, pointer_y = x, y
++	end
++	if phase == "start" then
++		ui.capture_pointer(over)
++		drag = { x = x, y = y, pan_x = view.read("x"), pan_y = view.read("y") }
++	elseif phase == "move" and drag then
++		local per_pixel = view.read("width") / math.max(1, ui.width(surface))
++		view.pan(drag.pan_x - (x - drag.x) * per_pixel, drag.pan_y - (y - drag.y) * per_pixel)
++	elseif phase == "end" or phase == "cancel" then
++		drag = nil
++	end
++end)
++
++ui.on_pointer_release(over, "right", function()
++	if opened and pointer_x then
++		compose_menu(context_menu)
++		ui.menu.show_at(context_menu, pointer_x, pointer_y)
++	end
++end)
++
++ui.on_update(function()
++	local width, height = ui.width(over), ui.height(over)
++	if width <= 0 or height <= 0 then
++		return
++	end
++	if width ~= fill_width or height ~= fill_height then
++		fill_width, fill_height = width, height
++		ui.size(over_fill, width, height)
++		settled = false
++	end
++	local offset = ui.scroll_offset(over)
++	if offset ~= REST then
++		ui.scroll_to(over, REST)
++		if settled then
++			-- Turning the wheel away from you scrolls up and zooms in.
++			turns = turns - (offset - REST) / NOTCH
++			local steps = turns < 0 and math.ceil(turns - 0.001) or math.floor(turns + 0.001)
++			turns = turns - steps
++			if steps ~= 0 then
++				-- From a level a bound cut short, the first step goes to the next whole one.
++				local from = steps > 0 and math.floor(level + 0.001) or math.ceil(level - 0.001)
++				set_level(from + steps, pointer_anchor())
++			end
++		end
++	else
++		settled = true
++	end
++end)
++
+ show_buttons(buttons)
+ rebuild_menu()
+ refresh_buttons()

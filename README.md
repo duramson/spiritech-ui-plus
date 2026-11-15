@@ -3,7 +3,7 @@
 The look of the original Anarchy Online interface for Spiritech, Project Rubi-Ka's new client: its window frames,
 its layouts and its crisp pixel text. With a few fixes and additions of its own.
 
-![Nano Programs: Anarchy Online, Spiritech as shipped, Spiritech with UI+](docs/images/nano-programs-bundled.png)
+![Spiritech with UI+: Inventory, NCU, Nano Programs, Wear and the nameplates in the original client's look](docs/images/spiritech-with-ui-plus.png)
 
 ## Install
 

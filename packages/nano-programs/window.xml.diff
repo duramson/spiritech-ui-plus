@@ -1,6 +1,6 @@
 --- a/UI/Packages/NanoPrograms/window.xml
 +++ b/UI/Packages/NanoPrograms/window.xml
-@@ -1,21 +1,68 @@
+@@ -1,21 +1,78 @@
  <?xml version="1.0" encoding="utf-8"?>
  <root>
 +  <!-- Two layouts, picked in the window menu ("School Tabs"); main.lua moves the list and the grid between them. -->
@@ -69,16 +69,26 @@
 +           window's left and bottom lines, one pixel short of its right one), 4 pixels under the buttons. Inside it the
 +           tab background, a little darker and bluer than the window's, as there (without one the client fills a
 +           BorderView near-black). The search
-+           sits in it under the list, lined up with the tiles; its outline reaches a pixel past the field, hence 5. -->
++           sits in it under the list. -->
 +      <BorderView name="bundled_frame" view_layout="vertical" weight="1" layout_borders="Rect(1,1,0,1)"
 +                  tl_gfx="GFX_GUI_TAB_BORDER_TL" tr_gfx="GFX_GUI_TAB_BORDER_TR"
 +                  bl_gfx="GFX_GUI_TAB_BORDER_BL" br_gfx="GFX_GUI_TAB_BORDER_BR"
 +                  left_gfx="GFX_GUI_TAB_BORDER_LEFT" top_gfx="GFX_GUI_TAB_BORDER_TOP"
 +                  right_gfx="GFX_GUI_TAB_BORDER_RIGHT" bottom_gfx="GFX_GUI_TAB_BORDER_BOTTOM" bg_gfx="GFX_GUI_TAB_BACKGROUND">
 +        <View name="bundled_body" view_layout="vertical" weight="1" />
-+        <View name="bundled_footer" view_layout="horizontal" min_size="Point(-1,22)" max_size="Point(-1,22)" layout_borders="Rect(5,0,5,5)">
-+          <TextInputView name="bundled_search" placeholder="Search" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" />
-+        </View>
++        <!-- The search in a frame drawn as this one, as the Inventory's search is: the tab frame's line and background,
++             its bottom corners cut as this frame's are (the tab frame's top corners are square). A BorderView places
++             its content from its lines, so 5 here leave 4 pixels between the two frames' lines at the sides and the
++             bottom, as between the lines and the tiles, and the search's left line in line with the tiles' outlines;
++             it runs on under the scroll bar. 23 pixels high as in the Inventory, the text 6 pixels in (the field's
++             own margin) and typed in the line's blue. -->
++        <BorderView name="bundled_search_frame" view_layout="horizontal" min_size="Point(-1,23)" max_size="Point(-1,23)" layout_borders="Rect(5,0,5,5)"
++                    tl_gfx="GFX_GUI_TAB_BORDER_TL" tr_gfx="GFX_GUI_TAB_BORDER_TR"
++                    bl_gfx="GFX_GUI_TAB_BORDER_BL" br_gfx="GFX_GUI_TAB_BORDER_BR"
++                    left_gfx="GFX_GUI_TAB_BORDER_LEFT" top_gfx="GFX_GUI_TAB_BORDER_TOP"
++                    right_gfx="GFX_GUI_TAB_BORDER_RIGHT" bottom_gfx="GFX_GUI_TAB_BORDER_BOTTOM" bg_gfx="GFX_GUI_TAB_BACKGROUND">
++          <TextInputView name="bundled_search" placeholder="Search" draw_border="false" color="9CE5F1" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" layout_borders="Rect(0,0,6,0)" />
++        </BorderView>
 +      </BorderView>
 +    </View>
    </View>

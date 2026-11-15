@@ -92,12 +92,12 @@
 +local TOOLBAR_SIDES, TOOLBAR_ENDS = 2, 6
 +-- The frame's share of the window, as measured in the client: across, its insets (1 and 0; its lines take no room of
 +-- their own); down, everything besides the grid that Grid.size doesn't count (its 4 above the grid and 3 below): the
-+-- frame's insets and lines, and in it the search row (the field's 22 pixels and 5 under it, its outline reaching one
-+-- past the field) with 3 between it and the grid's scroll view. That view is one pixel taller than the grid, so 4 show
-+-- between the tiles and the field: the client places windows on half pixels, and a grid one pixel taller than its
-+-- scroll view brings up the scroll bar, which takes a column away.
++-- frame's insets and lines, and in it the search's frame (23 pixels and 5 under it) with 3 between it and the grid's
++-- scroll view. That view is one pixel taller than the grid, so 4 show between the tiles and the search's line: the
++-- client places windows on half pixels, and a grid one pixel taller than its scroll view brings up the scroll bar,
++-- which takes a column away.
 +local BUNDLED_SIDES = 1 + 0
-+local BUNDLED_FOOTER = 29
++local BUNDLED_FOOTER = 30
 +-- Grid mode: the tiles 4 pixels clear of the frame's lines at the sides and 3 under its top line, as the original
 +-- client has them (nano_grid_scroll's borders 4 at the sides and 1 at the top, so that scrolled tiles stay under the
 +-- line, over the grid's own 3). Grid.size counts 5 pixels besides the grid across; the rest goes to the frame's share.
@@ -304,8 +304,8 @@
 +			ui.borders(grid, 0, 4, 0, 0)
 +			scroll_bar:borders(0, 2, 2, 2)
 +		else
-+			-- In the frame: the list and the tiles 4 pixels clear of its lines at the sides, and 4 above the search
-+			-- field's outline (for the grid, its scroll view's 3 and the pixel to spare in it).
++			-- In the frame: the list and the tiles 4 pixels clear of its lines at the sides, and 4 above the search's
++			-- frame (for the grid, its scroll view's 3 and the pixel to spare in it).
 +			ui.borders(list, 4, 3, 4, 4)
 +			ui.borders(grid_scroll, 4, 1, 4, 3)
 +			ui.borders(grid, 0, 3, 0, 0)

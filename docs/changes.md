@@ -8,6 +8,7 @@ pixel to match Spiritech's Retina pictures. The text in the UI+ pictures is [Not
 The newest change comes first. The [changelog](../CHANGELOG.md) lists every change in a line, with the pull
 request or the commits that made it.
 
+- [Nano Programs: framed search](#nano-programs-framed-search)
 - [Inventory: search and slot count](#inventory-search-and-slot-count)
 - [Inventory: full rows](#inventory-full-rows)
 - [Tooltips](#tooltips)
@@ -17,6 +18,16 @@ request or the commits that made it.
 - [Nano Programs: school tabs](#nano-programs-school-tabs)
 - [Window frame and text](#window-frame-and-text)
 - [Not done yet](#not-done-yet)
+
+## Nano Programs: framed search
+
+The search under the grid in the Nano Programs window's bundled layout was Spiritech's grey, rounded input field. Now
+it sits in a frame drawn as the window's second frame, as the Inventory's search does: the tab frame's blue line on its
+dark background, the bottom corners cut as that frame's are and the top ones square as its are. Its lines stand 4 pixels
+clear of the second frame's lines at the sides and the bottom, as the tiles do, and line up with the tiles' outlines on
+the left; where the scroll bar shows, the frame runs on under it. It is 23 pixels high, as in the Inventory, so the
+window grows by a pixel and the tiles keep their 4 pixels above it. The text starts 6 pixels in, and typed text takes
+the frame's blue. The School Tabs layout keeps Spiritech's field for now.
 
 ## Inventory: search and slot count
 

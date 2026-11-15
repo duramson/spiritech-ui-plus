@@ -1,0 +1,384 @@
+--- a/UI/Packages/Wear/content.xml
++++ b/UI/Packages/Wear/content.xml
+@@ -1,91 +1,312 @@
+ <?xml version="1.0" standalone="yes"?>
+ <root>
+-  <View name="wear_content" view_layout="vertical" min_size="Point(182,311)" max_size="Point(182,311)" h_alignment="center" layout_borders="Rect(0,6,0,0)">
+-    <View name="wear_tabs" view_layout="horizontal" selected_on_top="true" paint_on_top="true" min_size="Point(-1,17)" max_size="Point(-1,17)" layout_borders="Rect(0,0,0,-1)">
+-      <TabButton name="wear_weapons_tab" label="Weap" target="wear_weapons" font_size="12" min_size="Point(54,17)" max_size="Point(54,17)" layout_borders="Rect(0,0,-6,0)" />
+-      <TabButton name="wear_clothing_tab" label="Cloth" target="wear_clothing" font_size="12" min_size="Point(51,17)" max_size="Point(51,17)" layout_borders="Rect(0,0,-6,0)" />
+-      <TabButton name="wear_implants_tab" label="Impl" target="wear_implants" font_size="12" min_size="Point(46,17)" max_size="Point(46,17)" layout_borders="Rect(0,0,-6,0)" />
+-      <TabButton name="wear_social_tab" label="Social" target="wear_social" font_size="12" min_size="Point(49,17)" max_size="Point(49,17)" />
++  <!-- The original client's measures: the window is 202 by 348, the tabs stand 6 pixels below the title line and the
++       frame ends 6 pixels above the window's bottom line. -->
++  <View name="wear_content" view_layout="vertical" min_size="Point(182,308)" max_size="Point(182,308)" h_alignment="center" layout_borders="Rect(0,5,0,0)">
++    <!-- The labels at the original's 11 pixels. The original's tabs start 2, 49, 93 and 134 pixels from the frame's left
++         edge and cut "Social" to "Socia". Here they start at 2, 47, 89 and 128: each is as narrow as its word allows,
++         which leaves the last one room for the whole word. -->
++    <View name="wear_tabs" view_layout="horizontal" selected_on_top="true" paint_on_top="true" min_size="Point(-1,17)" max_size="Point(-1,17)" layout_borders="Rect(2,0,0,-1)">
++      <TabButton name="wear_weapons_tab" label="Weap" target="wear_weapons" font_size="11" min_size="Point(52,17)" max_size="Point(52,17)" layout_borders="Rect(0,0,-7,0)" />
++      <TabButton name="wear_clothing_tab" label="Cloth" target="wear_clothing" font_size="11" min_size="Point(49,17)" max_size="Point(49,17)" layout_borders="Rect(0,0,-7,0)" />
++      <TabButton name="wear_implants_tab" label="Impl" target="wear_implants" font_size="11" min_size="Point(46,17)" max_size="Point(46,17)" layout_borders="Rect(0,0,-7,0)" />
++      <TabButton name="wear_social_tab" label="Social" target="wear_social" font_size="11" min_size="Point(54,17)" max_size="Point(54,17)" />
+     </View>
+-    <BorderView name="wear_frame" view_layout="stacked" min_size="Point(182,295)" max_size="Point(182,295)"
++    <BorderView name="wear_frame" view_layout="stacked" min_size="Point(182,292)" max_size="Point(182,292)"
+                 tl_gfx="GFX_GUI_TAB_BORDER_TL" tr_gfx="GFX_GUI_TAB_BORDER_TR"
+                 bl_gfx="GFX_GUI_TAB_BORDER_BL" br_gfx="GFX_GUI_TAB_BORDER_BR"
+                 left_gfx="GFX_GUI_TAB_BORDER_LEFT" top_gfx="GFX_GUI_TAB_BORDER_TOP"
+                 right_gfx="GFX_GUI_TAB_BORDER_RIGHT" bottom_gfx="GFX_GUI_TAB_BORDER_BOTTOM" bg_gfx="GFX_GUI_TAB_BACKGROUND">
+-      <BitmapView name="wear_weapons" image="gfx://GFX_GUI_WEARVIEW_BG1" graphic_mode="tinted" view_layout="stacked" min_size="Point(178,288)" max_size="Point(178,288)" layout_borders="Rect(2,2,2,5)">
++      <BitmapView name="wear_weapons" image="gfx://GFX_GUI_WEARVIEW_BG1" graphic_mode="tinted" view_layout="stacked" min_size="Point(178,288)" max_size="Point(178,288)" layout_borders="Rect(2,2,2,2)">
+         <View view_layout="grid" grid_columns="3" min_columns="3" grid_spacing_x="5" grid_spacing_y="3" layout_borders="Rect(3,3,3,3)">
+-          <ItemSlotView name="wear_slot_1" placement="1" label="Hud&#10;1" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_15" placement="15" label="Hud&#10;2" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_2" placement="2" label="Hud&#10;3" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_3" placement="3" label="Utils&#10;1" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_4" placement="4" label="Utils&#10;2" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_5" placement="5" label="Utils&#10;3" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_6" placement="6" label="Right&#10;Hand" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_7" placement="7" label="Deck" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_8" placement="8" label="Left&#10;Hand" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_9" placement="9" label="Deck&#10;1" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_10" placement="10" label="Deck&#10;2" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_11" placement="11" label="Deck&#10;3" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_12" placement="12" label="Deck&#10;4" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_13" placement="13" label="Deck&#10;5" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_14" placement="14" label="Deck&#10;6" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++          <!-- The original client writes a slot's name over the item worn in it too. The slot hides its own label once it
++               holds an item, so each slot has inert ones above it that only write the name and take no input: one for
++               each line. The client centres a label in its view, a pixel right of and below the original's and with
++               its lines 12 pixels apart instead of 13. The views' sizes put each line where the original has it: one
++               line in 52 by 52 from the slot's top left, of two lines the first in 52 by 38 from the top and the
++               second in 52 by 44 from the bottom. -->
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_1" placement="1" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Hud" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="1" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_15" placement="15" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Hud" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="2" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_2" placement="2" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Hud" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="3" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_3" placement="3" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Utils" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="1" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_4" placement="4" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Utils" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="2" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_5" placement="5" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Utils" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="3" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_6" placement="6" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Right" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Hand" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_7" placement="7" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Deck" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_8" placement="8" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Left" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Hand" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_9" placement="9" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Deck" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="1" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_10" placement="10" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Deck" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="2" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_11" placement="11" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Deck" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="3" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_12" placement="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Deck" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="4" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_13" placement="13" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Deck" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="5" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_14" placement="14" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Deck" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="6" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
+         </View>
+       </BitmapView>
+-      <BitmapView name="wear_clothing" visible="false" image="gfx://GFX_GUI_WEARVIEW_BG1" graphic_mode="tinted" view_layout="stacked" min_size="Point(178,288)" max_size="Point(178,288)" layout_borders="Rect(2,2,2,5)">
++      <BitmapView name="wear_clothing" visible="false" image="gfx://GFX_GUI_WEARVIEW_BG1" graphic_mode="tinted" view_layout="stacked" min_size="Point(178,288)" max_size="Point(178,288)" layout_borders="Rect(2,2,2,2)">
+         <View view_layout="grid" grid_columns="3" min_columns="3" grid_spacing_x="5" grid_spacing_y="3" layout_borders="Rect(3,3,3,3)">
+-          <ItemSlotView name="wear_slot_17" placement="17" label="Neck" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_18" placement="18" label="Head" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_19" placement="19" label="Back" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_20" placement="20" label="Right&#10;Shoulder" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_21" placement="21" label="Chest" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_22" placement="22" label="Left&#10;Shoulder" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_23" placement="23" label="Right&#10;Arm" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_24" placement="24" label="Hands" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_25" placement="25" label="Left&#10;Arm" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_26" placement="26" label="Right&#10;Wrist" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_27" placement="27" label="Legs" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_28" placement="28" label="Left&#10;Wrist" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_29" placement="29" label="Right&#10;Finger" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_30" placement="30" label="Feet" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_31" placement="31" label="Left&#10;Finger" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_17" placement="17" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Neck" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_18" placement="18" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Head" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_19" placement="19" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Back" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_20" placement="20" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Right" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Shoulder" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_21" placement="21" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Chest" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_22" placement="22" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Left" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Shoulder" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_23" placement="23" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Right" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Arm" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_24" placement="24" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Hands" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_25" placement="25" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Left" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Arm" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_26" placement="26" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Right" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Wrist" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_27" placement="27" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Legs" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_28" placement="28" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Left" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Wrist" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_29" placement="29" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Right" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Finger" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_30" placement="30" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Feet" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_31" placement="31" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Left" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Finger" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
+         </View>
+       </BitmapView>
+-      <BitmapView name="wear_implants" visible="false" image="gfx://GFX_GUI_WEARVIEW_BG2" graphic_mode="tinted" view_layout="stacked" min_size="Point(178,288)" max_size="Point(178,288)" layout_borders="Rect(2,2,2,5)">
++      <BitmapView name="wear_implants" visible="false" image="gfx://GFX_GUI_WEARVIEW_BG2" graphic_mode="tinted" view_layout="stacked" min_size="Point(178,288)" max_size="Point(178,288)" layout_borders="Rect(2,2,2,2)">
+         <View view_layout="grid" grid_columns="3" min_columns="3" grid_spacing_x="5" grid_spacing_y="3" layout_borders="Rect(3,3,3,3)">
+-          <ItemSlotView name="wear_slot_33" placement="33" label="Eyes" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_34" placement="34" label="Head" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_35" placement="35" label="Ears" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_36" placement="36" label="Right&#10;Arm" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_37" placement="37" label="Chest" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_38" placement="38" label="Left&#10;Arm" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_39" placement="39" label="Right&#10;Wrist" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_40" placement="40" label="Waist" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_41" placement="41" label="Left&#10;Wrist" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_42" placement="42" label="Right&#10;Hand" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_43" placement="43" label="Legs" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_44" placement="44" label="Left&#10;Hand" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_33" placement="33" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Eyes" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_34" placement="34" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Head" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_35" placement="35" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Ears" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_36" placement="36" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Right" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Arm" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_37" placement="37" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Chest" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_38" placement="38" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Left" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Arm" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_39" placement="39" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Right" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Wrist" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_40" placement="40" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Waist" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_41" placement="41" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Left" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Wrist" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_42" placement="42" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Right" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Hand" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_43" placement="43" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Legs" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_44" placement="44" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Left" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Hand" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
+           <View min_size="Point(54,54)" max_size="Point(54,54)" />
+-          <ItemSlotView name="wear_slot_45" placement="45" label="Feet" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_45" placement="45" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Feet" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
+           <View min_size="Point(54,54)" max_size="Point(54,54)" />
+         </View>
+       </BitmapView>
+-      <BitmapView name="wear_social" visible="false" image="gfx://GFX_GUI_WEARVIEW_BG1" graphic_mode="tinted" view_layout="stacked" min_size="Point(178,288)" max_size="Point(178,288)" layout_borders="Rect(2,2,2,5)">
++      <BitmapView name="wear_social" visible="false" image="gfx://GFX_GUI_WEARVIEW_BG1" graphic_mode="tinted" view_layout="stacked" min_size="Point(178,288)" max_size="Point(178,288)" layout_borders="Rect(2,2,2,2)">
+         <View view_layout="grid" grid_columns="3" min_columns="3" grid_spacing_x="5" grid_spacing_y="3" layout_borders="Rect(3,3,3,3)">
+-          <ItemSlotView name="wear_slot_49" placement="49" label="Neck" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_50" placement="50" label="Head" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_51" placement="51" label="Back" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_52" placement="52" label="Right&#10;Shoulder" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_53" placement="53" label="Chest" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_54" placement="54" label="Left&#10;Shoulder" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_55" placement="55" label="Right&#10;Arm" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_56" placement="56" label="Hands" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_57" placement="57" label="Left&#10;Arm" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_58" placement="58" label="Right&#10;Wrist" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_59" placement="59" label="Legs" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_60" placement="60" label="Left&#10;Wrist" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_61" placement="61" label="Right&#10;Hand" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_62" placement="62" label="Feet" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
+-          <ItemSlotView name="wear_slot_63" placement="63" label="Left&#10;Hand" font_size="12" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_49" placement="49" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Neck" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_50" placement="50" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Head" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_51" placement="51" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Back" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_52" placement="52" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Right" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Shoulder" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_53" placement="53" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Chest" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_54" placement="54" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Left" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Shoulder" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_55" placement="55" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Right" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Arm" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_56" placement="56" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Hands" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_57" placement="57" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Left" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Arm" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_58" placement="58" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Right" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Wrist" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_59" placement="59" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Legs" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_60" placement="60" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Left" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Wrist" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_61" placement="61" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Right" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Hand" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_62" placement="62" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Feet" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,52)" max_size="Point(52,52)" h_alignment="left" v_alignment="top" />
++          </View>
++          <View view_layout="stacked" min_size="Point(54,54)" max_size="Point(54,54)">
++            <ItemSlotView name="wear_slot_63" placement="63" min_size="Point(54,54)" max_size="Point(54,54)" slot_gfx="GFX_GUI_MULTILISTVIEW_SLOT_48_OPEN" icon_inset="3" />
++            <ItemSlotView label="Left" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,38)" max_size="Point(52,38)" h_alignment="left" v_alignment="top" />
++            <ItemSlotView label="Hand" font_size="11" interactive="false" capture_input="false" slot_gfx="" min_size="Point(52,44)" max_size="Point(52,44)" h_alignment="left" v_alignment="bottom" />
++          </View>
+         </View>
+       </BitmapView>
+     </BorderView>

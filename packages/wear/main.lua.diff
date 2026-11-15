@@ -1,0 +1,47 @@
+--- a/UI/Packages/Wear/main.lua
++++ b/UI/Packages/Wear/main.lua
+@@ -47,6 +47,9 @@
+ })
+ local pages, buttons = {}, {}
+ local current = "weapons"
++-- The original client draws the tabs that aren't chosen fainter than the client does. At this opacity they have
++-- the original's tone over a dark scene.
++local UNSELECTED = 0.45
+ local function select(page)
+ 	if page == current then
+ 		return
+@@ -55,6 +58,7 @@
+ 	for name, view in pairs(pages) do
+ 		ui.visible(view, name == current)
+ 		ui.selected(buttons[name], name == current)
++		ui.opacity(buttons[name], name == current and 1 or UNSELECTED)
+ 	end
+ 	ui.publish("tab", current)
+ end
+@@ -62,6 +66,7 @@
+ 	pages[name] = ui.find(content, "wear_" .. name)
+ 	buttons[name] = ui.find(content, "wear_" .. name .. "_tab")
+ 	ui.selected(buttons[name], name == current)
++	ui.opacity(buttons[name], name == current and 1 or UNSELECTED)
+ 	ui.on_click(buttons[name], function()
+ 		select(name)
+ 	end)
+@@ -69,14 +74,14 @@
+ local frame = Window.create({
+ 	title = "Wear",
+ 	content = content,
+-	width = 208,
+-	height = 357,
++	width = 202,
++	height = 348,
+ 	x = 218,
+ 	y = 174,
+ 	resizable = false,
+ 	layout = function(window)
+-		ui.size(window.root, 208, 357)
+-		window:fit_title(208, true)
++		ui.size(window.root, 202, 348)
++		window:fit_title(202, true)
+ 	end,
+ 	on_visibility = function(visible)
+ 		ui.publish("visibility", tostring(visible))

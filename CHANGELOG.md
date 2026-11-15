@@ -5,6 +5,11 @@ What changed for players, the newest first. Each line links the pull request or 
 
 ## 2026-11-15
 
+- **Wear:** UI+ has a Wear window of its own, with the original client's measures: 202 by 348 pixels, the tab and
+  slot labels at 11 pixels so that "Impl" is whole again, a slot's name over the item worn in it, and the tabs that
+  aren't chosen fainter. One thing differs from the original on purpose: its last tab reads "Socia", UI+'s reads
+  "Social". Set **Wear** to **UI+** in Options → Interface & HUD → UI packages.
+  ([#10](https://github.com/duramson/spiritech-ui-plus/pull/10))
 - **Window frame:** the window titles are the original client's light grey instead of white.
   ([#8](https://github.com/duramson/spiritech-ui-plus/pull/8))
 - **Nano Programs:** the search under the grid sits in a frame like the window's second frame, as the Inventory's

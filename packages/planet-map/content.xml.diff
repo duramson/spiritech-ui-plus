@@ -1,0 +1,20 @@
+--- a/UI/Packages/PlanetMap/content.xml
++++ b/UI/Packages/PlanetMap/content.xml
+@@ -1,7 +1,16 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <root>
+   <View name="planet_map" view_layout="vertical" weight="1">
+-    <PannedSurfaceView name="planet_tiles" capture_input="true" pointer_pan="true" weight="1" />
++    <View name="planet_stack" view_layout="stacked" weight="1">
++      <PannedSurfaceView name="planet_tiles" capture_input="true" pointer_pan="true" weight="1" />
++      <ScrollView name="planet_over" capture_input="true" weight="1">
++        <ScrollViewChild name="planet_over_rows" view_layout="vertical">
++          <View name="planet_over_above" min_size="Point(-1,1000)" max_size="Point(-1,1000)" />
++          <View name="planet_over_fill" />
++          <View name="planet_over_below" min_size="Point(-1,1000)" max_size="Point(-1,1000)" />
++        </ScrollViewChild>
++      </ScrollView>
++    </View>
+     <View name="planet_zoom_row" view_layout="horizontal" min_size="Point(-1,27)" max_size="Point(-1,27)">
+       <HLayoutSpacer />
+       <Button name="planet_zoom_out" min_size="Point(27,27)" max_size="Point(27,27)" gfxid_raised="GFX_GUI_PLANETMAP_ZOOM_OUT" gfxid_hover="GFX_GUI_PLANETMAP_ZOOM_OUT" gfxid_pressed="GFX_GUI_PLANETMAP_ZOOM_OUT_PRESSED" />

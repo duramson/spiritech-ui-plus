@@ -8,6 +8,7 @@ pixel to match Spiritech's Retina pictures. The text in the UI+ pictures is [Not
 The newest change comes first. The [changelog](../CHANGELOG.md) lists every change in a line, with the pull
 request or the commits that made it.
 
+- [Planet Map: wheel zoom](#planet-map-wheel-zoom)
 - [Overhead nameplates](#overhead-nameplates)
 - [Wear](#wear)
 - [Inventory: backpacks and bank](#inventory-backpacks-and-bank)
@@ -22,6 +23,26 @@ request or the commits that made it.
 - [Nano Programs: school tabs](#nano-programs-school-tabs)
 - [Window frame and text](#window-frame-and-text)
 - [Not done yet](#not-done-yet)
+
+## Planet Map: wheel zoom
+
+Spiritech's Planet Map zooms only with its two buttons, and only from one of the map's own detail levels to the
+next: the default Rubi-Ka map has two, a picture 1280 pixels wide with the legend and one 3968 wide. UI+'s Planet
+Map zooms with the wheel as well, in the PF map's steps, three turns to twice the size: out until the whole planet
+fits into the window, in to twice the detailed level's own size. The spot under the pointer stays where it is.
+Between the levels the picture is scaled, and each step draws the level nearest its size, so going in, the overview
+with its legend gives way to the detailed map four turns past the overview's own size. The buttons still go from one
+level to the next, and out to the whole planet, now keeping the middle of the map in place.
+
+The levels don't cover their pictures alike, so their picture sizes don't say how they line up. UI+ lines them up
+by where your character stands on each, or your mission when you aren't on the map.
+
+The client keeps the wheel over the map to itself and tells a package nothing of it, so UI+ lays an empty scroll
+view over the map and reads how far the wheel scrolls it. That view takes the clicks as well, so UI+ drags the map
+and opens its right-click menu itself; the menu's Teleport To Location, which only game masters see, is missing
+from it. The picture zooms in on Newland City and out again.
+
+![The Planet Map with UI+, zoomed in on Newland City with the wheel and out again](images/planet-map-zoom.gif)
 
 ## Overhead nameplates
 

@@ -11,8 +11,8 @@ its layouts and its crisp pixel text. With a few fixes and additions of its own.
 2. **Windows:** double-click `install.bat`.\
    **macOS, Linux:** run `python3 install.py` in a terminal.
 3. Press Enter to install, then log in a character.
-4. In Options → Interface & HUD → UI packages, set **Inventory containers**, **Nano programs**, **Wear** and
-   **Overhead nameplates** to **UI+**, and log in again.
+4. In Options → Interface & HUD → UI packages, set **Inventory containers**, **Nano programs**, **Wear**,
+   **Overhead nameplates** and **Planet Map** to **UI+**, and log in again.
 
 > [!IMPORTANT]
 > Before the launcher updates the game, start the installer again and choose Uninstall. Install again after the
@@ -73,6 +73,7 @@ New with UI+.
 - [Notum Grotesk](docs/notum-grotesk.md), the original client's pixel text as a font
 - School Tabs, a second layout for the Nano programs window
 - Tooltips that wait until the pointer rests
+- Zoom with the mouse wheel on the Planet Map, around the spot under the pointer
 
 ### Bug fixes
 

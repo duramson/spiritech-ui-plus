@@ -37,14 +37,14 @@ its layouts and its crisp pixel text. With a few fixes and additions of its own.
 ### Windows
 
 Every entry that Options → Interface & HUD → UI packages can replace: a window, or several that the client draws
-with one package. 2 of 40 have had their first pass.
+with one package. 3 of 40 have had their first pass.
 
 ![100 %](docs/images/progress/100.svg) Nano programs · 100 %\
 ![100 %](docs/images/progress/100.svg) NCU · 100 %\
+![100 %](docs/images/progress/100.svg) Overhead nameplates · 100 %\
 ![80 %](docs/images/progress/80.svg) Inventory containers · 80 % · 5 windows: inventory, backpacks, bank, loot,
 overflow\
-![90 %](docs/images/progress/90.svg) Wear · 90 %\
-![90 %](docs/images/progress/90.svg) Overhead nameplates · 90 %
+![90 %](docs/images/progress/90.svg) Wear · 90 %
 
 <details>
 <summary>35 more, not started</summary>
@@ -63,7 +63,8 @@ Trade and shops · Tradeskills
 Pieces the windows share: how close each is to the original, and how many windows have it.
 
 ![100 %](docs/images/progress/100.svg) Window frame · 100 % · every window\
-![80 %](docs/images/progress/80.svg) Scroll bar · 80 % · 3 of 18 windows
+![80 %](docs/images/progress/80.svg) Scroll bar · 80 % · 3 of 18 windows\
+![100 %](docs/images/progress/100.svg) Overhead nameplates · 100 % · every name over a head
 
 ### Features
 

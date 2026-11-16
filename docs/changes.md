@@ -8,6 +8,7 @@ pixel to match Spiritech's Retina pictures. The text in the UI+ pictures is [Not
 The newest change comes first. The [changelog](../CHANGELOG.md) lists every change in a line, with the pull
 request or the commits that made it.
 
+- [Rollup](#rollup)
 - [Planet Map: wheel zoom](#planet-map-wheel-zoom)
 - [Overhead nameplates](#overhead-nameplates)
 - [Wear](#wear)
@@ -23,6 +24,24 @@ request or the commits that made it.
 - [Nano Programs: school tabs](#nano-programs-school-tabs)
 - [Window frame and text](#window-frame-and-text)
 - [Not done yet](#not-done-yet)
+
+## Rollup
+
+Spiritech has the original client's rollup again: the column under the bar of buttons at the top right, where a
+window docks when you right-click its title and then click into the column. Spiritech draws a docked
+window's title bar in the blue of its page, lays a scroll bar over the column's right edge, which cuts off the
+windows' right edge too, and gives the docked Stats window a scroll bar of its own. The original has neither
+scroll bar: a window that doesn't fit, as Stats here, is cut off at the bottom. Its title bars are black and 19
+pixels high, the collapse button cream where the close button takes the interface colour.
+
+UI+ draws the title bars that way for every window that docks, with nothing to choose. The two scroll bars belong
+to the Control Center and the Stats window, so they go with UI+'s own Control Center and Stats: set both to UI+ in
+Options → Interface & HUD → UI packages. UI+'s Stats has no scroll bar when it floats either.
+
+![The rollup: Anarchy Online, Spiritech as shipped, and Spiritech with UI+](images/rollup.png)
+
+The original's picture is a pair over black and white, with Wear, Programs and Stats docked; Spiritech's has the same
+windows in another order. The character's name is painted over.
 
 ## Planet Map: wheel zoom
 
@@ -228,6 +247,10 @@ worked on. At 100 % plain Notum Grotesk should give the original's pixels; that 
 ![Text at four times its size: Anarchy Online, Spiritech as shipped, Spiritech with Notum Grotesk 200](images/notum-grotesk.png)
 
 ## Not done yet
+
+- **The rollup's buttons.** The original client draws a docked window's collapse and close buttons slightly
+  see-through, so the world shows faintly through them; Spiritech draws them solid. Their colours are the
+  original's.
 
 - **Item tooltips.** The inventory, bags, bank, Wear and Trade windows still show item tooltips at once: the client
   draws them itself, and Lua can't make them wait (see [Tooltips](#tooltips) above).

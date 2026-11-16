@@ -12,7 +12,7 @@ its layouts and its crisp pixel text. With a few fixes and additions of its own.
    **macOS, Linux:** run `python3 install.py` in a terminal.
 3. Press Enter to install, then log in a character.
 4. In Options → Interface & HUD → UI packages, set **Inventory containers**, **Nano programs**, **Wear**,
-   **Overhead nameplates** and **Planet Map** to **UI+**, and log in again.
+   **Overhead nameplates**, **Planet Map**, **Stats** and **Control Center** to **UI+**, and log in again.
 
 > [!IMPORTANT]
 > Before the launcher updates the game, start the installer again and choose Uninstall. Install again after the
@@ -37,22 +37,24 @@ its layouts and its crisp pixel text. With a few fixes and additions of its own.
 ### Windows
 
 Every entry that Options → Interface & HUD → UI packages can replace: a window, or several that the client draws
-with one package. 3 of 40 have had their first pass.
+with one package. 7 of 40 have had their first pass.
 
 ![100 %](docs/images/progress/100.svg) Nano programs · 100 %\
 ![100 %](docs/images/progress/100.svg) NCU · 100 %\
 ![100 %](docs/images/progress/100.svg) Overhead nameplates · 100 %\
 ![80 %](docs/images/progress/80.svg) Inventory containers · 80 % · 5 windows: inventory, backpacks, bank, loot,
 overflow\
-![90 %](docs/images/progress/90.svg) Wear · 90 %
+![90 %](docs/images/progress/90.svg) Wear · 90 %\
+![50 %](docs/images/progress/50.svg) Stats · 50 %\
+![10 %](docs/images/progress/10.svg) Control Center · 10 % · so far the rollup column
 
 <details>
-<summary>35 more, not started</summary>
+<summary>33 more, not started</summary>
 
 Info / Inspect · Planet Map · Local Map · Compass · Sneak indicator · Logout progress ·
 Telegraph announcements · Floating combat text · Actions · Agg/Def · Chat content ·
-Chat configuration · Chat windows · Control Center · Faction · Friends · NPC dialogue · Shortcut bars ·
-Global Market Interface · Missions · Mission terminal · Perks · Pets · Raid · Raid bars · Skills · Stats ·
+Chat configuration · Chat windows · Faction · Friends · NPC dialogue · Shortcut bars ·
+Global Market Interface · Missions · Mission terminal · Perks · Pets · Raid · Raid bars · Skills ·
 Player status bars · Target panels · Target NCU · Team · Team invitations · Combat timer stack ·
 Trade and shops · Tradeskills
 
@@ -64,7 +66,8 @@ Pieces the windows share: how close each is to the original, and how many window
 
 ![100 %](docs/images/progress/100.svg) Window frame · 100 % · every window\
 ![80 %](docs/images/progress/80.svg) Scroll bar · 80 % · 3 of 18 windows\
-![100 %](docs/images/progress/100.svg) Overhead nameplates · 100 % · every name over a head
+![100 %](docs/images/progress/100.svg) Overhead nameplates · 100 % · every name over a head\
+![90 %](docs/images/progress/90.svg) Rollup · 90 % · every window that docks
 
 ### Features
 

@@ -3,6 +3,17 @@
 What changed for players, the newest first. Each line links the pull request or the commits that made the change;
 [docs/changes.md](docs/changes.md) shows the changes in pictures.
 
+## 2026-11-16
+
+- **Rollup:** a docked window's title bar is black, as in the original client, with a cream collapse button.
+  ([#PRNUM](https://github.com/duramson/spiritech-ui-plus/pull/PRNUM))
+- **Control Center:** new. UI+'s Control Center (`duramson.control-center`) draws the rollup column without a scroll
+  bar, as the original does, so the docked windows have the column's whole width. Set **Control Center** to **UI+**
+  in Options → Interface & HUD → UI packages. ([#PRNUM](https://github.com/duramson/spiritech-ui-plus/pull/PRNUM))
+- **Stats:** new. UI+'s Stats window (`duramson.stats`) has no scroll bar, as the original's: docked in the rollup,
+  what doesn't fit is cut off at the bottom. Set **Stats** to **UI+** in Options → Interface & HUD → UI packages.
+  ([#PRNUM](https://github.com/duramson/spiritech-ui-plus/pull/PRNUM))
+
 ## 2026-11-15
 
 - **Client 0.2.2:** UI+ installs on it. The client now draws a nameplate's health bar as its filled and its empty

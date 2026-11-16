@@ -1,0 +1,11 @@
+--- a/UI/Packages/Core/rollup.lua
++++ b/UI/Packages/Core/rollup.lua
+@@ -18,6 +18,8 @@
+ 		self.icon_home = ui.find(self.root, "rollup_icon_slot")
+ 		self.close_button = ui.find(self.root, "rollup_close")
+ 		self.collapse_button = ui.find(self.root, "rollup_collapse")
++		-- Cream, as on a docked window (core.dockable).
++		ui.graphic_tint(self.collapse_button, "#FFFFCC")
+ 		self.expand_button = ui.find(self.root, "rollup_expand")
+ 		ui.controls(self.root, self.close_button, 0)
+ 		ui.close_target(self.close_button, self.root)

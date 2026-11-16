@@ -11,3 +11,12 @@
  	end
  
  	function Dockable.attach(frame, floating, header, title)
+@@ -97,6 +99,8 @@
+ 		ui.visible(ui.find(self.compact, "rollup_icon"), false)
+ 		self.close = ui.find(self.compact, "rollup_close")
+ 		self.collapse = ui.find(self.compact, "rollup_collapse")
++		-- The original tints the collapse button cream, where the other buttons take the interface colour.
++		ui.graphic_tint(self.collapse, "#FFFFCC")
+ 		self.expand = ui.find(self.compact, "rollup_expand")
+ 		ui.text(ui.find(self.compact, "rollup_title"), title or "")
+ 		ui.text(ui.find(self.preview, "preview_title"), title or "")

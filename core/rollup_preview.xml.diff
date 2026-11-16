@@ -1,0 +1,12 @@
+--- a/UI/Packages/Core/rollup_preview.xml
++++ b/UI/Packages/Core/rollup_preview.xml
+@@ -1,7 +1,8 @@
+ <?xml version="1.0"?>
+ <root>
+   <View name="rollup_preview" view_layout="stacked" color="Default">
+-    <BitmapView image="gfx://GFX_GUI_TAB_BACKGROUND" graphic_mode="tinted" />
++    <!-- Black, as the title bar it is picked up from. -->
++    <View fill_color="000000" />
+     <View view_layout="horizontal" layout_borders="Rect(2,0,2,0)">
+       <BitmapView image="gfx://GFX_GUI_WINDOW_ICON_I" graphic_mode="tinted" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" />
+       <TextView name="preview_title" font_size="12" color="FFFFFF" weight="1" v_alignment="center" layout_borders="Rect(8,0,0,0)" />

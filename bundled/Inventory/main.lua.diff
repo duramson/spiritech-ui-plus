@@ -1,0 +1,12 @@
+--- a/UI/Packages/Inventory/main.lua
++++ b/UI/Packages/Inventory/main.lua
+@@ -151,6 +151,9 @@
+ 	end
+ end
+ local sizing = Grid.slots(capacity)
++-- The original client's scroll bar over the grid (window.xml), its arrows a row of slots at a time.
++ui.require("core.scroll_bar").attach(grid_scroll, ui.find(content, "inventory_root"),
++	{ step = sizing.cell + sizing.spacing })
+ local function footer_height(search)
+ 	return (search or counts_slots) and FOOTER_HEIGHT or 0
+ end

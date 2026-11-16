@@ -1,0 +1,11 @@
+--- a/UI/Packages/NanoPrograms/main.lua
++++ b/UI/Packages/NanoPrograms/main.lua
+@@ -121,6 +121,8 @@
+ })
+ local cell_size, spacing = 38, 4
+ local step = cell_size + spacing
++-- The original client's scroll bar over the grid (window.xml), its arrows a row at a time.
++ui.require("core.scroll_bar").attach(grid_scroll, ui.find(content, "nano_holder"), { step = step })
+ local maximum_extent = presentation.maximum_extent
+ local maximum_columns = math.floor((maximum_extent - 16 + spacing) / step)
+ local sizing = Grid.create(cell_size, spacing, 600)

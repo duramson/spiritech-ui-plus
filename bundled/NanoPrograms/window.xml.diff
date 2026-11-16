@@ -1,0 +1,20 @@
+--- a/UI/Packages/NanoPrograms/window.xml
++++ b/UI/Packages/NanoPrograms/window.xml
+@@ -13,9 +13,13 @@
+         <Button name="school_space" v_alignment="center" layout_borders="Rect(8,0,0,0)" gfxid_raised="GFX_GUI_NANO_SPACE" gfxid_hover="GFX_GUI_NANO_SPACE" gfxid_pressed="GFX_GUI_NANO_SPACE_PRESSED" gfxid_selected="GFX_GUI_NANO_SPACE_PRESSED" />
+       </View>
+     </View>
+-    <View name="nano_list" view_layout="vertical" weight="1" layout_borders="Rect(4,0,4,4)" />
+-    <ScrollView name="nano_grid_scroll" visible="false" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1" weight="1">
+-      <ScrollViewChild name="nano_grid" view_layout="grid" grid_columns="60" min_columns="1" grid_spacing="4" h_alignment="left" layout_borders="Rect(0,4,0,0)" />
+-    </ScrollView>
++    <!-- Without the client's own scroll bar: the list and the grid share a holder, in which main.lua puts the original
++         client's (core.scroll_bar) over the grid's right edge, where the grid leaves room for it. -->
++    <View name="nano_holder" view_layout="stacked" weight="1">
++      <View name="nano_list" view_layout="vertical" weight="1" layout_borders="Rect(4,0,4,4)" />
++      <ScrollView name="nano_grid_scroll" visible="false" capture_input="true" weight="1">
++        <ScrollViewChild name="nano_grid" view_layout="grid" grid_columns="60" min_columns="1" grid_spacing="4" h_alignment="left" layout_borders="Rect(0,4,0,0)" />
++      </ScrollView>
++    </View>
+   </View>
+ </root>

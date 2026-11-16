@@ -19,11 +19,14 @@
  local footer = ui.find(content, "footer")
  local footer_spacer = ui.find(content, "footer_spacer")
  local slot_count = ui.find(content, "slot_count")
-@@ -150,14 +155,55 @@
+@@ -150,17 +155,55 @@
  		cells:show(entries)
  	end
  end
 -local sizing = Grid.slots(capacity)
+--- The original client's scroll bar over the grid (window.xml), its arrows a row of slots at a time.
+-ui.require("core.scroll_bar").attach(grid_scroll, ui.find(content, "inventory_root"),
+-	{ step = sizing.cell + sizing.spacing })
 +-- The slots as far from the window's frame as in the original client: their outlines 5 pixels clear of its left and
 +-- right lines and 4 under the title's line (window.xml), and with the scroll bar 4 from it, the bar a pixel short of
 +-- the right line. Grid.size counts Spiritech's: 4 pixels on either side, 5 under the title and 12 for the bar.
@@ -77,7 +80,7 @@
  	ui.visible(footer_spacer, not searchable)
  	ui.visible(slot_count_frame, counts_slots)
  end
-@@ -170,7 +216,12 @@
+@@ -173,7 +216,12 @@
  	else
  		local fewest_columns, fewest_rows, fewest_scroll = 1, 1, false
  		if credits_shown then
@@ -91,7 +94,7 @@
  			fewest_scroll = capacity > fewest_columns * fewest_rows
  		end
  		local min_width, min_height = sizing:size(fewest_columns, fewest_rows, fewest_scroll)
-@@ -178,8 +229,12 @@
+@@ -181,8 +229,12 @@
  		local _, max_height = sizing:size(1, capacity, true)
  		ui.limits(window.root, min_width, min_height + reserved_height, max_width, max_height + reserved_height)
  		width, height = math.max(width, min_width), math.max(height, min_height + reserved_height)
@@ -106,7 +109,7 @@
  		height = height + reserved_height
  		title_visible = columns >= 3
  		ui.size(grid, columns * 58 - 4, -1)
-@@ -200,7 +255,7 @@
+@@ -203,7 +255,7 @@
  	list:clear()
  	mode = value
  	selected, splitting, split_count = -1, -1, ""
@@ -115,7 +118,7 @@
  	ui.visible(list_host, mode == "list")
  	ui.menu.checked(frame.icon, 1, mode == "list")
  	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
-@@ -230,14 +285,14 @@
+@@ -233,14 +285,14 @@
  	},
  })
  ui.root(frame.root)
@@ -132,7 +135,7 @@
  	ui.grid_columns(grid, capacity)
  	ui.text(ui.find(frame.root, "window_title"), configuration.title)
  	ui.place(frame.root, configuration.x, configuration.y)
-@@ -265,7 +320,9 @@
+@@ -268,7 +320,9 @@
  			occupied[#occupied + 1] = entry
  		end
  	end
@@ -143,7 +146,7 @@
  	frame:resize(ui.chosen_width(frame.root), ui.chosen_height(frame.root))
  	reconcile()
  end
-@@ -336,6 +393,7 @@
+@@ -339,6 +393,7 @@
  		return
  	end
  	credits_shown = available
@@ -151,7 +154,7 @@
  	ui.visible(credits_section, available)
  	choose_credits("")
  	if not available then
-@@ -358,7 +416,7 @@
+@@ -361,7 +416,7 @@
  		bind_credits_transfer()
  	end
  	ui.grid_columns(grid, capacity)

@@ -8,7 +8,7 @@ What changed for players, the newest first. Each line links the pull request or 
 - **Installer:** UI+ changes the client's own windows now instead of installing windows of its own beside them, so
   there is nothing to pick in Options any more. Installing removes the windows an earlier UI+ installed and sets
   Options → Interface & HUD → UI packages back to the client's own. Nano Programs opens in School Tabs once; its menu
-  (the i icon) switches back to the bundled layout.
+  (the i icon) switches back to the bundled layout. ([#17](https://github.com/duramson/spiritech-ui-plus/pull/17))
 - **Rollup:** a docked window's title bar is black, as in the original client, with a cream collapse button.
   ([#16](https://github.com/duramson/spiritech-ui-plus/pull/16))
 - **Control Center:** new. UI+'s Control Center (`duramson.control-center`) draws the rollup column without a scroll

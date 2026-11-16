@@ -1,0 +1,12 @@
+--- a/UI/Packages/Tradeskills/main.lua
++++ b/UI/Packages/Tradeskills/main.lua
+@@ -6,6 +6,9 @@
+ local slider = ui.find(content, "quality_slider")
+ local build = ui.find(content, "build_button")
+ local clear = ui.find(content, "clear_button")
++-- The original client's scroll bar beside the build feedback (content.xml), its arrows a line at a time.
++ui.require("core.scroll_bar").attach(ui.find(content, "build_feedback"), ui.find(content, "feedback_panel"),
++	{ step = 15, borders = { 0, 3, 3, 3 } })
+ local context, previous_feedback = 0, nil
+ local cells = Grid.cells({
+ 	host = content,

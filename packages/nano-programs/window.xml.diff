@@ -1,6 +1,6 @@
 --- a/UI/Packages/NanoPrograms/window.xml
 +++ b/UI/Packages/NanoPrograms/window.xml
-@@ -1,21 +1,78 @@
+@@ -1,25 +1,78 @@
  <?xml version="1.0" encoding="utf-8"?>
  <root>
 +  <!-- Two layouts, picked in the window menu ("School Tabs"); main.lua moves the list and the grid between them. -->
@@ -45,10 +45,13 @@
 +        <TextInputView name="search" placeholder="Search" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" />
        </View>
      </View>
--    <View name="nano_list" view_layout="vertical" weight="1" layout_borders="Rect(4,0,4,4)" />
--    <ScrollView name="nano_grid_scroll" visible="false" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1" weight="1">
--      <ScrollViewChild name="nano_grid" view_layout="grid" grid_columns="60" min_columns="1" grid_spacing="4" h_alignment="left" layout_borders="Rect(0,4,0,0)" />
--    </ScrollView>
+-    <!-- Without the client's own scroll bar: the list and the grid share a holder, in which main.lua puts the original
+-         client's (core.scroll_bar) over the grid's right edge, where the grid leaves room for it. -->
+-    <View name="nano_holder" view_layout="stacked" weight="1">
+-      <View name="nano_list" view_layout="vertical" weight="1" layout_borders="Rect(4,0,4,4)" />
+-      <ScrollView name="nano_grid_scroll" visible="false" capture_input="true" weight="1">
+-        <ScrollViewChild name="nano_grid" view_layout="grid" grid_columns="60" min_columns="1" grid_spacing="4" h_alignment="left" layout_borders="Rect(0,4,0,0)" />
+-      </ScrollView>
 +    <!-- The bundled window's layout: its school buttons over the list, and the search under it as in the Inventory
 +         window. -->
 +    <View name="bundled_layout" view_layout="vertical" weight="1" visible="false">
@@ -90,6 +93,6 @@
 +          <TextInputView name="bundled_search" placeholder="Search" draw_border="false" color="9CE5F1" font_size="12" max_length="64" weight="1" min_size="Point(40,22)" max_size="Point(-1,22)" v_alignment="center" layout_borders="Rect(0,0,6,0)" />
 +        </BorderView>
 +      </BorderView>
-+    </View>
+     </View>
    </View>
  </root>

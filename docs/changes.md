@@ -8,6 +8,7 @@ pixel to match Spiritech's Retina pictures. The text in the UI+ pictures is [Not
 The newest change comes first. The [changelog](../CHANGELOG.md) lists every change in a line, with the pull
 request or the commits that made it.
 
+- [Scroll bar](#scroll-bar)
 - [Rollup](#rollup)
 - [Planet Map: wheel zoom](#planet-map-wheel-zoom)
 - [Overhead nameplates](#overhead-nameplates)
@@ -18,12 +19,30 @@ request or the commits that made it.
 - [Inventory: search and slot count](#inventory-search-and-slot-count)
 - [Inventory: full rows](#inventory-full-rows)
 - [Tooltips](#tooltips)
-- [Scroll bar](#scroll-bar)
 - [NCU window](#ncu-window)
 - [Nano Programs: the bundled layout](#nano-programs-the-bundled-layout)
 - [Nano Programs: school tabs](#nano-programs-school-tabs)
 - [Window frame and text](#window-frame-and-text)
 - [Not done yet](#not-done-yet)
+
+## Scroll bar
+
+Every window that scrolls. Spiritech draws its own scroll bar: arrows in three steps, 2 pixels under the frame's line
+and 5 from the bar. UI+ puts the original client's in its place, built from its own pictures (GFX_GUI_SIMPLE_SB_*,
+which Spiritech has too): the arrows are smooth triangles 11 pixels wide and 6 high, a pixel under the frame's line
+and a pixel clear of the line on the right, 3 pixels from the bar. The arrows scroll a row and repeat while held, a
+press above or below the bar pages that way, and the bar can be dragged. The bar picture is stretched to its length, a
+little softer than in the original client.
+
+It came first to the NCU window, the Nano Programs grid and the Inventory window. Now every list has it (the list
+views, the Market, Friends, Team search, the mission rewards), and so have Actions, Missions, Info, Trade, the NPC
+dialogue, Tradeskills, Chat, the chat configuration, Perks and Skills, and Spiritech's own Nano Programs, Inventory,
+Stats and rollup. UI+'s Stats and Control Center leave it out, as the original does. Where Spiritech's bar took room
+from what scrolls, the original's takes the same. In the Inventory the bar stands 4 pixels clear of the slots, as
+there, and the grid gives up the bar's width only while the bar shows. The picture shows the Inventory window in all
+three.
+
+![Scroll bar at eight times its size: Anarchy Online, Spiritech as shipped, Spiritech with UI+](images/scroll-bar.png)
 
 ## Rollup
 
@@ -174,19 +193,6 @@ and the target panels. A delay shows in no picture, so this section has none.
 The client draws the item tooltips in the inventory, bags, bank, Wear and Trade windows itself, and Lua can hold them
 back only by unbinding the item, which would also stop clicks and drags; those still show at once. So do the tooltips
 a layout file sets directly and those of the client's own windows, such as Options.
-
-## Scroll bar
-
-The scroll bar of the NCU window, the Nano Programs grid and the Inventory window. Spiritech draws its own: arrows in
-three steps, 2 pixels under the frame's line and 5 from the bar. UI+ puts the original client's in its place, built
-from its own pictures (GFX_GUI_SIMPLE_SB_*, which Spiritech has too): the arrows are smooth triangles 11 pixels wide
-and 6 high, a pixel under the frame's line and a pixel clear of the line on the right, 3 pixels from the bar. The arrows
-scroll a row and repeat while held, a press above or below the bar pages that way, and the bar can be dragged. The bar
-picture is stretched to its length, a little softer than in the original client. In the Inventory the bar stands 4
-pixels clear of the slots, as there, and the grid gives up the bar's width only while the bar shows. The picture shows
-the Inventory window in all three.
-
-![Scroll bar at eight times its size: Anarchy Online, Spiritech as shipped, Spiritech with UI+](images/scroll-bar.png)
 
 ## NCU window
 

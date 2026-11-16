@@ -1,0 +1,14 @@
+--- a/UI/Packages/Chat/content.xml
++++ b/UI/Packages/Chat/content.xml
+@@ -1,7 +1,9 @@
+ <root>
+   <View name="chat_content" view_layout="vertical" weight="1" layout_borders="Rect(2,2,2,2)">
+-    <BorderView name="chat_log_frame" view_layout="vertical" border_gfx="GFX_GUI_INSET" tint="FFFFFF" draw_background="false" weight="1" layout_borders="Rect(0,0,0,3)">
+-      <ScrollView name="chat_log" view_layout="vertical" capture_input="true" v_scrollbar_mode="auto" weight="1" layout_borders="Rect(5,3,5,3)" />
++    <!-- Without the client's own scroll bar: main.lua puts the original client's (core.scroll_bar) over the 12 pixels
++         the log leaves free at the right. -->
++    <BorderView name="chat_log_frame" view_layout="stacked" border_gfx="GFX_GUI_INSET" tint="FFFFFF" draw_background="false" weight="1" layout_borders="Rect(0,0,0,3)">
++      <ScrollView name="chat_log" view_layout="vertical" capture_input="true" weight="1" layout_borders="Rect(5,3,17,3)" />
+     </BorderView>
+     <BorderView name="chat_entry" view_layout="horizontal" border_style="input" hidden_border_divider="0x50A0A0A0" min_size="Point(-1,28)" max_size="Point(-1,28)">
+       <TextButton name="chat_target" label="Vicinity" color="0x8FB8CC" hover_color="White" font_size="13" v_alignment="center" layout_borders="Rect(6,0,2,0)" />

@@ -1,0 +1,27 @@
+--- a/UI/Packages/NpcChat/content.xml
++++ b/UI/Packages/NpcChat/content.xml
+@@ -2,13 +2,19 @@
+ <root>
+   <View name="npc_chat" view_layout="horizontal" weight="1">
+     <View name="conversation" view_layout="vertical" weight="1">
+-      <View view_layout="vertical" weight="2" fill_by_weight="true" layout_borders="Rect(2,2,2,0)">
+-        <ScrollView name="transcript" view_layout="vertical" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" weight="1" layout_borders="Rect(5,3,5,3)" />
++      <!-- Without the client's own scroll bars: main.lua puts the original client's (core.scroll_bar) over the 12
++           pixels each scroll view leaves free at the right, and adds the lines to its child, which the bar measures. -->
++      <View name="transcript_holder" view_layout="stacked" weight="2" fill_by_weight="true" layout_borders="Rect(2,2,2,0)">
++        <ScrollView name="transcript" capture_input="true" weight="1" layout_borders="Rect(5,3,17,3)">
++          <ScrollViewChild name="transcript_lines" view_layout="vertical" />
++        </ScrollView>
+       </View>
+       <BitmapView name="separator" image="gfx://GFX_GUI_NPCCHAT_SEPERATOR" min_size="Point(-1,3)" max_size="Point(-1,3)" layout_borders="Rect(2,3,2,3)" />
+-      <View view_layout="vertical" weight="1" fill_by_weight="true" layout_borders="Rect(2,0,2,2)">
+-        <ScrollView name="responses" view_layout="vertical" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" weight="1" layout_borders="Rect(5,3,5,3)">
+-          <TextView name="trade_prompt" visible="false" value="" font_size="13" word_wrap="true" />
++      <View name="responses_holder" view_layout="stacked" weight="1" fill_by_weight="true" layout_borders="Rect(2,0,2,2)">
++        <ScrollView name="responses" capture_input="true" weight="1" layout_borders="Rect(5,3,17,3)">
++          <ScrollViewChild name="response_lines" view_layout="vertical">
++            <TextView name="trade_prompt" visible="false" value="" font_size="13" word_wrap="true" />
++          </ScrollViewChild>
+         </ScrollView>
+       </View>
+     </View>

@@ -1,13 +1,14 @@
 --- a/UI/Packages/Stats/content.xml
 +++ b/UI/Packages/Stats/content.xml
-@@ -1,7 +1,9 @@
+@@ -1,8 +1,8 @@
  <?xml version="1.0" standalone="yes"?>
  <root>
-   <View name="stats" view_layout="stacked">
--    <ScrollView name="stats_scroll" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1" weight="1">
+-  <!-- Without the client's own scroll bar: main.lua puts the original client's (core.scroll_bar) beside the stats,
+-       which give up its width while it shows. -->
+-  <View name="stats" view_layout="horizontal">
++  <View name="stats" view_layout="stacked">
 +    <!-- The original client's Stats window has no scroll bar, not even docked in the rollup, where what doesn't fit
 +         is cut off at the bottom. -->
-+    <ScrollView name="stats_scroll" capture_input="true" weight="1">
+     <ScrollView name="stats_scroll" capture_input="true" weight="1">
        <ScrollViewChild name="stats_content" view_layout="vertical" layout_borders="Rect(0,0,0,3)">
          <View name="stats_header" view_layout="horizontal" layout_borders="Rect(3,3,3,3)">
-           <TextView value="Name:" font_size="12" color="FFFFFF" layout_borders="Rect(0,0,4,0)" />

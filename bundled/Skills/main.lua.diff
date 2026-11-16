@@ -1,0 +1,15 @@
+--- a/UI/Packages/Skills/main.lua
++++ b/UI/Packages/Skills/main.lua
+@@ -5,6 +5,12 @@
+ local compact = ui.load("compact.xml")
+ local confirmation = ui.load("confirmation.xml")
+ ui.add(content, compact)
++-- The original client's scroll bars (content.xml, compact.xml), the arrows a row at a time.
++for _, place in ipairs({ { compact, "category_scroll", 26 }, { expanded, "category_scroll", 26 },
++	{ expanded, "skill_scroll", 22 }, { expanded, "description_scroll", 15 }, { expanded, "suggestion_scroll", 20 } }) do
++	ui.require("core.scroll_bar").attach(ui.find(place[1], place[2]), ui.find(place[1], place[2] .. "_holder"),
++		{ step = place[3] })
++end
+ ui.add(content, confirmation)
+ local tree = ui.load("categories.xml")
+ local categories = {

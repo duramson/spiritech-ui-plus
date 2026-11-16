@@ -1,0 +1,13 @@
+--- a/UI/Packages/Missions/content.xml
++++ b/UI/Packages/Missions/content.xml
+@@ -1,7 +1,9 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <root>
+   <View name="missions" view_layout="stacked" h_alignment="center" v_alignment="center">
+-    <ScrollView name="mission_grid_scroll" visible="false" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1">
++    <!-- Without the client's own scroll bar: main.lua puts the original client's (core.scroll_bar) over the grid's
++         right edge, where the grid leaves room for it. -->
++    <ScrollView name="mission_grid_scroll" visible="false" capture_input="true">
+       <ScrollViewChild name="mission_grid" view_layout="grid" grid_columns="30" min_columns="1" grid_spacing="4" h_alignment="left" layout_borders="Rect(0,4,0,0)" />
+     </ScrollView>
+     <View name="mission_list" view_layout="vertical" />

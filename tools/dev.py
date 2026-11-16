@@ -4,7 +4,9 @@
     python3 tools/dev.py fork             work/: the client's files with UI+'s patches applied, to edit
     python3 tools/dev.py new NAME STOCK   start a window: packages/NAME, from the client's bundled package STOCK
     python3 tools/dev.py core FILE        start patching another file of the client's UI/Packages/Core
-    python3 tools/dev.py diff             the patches (and UI+'s own files) in core/ and packages/, from work/
+    python3 tools/dev.py bundled PKG/FILE start patching a file of another of the client's packages in place, for a
+                                          shared piece in each window's own layout (the scroll bar)
+    python3 tools/dev.py diff             the patches (and UI+'s own files) in core/, bundled/ and packages/, from work/
     python3 tools/dev.py sync             diff, then install into the client
     python3 tools/dev.py preview [off]    install (or remove) the preview: copies of the windows UI+ changes, built
                                           again from the layout files after each sync, without logging out
@@ -27,23 +29,25 @@ PREVIEW = REPO / "dev" / "preview"
 PREVIEW_FOLDER = "ui-plus-dev-preview"
 
 
-def stock_package(client, source):
-    stock_file = source / ui.STOCK
-    if not stock_file.exists():
+def stock_package(client, source, plan):
+    """The bundled package a window is made from, and its files as UI+ patches them in place (plan)."""
+    stock = ui.stock_of(source)
+    if not stock:
         return None, {}
-    name = stock_file.read_text(encoding="utf-8").strip()
-    return name, ui.files_of(client / "UI" / "Packages" / name)
+    return stock, ui.bundled_package(client, ui.load_state(client), stock, plan)
 
 
 def fork(client):
     state = ui.load_state(client)
     shutil.rmtree(WORK, ignore_errors=True)
-    for name, _, _, style, new, _ in ui.plan_core(client, state, ui.repo_core()):
-        path = WORK / "core" / name
+    plan = ui.plan_files(client, state, ui.repo_items())
+    for rel, _, _, style, new, _ in plan:
+        package, name = rel.split("/", 1)
+        path = WORK / "core" / name if package == "Core" else WORK / "bundled" / rel
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(ui.encode(new, style))
     for source in ui.repo_packages():
-        for rel, data in ui.build_package(client, source, generated=False).items():
+        for rel, data in ui.build_package(client, source, plan, generated=False).items():
             path = WORK / "packages" / source.name / rel
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(data)
@@ -56,20 +60,36 @@ def new_package(client, name, stock):
         sys.exit(f"packages/{name} exists already")
     if not (client / "UI" / "Packages" / stock).is_dir():
         sys.exit(f"the client has no bundled package {stock}")
+    state = ui.load_state(client)
+    files = ui.bundled_package(client, state, stock, ui.plan_files(client, state, ui.repo_items()))
     source.mkdir(parents=True)
     (source / ui.STOCK).write_text(stock + "\n", encoding="utf-8")
     shutil.rmtree(work, ignore_errors=True)
-    shutil.copytree(client / "UI" / "Packages" / stock, work)
+    for rel, data in files.items():
+        path = work / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
     print(f"work/packages/{name} is a copy of {stock}. Give its package.xml its own id (duramson.<short>) and the "
           f"name UI+, so it shows beside the bundled window; then diff.")
 
 
 def new_core(client, name):
     path = WORK / "core" / name
-    base, style, _ = ui.core_base(client, ui.load_state(client), name)
+    base, style, _ = ui.original(client, ui.load_state(client), f"Core/{name}")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(ui.encode(base, style))
     print(f"work/core/{name} is the client's file: edit it, then diff")
+
+
+def new_bundled(client, rel):
+    package = rel.split("/", 1)[0]
+    if "/" not in rel or package == "Core" or not (client / "UI" / "Packages" / rel).is_file():
+        sys.exit(f"the client has no UI/Packages/{rel} outside Core (Core's files: dev.py core FILE)")
+    path = WORK / "bundled" / rel
+    base, style, _ = ui.original(client, ui.load_state(client), rel)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(ui.encode(base, style))
+    print(f"work/bundled/{rel} is the client's file: edit it, then diff")
 
 
 def diff(client):
@@ -77,12 +97,19 @@ def diff(client):
     written = 0
     if (WORK / "core").is_dir():
         for rel, path in ui.files_of(WORK / "core").items():
-            base, _, _ = ui.core_base(client, state, rel)
+            base, _, _ = ui.original(client, state, f"Core/{rel}")
             patch = ui.make_diff(base, ui.decode(path.read_bytes())[0], f"UI/Packages/Core/{rel}")
             written += put(REPO / "core" / (rel + ".diff"), patch)
+    if (WORK / "bundled").is_dir():
+        for rel, path in ui.files_of(WORK / "bundled").items():
+            base, _, _ = ui.original(client, state, rel)
+            patch = ui.make_diff(base, ui.decode(path.read_bytes())[0], f"UI/Packages/{rel}")
+            written += put(REPO / "bundled" / (rel + ".diff"), patch)
+    # A window's patches go on top of its bundled package as UI+ patches it in place, as just written.
+    plan = ui.plan_files(client, state, ui.repo_items())
     for work in sorted((WORK / "packages").iterdir()) if (WORK / "packages").is_dir() else []:
         source = REPO / "packages" / work.name
-        stock_name, stock = stock_package(client, source)
+        stock_name, stock = stock_package(client, source, plan)
         keep = {ui.STOCK}
         for rel, path in ui.files_of(work).items():
             data = path.read_bytes()
@@ -92,7 +119,7 @@ def diff(client):
                 keep.add(rel)
                 continue
             if rel in stock:
-                original = stock[rel].read_bytes()
+                original = stock[rel]
                 if data == original:
                     continue
                 try:
@@ -183,6 +210,8 @@ def main(argv):
         new_package(client, args[1], args[2])
     elif len(args) == 2 and args[0] == "core":
         new_core(client, args[1])
+    elif len(args) == 2 and args[0] == "bundled":
+        new_bundled(client, args[1])
     elif args == ["diff"]:
         diff(client)
     elif args == ["sync"]:

@@ -1,0 +1,15 @@
+--- a/UI/Packages/Perks/content.xml
++++ b/UI/Packages/Perks/content.xml
+@@ -12,8 +12,10 @@
+       <View name="perk_view" view_layout="horizontal">
+         <View name="perk_left" view_layout="vertical" min_size="Point(215,-1)" max_size="Point(215,-1)">
+           <TextView name="perk_lines_header" value="Perk Lines" color="CCFFFF" font_size="13" text_alignment="center" min_size="Point(-1,16)" max_size="Point(-1,16)" layout_borders="Rect(5,8,5,5)" />
+-          <BorderView name="perk_lines_panel" view_layout="vertical" border_gfx="GFX_GUI_INSET" draw_background="false" weight="1" layout_borders="Rect(5,0,0,5)">
+-            <ScrollView name="perk_lines_scroll" capture_input="true" v_scrollbar_mode="always" scrollbar_width="11" weight="1" layout_borders="Rect(5,9,3,5)">
++          <!-- Without the client's own scroll bar: main.lua puts the original client's (core.scroll_bar) over the 11
++               pixels the perk lines leave free at the right. -->
++          <BorderView name="perk_lines_panel" view_layout="stacked" border_gfx="GFX_GUI_INSET" draw_background="false" weight="1" layout_borders="Rect(5,0,0,5)">
++            <ScrollView name="perk_lines_scroll" capture_input="true" weight="1" layout_borders="Rect(5,9,14,5)">
+               <ScrollViewChild name="perk_lines" view_layout="vertical" layout_borders="Rect(0,0,4,0)" />
+             </ScrollView>
+           </BorderView>

@@ -1,0 +1,13 @@
+--- a/UI/Packages/Trade/main.lua
++++ b/UI/Packages/Trade/main.lua
+@@ -12,6 +12,10 @@
+ local shop_dock = ui.find(content, "shop_dock")
+ local partner_dock = ui.find(content, "partner_dock")
+ local our_dock = ui.find(content, "our_dock")
++-- The original client's scroll bar beside each dock (content.xml), its arrows a row of slots at a time.
++for _, dock in ipairs({ { shop_dock, shop_frame }, { partner_dock, partner_frame }, { our_dock, our_frame } }) do
++	ui.require("core.scroll_bar").attach(dock[1], dock[2], { step = 58, borders = { 0, 3, 3, 3 } })
++end
+ local shop_list = ui.find(content, "shop_list")
+ local shop_label = ui.find(content, "shop_label")
+ local shop_search = ui.find(content, "shop_search")

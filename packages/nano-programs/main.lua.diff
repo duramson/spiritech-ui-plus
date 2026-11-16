@@ -189,7 +189,7 @@
  local cells = Grid.cells({
  	host = grid,
  	template = "slot.xml",
-@@ -119,14 +219,32 @@
+@@ -119,16 +219,32 @@
  		populate()
  	end,
  })
@@ -198,6 +198,8 @@
 +-- pixels in (the bundled window drew it at its own 38, 4 apart). 14: what Grid.size counts besides the grid across.
 +local cell_size, spacing = 40, 2
  local step = cell_size + spacing
+--- The original client's scroll bar over the grid (window.xml), its arrows a row at a time.
+-ui.require("core.scroll_bar").attach(grid_scroll, ui.find(content, "nano_holder"), { step = step })
  local maximum_extent = presentation.maximum_extent
 -local maximum_columns = math.floor((maximum_extent - 16 + spacing) / step)
 +local maximum_columns = math.floor((maximum_extent - 14 + spacing) / step)
@@ -227,7 +229,7 @@
  end
  
  local function reconcile()
-@@ -138,38 +256,82 @@
+@@ -140,38 +256,82 @@
  end
  
  local function layout(window, width, height)
@@ -321,7 +323,7 @@
  
  populate = function()
  	selected, matches = {}, {}
-@@ -196,15 +358,31 @@
+@@ -198,15 +358,31 @@
  	cells:clear()
  	mode = value
  	ui.visible(list, mode == "list")
@@ -355,7 +357,7 @@
  	content = content,
  	x = 10,
  	y = 174,
-@@ -219,29 +397,58 @@
+@@ -221,29 +397,58 @@
  				set_mode(mode == "list" and "grid" or "list")
  			end,
  		},
@@ -429,7 +431,7 @@
  	end)
  end
  
-@@ -253,7 +460,7 @@
+@@ -255,7 +460,7 @@
  
  Security.on_unlock(function()
  	ui.visible(list, mode == "list")

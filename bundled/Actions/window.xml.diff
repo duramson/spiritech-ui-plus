@@ -1,0 +1,13 @@
+--- a/UI/Packages/Actions/window.xml
++++ b/UI/Packages/Actions/window.xml
+@@ -1,7 +1,9 @@
+ <?xml version="1.0" standalone="yes"?>
+ <root>
+   <View name="actions_content" view_layout="stacked" min_size="Point(211,171)" max_size="Point(211,171)" h_alignment="center" v_alignment="center">
+-    <ScrollView name="actions_grid_scroll" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1" weight="1">
++    <!-- Without the client's own scroll bar: main.lua puts the original client's (core.scroll_bar) over the grid's
++         right edge, where the grid leaves room for it. -->
++    <ScrollView name="actions_grid_scroll" capture_input="true" weight="1">
+       <ScrollViewChild name="actions_grid" view_layout="grid" grid_columns="30" min_columns="1" grid_spacing="4" min_size="Point(206,-1)" max_size="Point(206,-1)" h_alignment="left" layout_borders="Rect(0,4,0,0)" />
+     </ScrollView>
+     <View name="actions_list" view_layout="vertical" visible="false" weight="1" />

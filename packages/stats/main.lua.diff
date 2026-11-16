@@ -1,0 +1,11 @@
+--- a/UI/Packages/Stats/main.lua
++++ b/UI/Packages/Stats/main.lua
+@@ -4,8 +4,6 @@
+ local MINIMUM_HEIGHT = FRAME_ENDS + HEADER + 2 * BAR + BOTTOM_BORDER
+ local Vitals = ui.require("character.vitals")
+ local content = ui.load("content.xml")
+--- The original client's scroll bar beside the stats (content.xml), its arrows a line at a time.
+-ui.require("core.scroll_bar").attach(ui.find(content, "stats_scroll"), content, { step = 16 })
+ local name = ui.find(content, "character_name")
+ local frame
+ local full_height = 0

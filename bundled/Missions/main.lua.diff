@@ -1,0 +1,11 @@
+--- a/UI/Packages/Missions/main.lua
++++ b/UI/Packages/Missions/main.lua
+@@ -9,6 +9,8 @@
+ local stored = ui.preference.read("listview_config.listview_mode")
+ local mode = stored == "false" and "grid" or "list"
+ local sizing = Grid.slots(60)
++-- The original client's scroll bar over the grid (content.xml), its arrows a row at a time.
++ui.require("core.scroll_bar").attach(grid_scroll, content, { step = sizing.cell + sizing.spacing })
+ ui.grid_columns(grid, sizing.maximum)
+ local minimum_width, minimum_height = sizing:size(1, 1, false)
+ local maximum_width, maximum_height = sizing:size(sizing.maximum, sizing.maximum, true)

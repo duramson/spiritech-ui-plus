@@ -7,9 +7,11 @@ The Windows twin of install.py, for players without Python: it reads the same pa
 the same ui-plus.json, so either one can update or undo what the other installed. install.bat starts it.
 
 UI+ ships none of Project Rubi-Ka's files, only patches: its changes to their files. This reads the files from your
-own client and patches them there. The Core files are patched in place, each kept as it was beside it as
-<name>.ui-plus-backup; each window is copied from the client's bundled package, patched, and put into the per-user
-package folder (%LOCALAPPDATA%\ProjectRubiKa\ui-packages) as ui-plus-<name>.
+own client and patches them there. Core, the frame and the shared pieces every window is built from, is patched in
+place, and so are the client's other packages where a shared piece sits in each window's own layout (the scroll bar):
+each file is kept as it was beside it as <name>.ui-plus-backup. Each window is copied from the client's bundled
+package as UI+ patches it in place, patched, and put into the per-user package folder
+(%LOCALAPPDATA%\ProjectRubiKa\ui-packages) as ui-plus-<name>.
 
 .EXAMPLE
 .\install.ps1
@@ -275,9 +277,12 @@ function Get-ClientVersion([string]$ClientDir) {
     return 'unknown'
 }
 
+# What is installed: files, the client's files UI+ patched in place (by their path under UI/Packages), and packages,
+# UI+'s windows in the per-user folder. Versions before 2026-11-16 patched only Core in place and recorded its files
+# under "core" by name; they are read as Core's.
 function Read-State([string]$ClientDir) {
     $path = Join $ClientDir $StateName
-    $state = @{ version = $null; core = @{}; packages = @{}; fonts = @() }
+    $state = @{ version = $null; files = @{}; packages = @{}; fonts = @() }
     if (Test-Path -LiteralPath $path) {
         $json = [IO.File]::ReadAllText($path) | ConvertFrom-Json
         $state.version = $json.version
@@ -288,12 +293,24 @@ function Read-State([string]$ClientDir) {
         } elseif ($json.PSObject.Properties['font'] -and $json.font) {
             $state.fonts = @('Notum Grotesk')
         }
-        foreach ($entry in $json.core.PSObject.Properties) {
-            $state.core[$entry.Name] = @{ sha = $entry.Value.sha; diff = $entry.Value.diff
-                                         created = [bool]$entry.Value.created }
+        if ($json.PSObject.Properties['files']) {
+            foreach ($entry in $json.files.PSObject.Properties) {
+                $state.files[$entry.Name] = @{ sha = $entry.Value.sha; diff = $entry.Value.diff
+                                              created = [bool]$entry.Value.created }
+            }
         }
-        foreach ($entry in $json.packages.PSObject.Properties) {
-            $state.packages[$entry.Name] = @{ folder = $entry.Value.folder; id = $entry.Value.id }
+        if ($json.PSObject.Properties['core']) {
+            foreach ($entry in $json.core.PSObject.Properties) {
+                if (-not $state.files.ContainsKey("Core/$($entry.Name)")) {
+                    $state.files["Core/$($entry.Name)"] = @{ sha = $entry.Value.sha; diff = $entry.Value.diff
+                                                            created = [bool]$entry.Value.created }
+                }
+            }
+        }
+        if ($json.PSObject.Properties['packages']) {
+            foreach ($entry in $json.packages.PSObject.Properties) {
+                $state.packages[$entry.Name] = @{ folder = $entry.Value.folder; id = $entry.Value.id }
+            }
         }
     }
     return $state
@@ -301,9 +318,11 @@ function Read-State([string]$ClientDir) {
 
 function Save-State([string]$ClientDir, $State) {
     $path = Join $ClientDir $StateName
-    if ($State.core.Count -gt 0 -or $State.packages.Count -gt 0) {
-        $data = @{ version = $State.version; core = $State.core; packages = $State.packages }
+    if ($State.files.Count -gt 0 -or $State.packages.Count -gt 0) {
+        $data = [ordered]@{ files = $State.files }
         if ($State.fonts.Count -gt 0) { $data.fonts = @($State.fonts) }
+        $data.packages = $State.packages
+        $data.version = $State.version
         $json = $data | ConvertTo-Json -Depth 6
         [IO.File]::WriteAllText($path, $json.Replace("`r`n", "`n") + "`n", $Utf8)
     } elseif (Test-Path -LiteralPath $path) {
@@ -311,21 +330,37 @@ function Save-State([string]$ClientDir, $State) {
     }
 }
 
+# {relative path: path} of the files in a folder, without system clutter and UI+'s kept copies.
 function Get-FilesOf([string]$Root) {
     $map = @{}
     if (-not (Test-Path -LiteralPath $Root -PathType Container)) { return , $map }
     $full = (Get-Item -LiteralPath $Root).FullName.TrimEnd('\', '/')
     foreach ($file in @(Get-ChildItem -LiteralPath $Root -Recurse -File -Force)) {
-        if ($Skip -contains $file.Name) { continue }
+        if ($Skip -contains $file.Name -or $file.Name.EndsWith($BackupSuffix, [StringComparison]::Ordinal)) { continue }
         $map[$file.FullName.Substring($full.Length + 1).Replace('\', '/')] = $file.FullName
     }
     return , $map
 }
 
-function Get-RepoCore {
-    $root = Join $Here 'core'
-    if (-not (Test-Path -LiteralPath $root -PathType Container)) { return }
-    Get-ChildItem -LiteralPath $root -Filter '*.diff' -File | Sort-Object Name
+# (path under UI/Packages, diff) for every file of the client that UI+ patches in place: core/ for Core,
+# bundled/<package>/ for the client's other packages.
+function Get-RepoItems {
+    $items = New-Object System.Collections.Generic.List[object]
+    $core = Join $Here 'core'
+    if (Test-Path -LiteralPath $core -PathType Container) {
+        foreach ($diffFile in @(Get-ChildItem -LiteralPath $core -Filter '*.diff' -File | Sort-Object Name)) {
+            $items.Add(@{ Rel = "Core/$($diffFile.Name.Substring(0, $diffFile.Name.Length - '.diff'.Length))"
+                          Diff = [IO.File]::ReadAllText($diffFile.FullName, $Utf8).Replace("`r`n", "`n") })
+        }
+    }
+    $bundled = Get-FilesOf (Join $Here 'bundled')
+    foreach ($rel in @($bundled.Keys | Sort-Object)) {
+        if ($rel.EndsWith('.diff', [StringComparison]::Ordinal) -and $rel.Contains('/')) {
+            $items.Add(@{ Rel = $rel.Substring(0, $rel.Length - '.diff'.Length)
+                          Diff = [IO.File]::ReadAllText($bundled[$rel], $Utf8).Replace("`r`n", "`n") })
+        }
+    }
+    return , $items
 }
 
 function Get-RepoPackages {
@@ -334,24 +369,28 @@ function Get-RepoPackages {
     Get-ChildItem -LiteralPath $root -Directory | Sort-Object Name | Where-Object { (Get-FilesOf $_.FullName).Count -gt 0 }
 }
 
-# ---- Core: patched in place ------------------------------------------------------------------------------------------
+# ---- the client's files: patched in place ---------------------------------------------------------------------------
 
-# Whether a Core file is UI+'s own, one the client doesn't have: it gets no kept copy, and uninstalling deletes it.
-# Earlier installers took such a file for the client's own when installing again and kept an empty copy of it, so an
+# A file of the client's UI/Packages, by its path there ("Core/window.xml").
+function Get-UiFile([string]$ClientDir, [string]$Rel) {
+    return (Join $ClientDir 'UI' 'Packages' $Rel.Replace('/', [string][IO.Path]::DirectorySeparatorChar))
+}
+
+# Whether a file is UI+'s own, one the client doesn't have: it gets no kept copy, and uninstalling deletes it. Earlier
+# installers took such a Core file for the client's own when installing again and kept an empty copy of it, so an
 # empty kept copy means the same.
 function Test-MadeByUiPlus($Entry, [string]$Backup) {
     return ([bool]$Entry.created -or
             ((Test-Path -LiteralPath $Backup) -and (Get-Item -LiteralPath $Backup).Length -eq 0))
 }
 
-# The client's own file for a Core patch, without UI+'s changes: the kept copy while the installed file is still
-# UI+'s, else the file in the client with UI+'s last changes taken out where they are still in it. Nothing, for a
-# file UI+ makes.
-function Get-CoreBase([string]$ClientDir, $State, [string]$Name) {
-    $target = Join $ClientDir 'UI' 'Packages' 'Core' $Name
+# The client's own file, without UI+'s changes: the kept copy while the installed file is still UI+'s, else the file
+# in the client with UI+'s last changes taken out where they are still in it. Nothing, for a file UI+ makes.
+function Get-Original([string]$ClientDir, $State, [string]$Rel) {
+    $target = Get-UiFile $ClientDir $Rel
     $backup = $target + $BackupSuffix
     $entry = $null
-    if ($State.core.ContainsKey($Name)) { $entry = $State.core[$Name] }
+    if ($State.files.ContainsKey($Rel)) { $entry = $State.files[$Rel] }
     $made = $null -ne $entry -and (Test-MadeByUiPlus $entry $backup)
     if (-not (Test-Path -LiteralPath $target)) {
         return @{ Text = ''; Crlf = $false; Bom = $false; Created = ($null -eq $entry -or $made) }
@@ -371,34 +410,38 @@ function Get-CoreBase([string]$ClientDir, $State, [string]$Name) {
     return $file
 }
 
-function Get-CorePlan([string]$ClientDir, $State) {
+# What installing writes, worked out before anything is: per item the path, the diff, the client's own file and
+# UI+'s text.
+function Get-FilePlan([string]$ClientDir, $State, $Items) {
     $plan = New-Object System.Collections.Generic.List[object]
-    foreach ($diffFile in @(Get-RepoCore)) {
-        $name = $diffFile.Name.Substring(0, $diffFile.Name.Length - '.diff'.Length)
-        $diff = [IO.File]::ReadAllText($diffFile.FullName, $Utf8).Replace("`r`n", "`n")
-        $base = Get-CoreBase $ClientDir $State $name
+    foreach ($item in $Items) {
+        $package = $item.Rel.Split('/')[0]
+        if (-not (Test-Path -LiteralPath (Get-UiFile $ClientDir $package) -PathType Container)) {
+            throw "the client has no package UI/Packages/$package. It is not the client this version of UI+ was made for (client $MadeFor)."
+        }
+        $base = Get-Original $ClientDir $State $item.Rel
         try {
-            $new = Invoke-Patch $base.Text $diff
+            $new = Invoke-Patch $base.Text $item.Diff
         } catch {
             $problem = $_.Exception.Message
             try {   # UI+'s changes are in it although nothing records them (ui-plus.json was deleted)
-                $base.Text = Invoke-Patch $base.Text $diff $true
-                $new = Invoke-Patch $base.Text $diff
+                $base.Text = Invoke-Patch $base.Text $item.Diff $true
+                $new = Invoke-Patch $base.Text $item.Diff
             } catch {
-                throw "UI/Packages/Core/${name}: $problem. The client's file is not the one this version of UI+ was made for (client $MadeFor)."
+                throw "UI/Packages/$($item.Rel): $problem. The client's file is not the one this version of UI+ was made for (client $MadeFor)."
             }
             # nothing of the client's left in it: a file UI+ made
             if ([string]::IsNullOrEmpty($base.Text)) { $base.Created = $true }
         }
-        $plan.Add(@{ Name = $name; Diff = $diff; Base = $base; New = $new })
+        $plan.Add(@{ Rel = $item.Rel; Diff = $item.Diff; Base = $base; New = $new })
     }
     return , $plan
 }
 
-function Write-Core([string]$ClientDir, $State, $Plan) {
+function Write-Files([string]$ClientDir, $State, $Plan) {
     $changed = 0
     foreach ($item in $Plan) {
-        $target = Join $ClientDir 'UI' 'Packages' 'Core' $item.Name
+        $target = Get-UiFile $ClientDir $item.Rel
         $backup = $target + $BackupSuffix
         if (-not $item.Base.Created) {
             $data = ConvertTo-FileBytes $item.Base.Text $item.Base.Crlf $item.Base.Bom
@@ -408,26 +451,26 @@ function Write-Core([string]$ClientDir, $State, $Plan) {
         } elseif (Test-Path -LiteralPath $backup) {
             # a kept copy of a file UI+ made: the empty one an earlier installer left
             Remove-Item -LiteralPath $backup
-            Say ("  removed UI/Packages/Core/$($item.Name)$BackupSuffix " +
-                 "(UI+ made that file, the client has none to keep)")
+            Say "  removed UI/Packages/$($item.Rel)$BackupSuffix (UI+ made that file, the client has none to keep)"
             $changed++
         }
         $data = ConvertTo-FileBytes $item.New $item.Base.Crlf $item.Base.Bom
         if (-not (Test-Path -LiteralPath $target) -or (Get-Sha ([IO.File]::ReadAllBytes($target))) -ne (Get-Sha $data)) {
+            [void][IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($target))
             [IO.File]::WriteAllBytes($target, $data)
-            Say "  patched UI/Packages/Core/$($item.Name)"
+            if ($item.Base.Created) { Say "  added UI/Packages/$($item.Rel)" } else { Say "  patched UI/Packages/$($item.Rel)" }
             $changed++
         }
-        $State.core[$item.Name] = @{ sha = (Get-Sha $data); diff = $item.Diff; created = [bool]$item.Base.Created }
+        $State.files[$item.Rel] = @{ sha = (Get-Sha $data); diff = $item.Diff; created = [bool]$item.Base.Created }
     }
     return $changed
 }
 
-function Remove-Core([string]$ClientDir, $State, [string]$Name) {
-    $target = Join $ClientDir 'UI' 'Packages' 'Core' $Name
+function Remove-UiFile([string]$ClientDir, $State, [string]$Rel) {
+    $target = Get-UiFile $ClientDir $Rel
     $backup = $target + $BackupSuffix
-    $entry = $State.core[$Name]
-    $State.core.Remove($Name)
+    $entry = $State.files[$Rel]
+    $State.files.Remove($Rel)
     $made = Test-MadeByUiPlus $entry $backup
     if (-not (Test-Path -LiteralPath $target)) {
         if (Test-Path -LiteralPath $backup) { Remove-Item -LiteralPath $backup }
@@ -438,11 +481,11 @@ function Remove-Core([string]$ClientDir, $State, [string]$Name) {
         if ($made) {
             Remove-Item -LiteralPath $target
             if (Test-Path -LiteralPath $backup) { Remove-Item -LiteralPath $backup }
-            Say "  removed UI/Packages/Core/$Name"
+            Say "  removed UI/Packages/$Rel"
         } elseif (Test-Path -LiteralPath $backup) {
             [IO.File]::WriteAllBytes($target, [IO.File]::ReadAllBytes($backup))
             Remove-Item -LiteralPath $backup
-            Say "  put back the client's UI/Packages/Core/$Name"
+            Say "  put back the client's UI/Packages/$Rel"
         }
         return
     }
@@ -451,33 +494,50 @@ function Remove-Core([string]$ClientDir, $State, [string]$Name) {
         $base = Invoke-Patch $file.Text $entry.diff $true
         if ($made -and [string]::IsNullOrEmpty($base)) {
             Remove-Item -LiteralPath $target
-            Say "  removed UI/Packages/Core/$Name"
+            Say "  removed UI/Packages/$Rel"
         } else {
             [IO.File]::WriteAllBytes($target, (ConvertTo-FileBytes $base $file.Crlf $file.Bom))
-            Say "  took UI+'s changes out of UI/Packages/Core/$Name (it changed since UI+ installed it)"
+            Say "  took UI+'s changes out of UI/Packages/$Rel (it changed since UI+ installed it)"
         }
     } catch {
-        Say "  left UI/Packages/Core/${Name}: it changed since UI+ installed it and has none of UI+'s changes left"
+        Say "  left UI/Packages/${Rel}: it changed since UI+ installed it and has none of UI+'s changes left"
     }
     if (Test-Path -LiteralPath $backup) { Remove-Item -LiteralPath $backup }
 }
 
 # ---- packages: forked from the client's bundled ones -----------------------------------------------------------------
 
-# {relative path: bytes} of a UI+ package: the bundled package it names, patched, plus UI+'s own files.
-function Get-PackageFiles([string]$ClientDir, $Source) {
+# {relative path: bytes} of one of the client's bundled packages as UI+ patches it in place (the plan of
+# Get-FilePlan), whatever is installed now; without the kept copies.
+function Get-BundledPackage([string]$ClientDir, $State, [string]$Stock, $Plan) {
+    $root = Get-UiFile $ClientDir $Stock
+    if (-not (Test-Path -LiteralPath $root -PathType Container)) { throw "the client has no bundled package $Stock" }
+    $files = @{}
+    $found = Get-FilesOf $root
+    foreach ($rel in @($found.Keys)) {
+        $key = "$Stock/$rel"
+        if ($State.files.ContainsKey($key)) {
+            $base = Get-Original $ClientDir $State $key
+            if (-not $base.Created) { $files[$rel] = ConvertTo-FileBytes $base.Text $base.Crlf $base.Bom }
+        } else {
+            $files[$rel] = [IO.File]::ReadAllBytes($found[$rel])
+        }
+    }
+    foreach ($item in $Plan) {
+        $package, $name = $item.Rel.Split('/', 2)
+        if ($package -eq $Stock) { $files[$name] = ConvertTo-FileBytes $item.New $item.Base.Crlf $item.Base.Bom }
+    }
+    return , $files
+}
+
+# {relative path: bytes} of a UI+ package: the bundled package it names, as UI+ patches it in place (the plan), and
+# then with the window's patches, plus UI+'s own files.
+function Get-PackageFiles([string]$ClientDir, $State, $Source, $Plan) {
     $files = @{}
     $stockFile = Join $Source.FullName $StockName
     $stock = $null
     if (Test-Path -LiteralPath $stockFile) { $stock = ([IO.File]::ReadAllText($stockFile)).Trim() }
-    if ($stock) {
-        $stockDir = Join $ClientDir 'UI' 'Packages' $stock
-        if (-not (Test-Path -LiteralPath $stockDir -PathType Container)) {
-            throw "packages/$($Source.Name): the client has no bundled package $stock"
-        }
-        $stockFiles = Get-FilesOf $stockDir
-        foreach ($rel in @($stockFiles.Keys)) { $files[$rel] = [IO.File]::ReadAllBytes($stockFiles[$rel]) }
-    }
+    if ($stock) { $files = Get-BundledPackage $ClientDir $State $stock $Plan }
     $own = Get-FilesOf $Source.FullName
     foreach ($rel in @($own.Keys | Sort-Object)) {
         if ($rel -eq $StockName) { continue }
@@ -583,19 +643,19 @@ function Invoke-Install([string]$ClientDir) {
         Say "  note: this is client $clientVersion, UI+ was made for $MadeFor. It installs what still fits and stops at anything that doesn't."
     }
     try {   # everything is worked out before anything is written
-        $core = Get-CorePlan $ClientDir $state
+        $plan = Get-FilePlan $ClientDir $state (Get-RepoItems)
         $packages = New-Object System.Collections.Generic.List[object]
         foreach ($source in @(Get-RepoPackages)) {
-            $packages.Add(@{ Name = $source.Name; Files = (Get-PackageFiles $ClientDir $source) })
+            $packages.Add(@{ Name = $source.Name; Files = (Get-PackageFiles $ClientDir $state $source $plan) })
         }
         foreach ($package in $packages) { Assert-NoClash $ClientDir $package.Name $package.Files }
     } catch {
         throw "Nothing was changed. $($_.Exception.Message)"
     }
-    $changed = Write-Core $ClientDir $state $core
+    $changed = Write-Files $ClientDir $state $plan
     foreach ($package in $packages) { $changed += Write-Package $ClientDir $state $package.Name $package.Files }
-    $repoCore = @(Get-RepoCore | ForEach-Object { $_.Name.Substring(0, $_.Name.Length - '.diff'.Length) })
-    foreach ($name in @($state.core.Keys)) { if ($repoCore -notcontains $name) { Remove-Core $ClientDir $state $name } }
+    $planned = @($plan | ForEach-Object { $_.Rel })
+    foreach ($rel in @($state.files.Keys | Sort-Object)) { if ($planned -notcontains $rel) { Remove-UiFile $ClientDir $state $rel } }
     $repoPackages = @(Get-RepoPackages | ForEach-Object { $_.Name })
     foreach ($name in @($state.packages.Keys)) { if ($repoPackages -notcontains $name) { Remove-Package $state $name } }
     $state.version = Get-Version
@@ -603,20 +663,20 @@ function Invoke-Install([string]$ClientDir) {
     if ($changed -eq 0) { Say '  nothing to change: this version is installed' }
     Say
     Say 'Done. It loads at your next character login (log out to character select and back in).'
-    Say '- The window frame changes every window by itself. The client''s own screens (Options, login) take it'
-    Say '  after a restart of the game.'
+    Say '- The window frame and the scroll bars change every window by themselves. The client''s own screens (Options,'
+    Say '  login) take the frame after a restart of the game.'
     Say '- Pick UI+''s windows in Options > Interface & HUD > UI packages, where they show as'
     Say "  `"External [duramson.<window>] - UI+`": $($repoPackages -join ', ')."
 }
 
 function Invoke-Uninstall([string]$ClientDir) {
     $state = Read-State $ClientDir
-    if ($state.core.Count -eq 0 -and $state.packages.Count -eq 0) {
+    if ($state.files.Count -eq 0 -and $state.packages.Count -eq 0) {
         Say 'UI+ is not installed in this client.'
         return
     }
     Say "Removing $Title from $ClientDir"
-    foreach ($name in @($state.core.Keys | Sort-Object)) { Remove-Core $ClientDir $state $name }
+    foreach ($rel in @($state.files.Keys | Sort-Object)) { Remove-UiFile $ClientDir $state $rel }
     foreach ($name in @($state.packages.Keys | Sort-Object)) { Remove-Package $state $name }
     Save-State $ClientDir $state
     Say 'Done. The client''s own UI is back at your next character login (the Options and login screens after a'
@@ -629,17 +689,35 @@ function Invoke-Uninstall([string]$ClientDir) {
 function Show-Status([string]$ClientDir) {
     $state = Read-State $ClientDir
     Say "Client: $ClientDir (version $(Get-ClientVersion $ClientDir); UI+ $(Get-Version) was made for $MadeFor)"
-    if ($state.core.Count -eq 0 -and $state.packages.Count -eq 0) {
+    if ($state.files.Count -eq 0 -and $state.packages.Count -eq 0) {
         Say 'UI+ is not installed.'
         return
     }
     Say "UI+ $($state.version) is installed:"
-    foreach ($name in @($state.core.Keys | Sort-Object)) {
-        $target = Join $ClientDir 'UI' 'Packages' 'Core' $name
-        if (-not (Test-Path -LiteralPath $target) -or (Get-Sha ([IO.File]::ReadAllBytes($target))) -ne $state.core[$name].sha) {
-            Say "  Core ${name}: changed since it was installed (a client update?): install again"
+    $note = $null
+    $planned = @{}
+    try {
+        foreach ($item in (Get-FilePlan $ClientDir $state (Get-RepoItems))) { $planned[$item.Rel] = $item.New }
+    } catch {
+        $note = $_.Exception.Message
+    }
+    foreach ($rel in @(@($state.files.Keys) + @($planned.Keys) | Sort-Object -Unique)) {
+        $target = Get-UiFile $ClientDir $rel
+        if (-not $state.files.ContainsKey($rel)) {
+            Say "  ${rel}: not installed yet"
+            continue
+        }
+        if (-not (Test-Path -LiteralPath $target) -or (Get-Sha ([IO.File]::ReadAllBytes($target))) -ne $state.files[$rel].sha) {
+            Say "  ${rel}: changed since it was installed (a client update?): install again"
+            continue
+        }
+        $data = [IO.File]::ReadAllBytes($target)
+        $file = ConvertFrom-FileBytes $data
+        if ($planned.ContainsKey($rel) -and
+            (Get-Sha (ConvertTo-FileBytes $planned[$rel] $file.Crlf $file.Bom)) -ne (Get-Sha $data)) {
+            Say "  ${rel}: installed, this copy of UI+ has a newer version"
         } else {
-            Say "  Core ${name}: installed"
+            Say "  ${rel}: installed"
         }
     }
     foreach ($source in @(Get-RepoPackages)) {
@@ -649,6 +727,8 @@ function Show-Status([string]$ClientDir) {
             Say "  window $($source.Name): not installed yet"
         }
     }
+    foreach ($font in $state.fonts) { Say "  font ${font}: installed" }
+    if ($note) { Say "  note: $note" }
 }
 
 function Select-Client {

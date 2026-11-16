@@ -1,0 +1,28 @@
+--- a/UI/Packages/Core/table.lua
++++ b/UI/Packages/Core/table.lua
+@@ -1,6 +1,7 @@
+ ui.define("core.table", function()
+ 	local Preferences = ui.require("core.preferences")
+ 	local Security = ui.require("core.security")
++	local ScrollBar = ui.require("core.scroll_bar")
+ 	local Table = {}
+ 	Table.__index = Table
+ 	local styles = {
+@@ -78,6 +79,9 @@
+ 		ui.add(options.host, self.root)
+ 		self.header, self.host = ui.find(self.root, "table_header"), ui.find(self.root, "table_rows")
+ 		self.drop_host = ui.find(self.root, "table_scroll")
++		-- The original client's scroll bar beside the rows (table.xml), its arrows a row at a time.
++		self.scroll_bar = ScrollBar.attach(self.drop_host, ui.find(self.root, "table_scroll_holder"),
++			{ step = options.row_height or style.row_height })
+ 		self.row_height = options.row_height or style.row_height
+ 		local sort = ui.preference.read(self.preference .. ".list_sort_column")
+ 		for _, column in ipairs(self.columns) do
+@@ -552,6 +556,7 @@
+ 
+ 	function Table:destroy()
+ 		Security.forget(self)
++		self.scroll_bar:detach()
+ 		self:clear()
+ 		if self.prototype then
+ 			ui.destroy(self.prototype.root)

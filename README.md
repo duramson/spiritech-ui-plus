@@ -65,7 +65,7 @@ Trade and shops · Tradeskills
 Pieces the windows share: how close each is to the original, and how many windows have it.
 
 ![100 %](docs/images/progress/100.svg) Window frame · 100 % · every window\
-![80 %](docs/images/progress/80.svg) Scroll bar · 80 % · 3 of 18 windows\
+![80 %](docs/images/progress/80.svg) Scroll bar · 80 % · every window that scrolls\
 ![100 %](docs/images/progress/100.svg) Overhead nameplates · 100 % · every name over a head\
 ![90 %](docs/images/progress/90.svg) Rollup · 90 % · every window that docks
 

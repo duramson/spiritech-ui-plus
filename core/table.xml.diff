@@ -1,0 +1,18 @@
+--- a/UI/Packages/Core/table.xml
++++ b/UI/Packages/Core/table.xml
+@@ -3,8 +3,12 @@
+     <ScrollView name="table_header_scroll" h_scroll_source="table_scroll" view_layout="vertical" min_size="Point(-1,19)" max_size="Point(-1,19)" layout_borders="Rect(0,0,12,0)">
+       <BorderView name="table_header" view_layout="horizontal" color="0xB6B6B6" fill_color="0x323232" min_size="Point(-1,19)" max_size="Point(-1,19)" />
+     </ScrollView>
+-    <ScrollView name="table_scroll" capture_input="true" interactive="true" v_scrollbar_mode="always" h_scrollbar_mode="auto" scrollbar_width="11" weight="1">
+-      <ScrollViewChild name="table_rows" view_layout="vertical" />
+-    </ScrollView>
++    <!-- Without the client's own vertical scroll bar: core.table puts the original client's (core.scroll_bar) over the
++         12 pixels the rows leave free at the right, as the header does. -->
++    <View name="table_scroll_holder" view_layout="stacked" weight="1">
++      <ScrollView name="table_scroll" capture_input="true" interactive="true" h_scrollbar_mode="auto" scrollbar_width="11" layout_borders="Rect(0,0,12,0)">
++        <ScrollViewChild name="table_rows" view_layout="vertical" />
++      </ScrollView>
++    </View>
+   </View>
+ </root>

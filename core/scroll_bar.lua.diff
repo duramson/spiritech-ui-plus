@@ -1,6 +1,6 @@
 --- a/UI/Packages/Core/scroll_bar.lua
 +++ b/UI/Packages/Core/scroll_bar.lua
-@@ -0,0 +1,150 @@
+@@ -0,0 +1,145 @@
 +ui.define("core.scroll_bar", function()
 +	-- The original client's scroll bar (scroll_bar.xml) for a scroll view whose own bar is off: the scroll view
 +	-- leaves out v_scrollbar_mode, and ScrollBar.attach puts this bar over its right edge, in the stacked view that
@@ -8,25 +8,17 @@
 +	-- the bar can be dragged. The bar shows only while the content is taller than the scroll view.
 +	--
 +	-- The client tells a package nothing when a scroll view scrolls (the wheel), changes size or gets new content, so
-+	-- the bars follow their scroll views from the package's update observer. A package has only one: one that needs
-+	-- its own as well hands it to ScrollBar.on_update instead of ui.on_update.
++	-- the bars follow their scroll views from an update observer (core.updates), while the package has a bar.
++	local Updates = ui.require("core.updates")
 +	local ScrollBar = {}
 +	ScrollBar.__index = ScrollBar
 +
-+	local bars, also = {}, nil
++	local bars = {}
 +
-+	local function update(now)
++	local function update()
 +		for _, bar in ipairs(bars) do
 +			bar:refresh()
 +		end
-+		if also then
-+			also(now)
-+		end
-+	end
-+
-+	function ScrollBar.on_update(callback)
-+		also = callback
-+		ui.on_update(update)
 +	end
 +
 +	-- options.step: the pixels an arrow scrolls (a row of the content); options.borders: the bar's distance from the
@@ -67,7 +59,7 @@
 +			self:drag(phase, y)
 +		end)
 +		bars[#bars + 1] = self
-+		ui.on_update(update)
++		Updates.add(update)
 +		return self
 +	end
 +
@@ -78,6 +70,9 @@
 +				table.remove(bars, index)
 +				break
 +			end
++		end
++		if #bars == 0 then
++			Updates.remove(update)
 +		end
 +	end
 +

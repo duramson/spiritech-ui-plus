@@ -1,0 +1,71 @@
+--- a/UI/Packages/Core/updates.lua
++++ b/UI/Packages/Core/updates.lua
+@@ -0,0 +1,68 @@
++-- One update observer for a package and Core's pieces together. The client keeps a single update observer per
++-- package (ui.on_update replaces the one before), so a window's own animation and the observers of Core's pieces, the
++-- tooltip delay and the scroll bars, would push each other out. This takes the client's observer for all of them:
++-- ui.on_update and ui.stop_updates set and stop the package's own as before, and Core's pieces add and remove theirs
++-- through core.updates. The client's observer runs only while one of them is there.
++--
++-- Core loads this right after modules.lua, before anything keeps ui.on_update for itself.
++do
++	local observe, stop = ui.on_update, ui.stop_updates
++	local own -- the package's observer
++	local pieces, list = {}, {} -- the pieces' observers, as a set and, for calling them, a list made anew on each change
++	local running = false
++
++	local function tick(now)
++		for _, observer in ipairs(list) do
++			observer(now)
++		end
++		if own then
++			own(now)
++		end
++	end
++
++	local function settle()
++		list = {}
++		for observer in pairs(pieces) do
++			list[#list + 1] = observer
++		end
++		local wanted = own ~= nil or #list > 0
++		if wanted and not running then
++			running = true
++			observe(tick)
++		elseif not wanted and running then
++			running = false
++			stop()
++		end
++	end
++
++	function ui.on_update(callback)
++		own = callback
++		settle()
++	end
++
++	function ui.stop_updates()
++		own = nil
++		settle()
++	end
++
++	ui.define("core.updates", function()
++		local Updates = {}
++
++		-- Calls observer(now) on every update, beside the package's own, until it is removed.
++		function Updates.add(observer)
++			if not pieces[observer] then
++				pieces[observer] = true
++				settle()
++			end
++		end
++
++		function Updates.remove(observer)
++			if pieces[observer] then
++				pieces[observer] = nil
++				settle()
++			end
++		end
++
++		return Updates
++	end)
++end

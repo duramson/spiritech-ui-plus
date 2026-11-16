@@ -1,6 +1,6 @@
 --- a/UI/Packages/Core/tooltip_delay.lua
 +++ b/UI/Packages/Core/tooltip_delay.lua
-@@ -0,0 +1,159 @@
+@@ -0,0 +1,142 @@
 +-- Tooltips that wait for the pointer to rest, as in the original client. Spiritech shows a tooltip the moment the
 +-- pointer touches a view, so sweeping it over the shortcut bars or a grid pops one up after another; the original
 +-- client showed one only once the pointer had rested on its view for about a second. The client has no delay of its
@@ -9,10 +9,10 @@
 +-- leaves, as before. Where the client draws a tooltip of its own for a view (a shortcut's description), the text
 +-- still switches it on and off, so that one waits too.
 +--
-+-- Core loads this right after ui.lua, in every package's VM, before any script keeps ui.tooltip for itself. It learns
-+-- of the pointer over a view through ui.on_pointer ("hover") and of time passing through the package's update
-+-- observer (ui.on_update). The client keeps one of each per view and per package, so those are wrapped as well, and
-+-- the package's own observers keep working beside these. The client reports no pointer leaving a view, only one
++-- Core loads this right after core.updates, in every package's VM, before any script keeps ui.tooltip for itself. It
++-- learns of the pointer over a view through ui.on_pointer ("hover"), which the client keeps one of per view, so that is
++-- wrapped as well and the package's own pointer observers keep working beside it; and of time passing through an
++-- update observer of core.updates, only while a tooltip waits. The client reports no pointer leaving a view, only one
 +-- coming over another: a pointer that leaves a view for anything but another of the package's tooltips (the world, a
 +-- window's background, another window) and comes straight back finds its tooltip already there.
 +--
@@ -23,8 +23,8 @@
 +	local DELAY = 1500
 +
 +	if DELAY > 0 then
-+		local set_tooltip, observe_pointer = ui.tooltip, ui.on_pointer
-+		local observe_updates, stop_updates, destroy = ui.on_update, ui.stop_updates, ui.destroy
++		local set_tooltip, observe_pointer, destroy = ui.tooltip, ui.on_pointer, ui.destroy
++		local Updates = ui.require("core.updates")
 +
 +		local wanted = {} -- view -> the text the package set
 +		local given = {} -- view -> the text the client has
@@ -32,7 +32,7 @@
 +		local watched = {} -- view -> true once the hover observer is in place, false where the client refused it
 +		local observers = {} -- view -> the package's own pointer observer
 +		local hovered, entered -- the view the pointer was over last, and when it got there
-+		local own_update, waiting -- the package's update observer, and whether a tooltip waits for the delay
++		local waiting -- whether a tooltip waits for the delay
 +		local update
 +
 +		local function give(view, text)
@@ -45,16 +45,14 @@
 +		local function wait()
 +			if not waiting then
 +				waiting = true
-+				observe_updates(update)
++				Updates.add(update)
 +			end
 +		end
 +
 +		local function stop_waiting()
 +			if waiting then
 +				waiting = false
-+				if not own_update then
-+					stop_updates()
-+				end
++				Updates.remove(update)
 +			end
 +		end
 +
@@ -66,9 +64,6 @@
 +					shown[hovered] = true
 +					give(hovered, text)
 +				end
-+			end
-+			if own_update then
-+				own_update(now)
 +			end
 +		end
 +
@@ -135,18 +130,6 @@
 +			observers[view] = callback
 +			if not watched[view] then
 +				return observe_pointer(view, callback)
-+			end
-+		end
-+
-+		function ui.on_update(callback)
-+			own_update = callback
-+			return observe_updates(update)
-+		end
-+
-+		function ui.stop_updates()
-+			own_update = nil
-+			if not waiting then
-+				return stop_updates()
 +			end
 +		end
 +

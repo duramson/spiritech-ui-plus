@@ -1,0 +1,14 @@
+--- a/UI/Packages/ChatConfig/main.lua
++++ b/UI/Packages/ChatConfig/main.lua
+@@ -2,6 +2,11 @@
+ ui.root(content)
+ local window_host = ui.find(content, "chat_config_windows")
+ local channel_host = ui.find(content, "chat_config_channels")
++-- The original client's scroll bars beside the two lists (content.xml), the arrows a row at a time.
++for _, list in ipairs({ "chat_config_window", "chat_config_channel" }) do
++	ui.require("core.scroll_bar").attach(ui.find(content, list .. "_scroll"), ui.find(content, list .. "_frame"),
++		{ step = 28, borders = { 0, 4, 4, 4 } })
++end
+ local windows, channels = {}, {}
+ local window_rows, channel_rows = {}, {}
+ local selected = ""

@@ -1,0 +1,15 @@
+--- a/UI/Packages/Tradeskills/content.xml
++++ b/UI/Packages/Tradeskills/content.xml
+@@ -59,8 +59,10 @@
+     </View>
+ 
+     <TextView name="feedback_label" value="Build Feedback" font_size="12" color="FFFFFF" min_size="Point(-1,16)" max_size="Point(-1,16)" layout_borders="Rect(0,6,0,3)" />
+-    <BorderView name="feedback_panel" border_gfx="GFX_GUI_INSET" tint="FFFFFF" draw_background="false" view_layout="vertical" weight="1" min_size="Point(-1,100)">
+-      <ScrollView name="build_feedback" view_layout="vertical" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" scrollbar_right_inset="1" weight="1" layout_borders="Rect(5,3,2,3)">
++    <!-- Without the client's own scroll bar: main.lua puts the original client's (core.scroll_bar) over the 12 pixels
++         the feedback leaves free at the right. -->
++    <BorderView name="feedback_panel" border_gfx="GFX_GUI_INSET" tint="FFFFFF" draw_background="false" view_layout="stacked" weight="1" min_size="Point(-1,100)">
++      <ScrollView name="build_feedback" view_layout="vertical" capture_input="true" weight="1" layout_borders="Rect(5,3,14,3)">
+         <TextView name="build_feedback_text" font_size="12" color="FFFFFF" word_wrap="true" />
+       </ScrollView>
+     </BorderView>

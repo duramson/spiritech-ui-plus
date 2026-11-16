@@ -1,0 +1,36 @@
+--- a/UI/Packages/Trade/content.xml
++++ b/UI/Packages/Trade/content.xml
+@@ -3,17 +3,19 @@
+   <View name="trade_content" view_layout="vertical" weight="1" layout_borders="Rect(4,0,4,2)">
+     <TextView name="partner_name" font_size="12" color="FFFFFF" size_to_text="false" text_alignment="center" min_size="Point(-1,18)" max_size="Point(-1,18)" layout_borders="Rect(3,0,3,0)" />
+ 
++    <!-- Without the client's own scroll bars: main.lua puts the original client's (core.scroll_bar) in each frame,
++         over the 12 pixels its dock leaves free at the right. -->
+     <TextView name="shop_label" value="Shop" font_size="12" color="FFFF00" h_alignment="center" min_size="Point(-1,16)" max_size="Point(-1,16)" layout_borders="Rect(3,5,3,3)" />
+     <BorderView name="shop_frame" border_gfx="GFX_GUI_INSET" draw_background="false" view_layout="stacked" min_size="Point(-1,176)" max_size="Point(-1,176)">
+-      <ScrollView name="shop_dock" capture_input="true" v_scrollbar_mode="always" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1" weight="1" layout_borders="Rect(3,3,2,3)">
++      <ScrollView name="shop_dock" capture_input="true" weight="1" layout_borders="Rect(3,3,14,3)">
+         <ScrollViewChild name="shop_slots" view_layout="grid" grid_columns="30" min_columns="1" grid_spacing="4" h_alignment="center" />
+       </ScrollView>
+       <View name="shop_list" view_layout="vertical" weight="1" visible="false" layout_borders="Rect(3,3,2,3)" />
+     </BorderView>
+ 
+     <TextView name="partner_label" value="Bought Items" font_size="12" color="FFFF00" h_alignment="center" min_size="Point(-1,16)" max_size="Point(-1,16)" layout_borders="Rect(3,5,3,3)" />
+-    <BorderView name="partner_frame" border_gfx="GFX_GUI_INSET" draw_background="false" view_layout="vertical" min_size="Point(-1,60)" max_size="Point(-1,60)">
+-      <ScrollView name="partner_dock" capture_input="true" v_scrollbar_mode="always" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1" weight="1" layout_borders="Rect(3,3,2,3)">
++    <BorderView name="partner_frame" border_gfx="GFX_GUI_INSET" draw_background="false" view_layout="stacked" min_size="Point(-1,60)" max_size="Point(-1,60)">
++      <ScrollView name="partner_dock" capture_input="true" weight="1" layout_borders="Rect(3,3,14,3)">
+         <ScrollViewChild name="partner_slots" view_layout="grid" grid_columns="30" min_columns="1" grid_spacing="4" h_alignment="center" />
+       </ScrollView>
+     </BorderView>
+@@ -30,8 +32,8 @@
+     </View>
+ 
+     <TextView name="our_label" value="Sold Items" font_size="12" color="FFFF00" h_alignment="center" min_size="Point(-1,16)" max_size="Point(-1,16)" layout_borders="Rect(3,5,3,3)" />
+-    <BorderView name="our_frame" border_gfx="GFX_GUI_INSET" draw_background="false" view_layout="vertical" min_size="Point(-1,60)" max_size="Point(-1,60)">
+-      <ScrollView name="our_dock" capture_input="true" v_scrollbar_mode="always" scrollbar_width="11" scrollbar_right_inset="1" scrollbar_arrow_gap="1" weight="1" layout_borders="Rect(3,3,2,3)">
++    <BorderView name="our_frame" border_gfx="GFX_GUI_INSET" draw_background="false" view_layout="stacked" min_size="Point(-1,60)" max_size="Point(-1,60)">
++      <ScrollView name="our_dock" capture_input="true" weight="1" layout_borders="Rect(3,3,14,3)">
+         <ScrollViewChild name="our_slots" view_layout="grid" grid_columns="30" min_columns="1" grid_spacing="4" h_alignment="center" />
+       </ScrollView>
+     </BorderView>

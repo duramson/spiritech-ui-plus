@@ -1,0 +1,11 @@
+--- a/UI/Packages/Actions/main.lua
++++ b/UI/Packages/Actions/main.lua
+@@ -33,6 +33,8 @@
+ local capacity = 1
+ local mode = ui.preference.read("listview_config.listview_mode") == "true" and "list" or "grid"
+ local sizing = Grid.create(38, 4, 30)
++-- The original client's scroll bar over the grid (window.xml), its arrows a row at a time.
++ui.require("core.scroll_bar").attach(grid_scroll, content, { step = sizing.cell + sizing.spacing })
+ local frame
+ local populate
+ local set_mode

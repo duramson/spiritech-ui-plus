@@ -1,0 +1,14 @@
+--- a/UI/Packages/Chat/main.lua
++++ b/UI/Packages/Chat/main.lua
+@@ -2,6 +2,11 @@
+ local content = ui.load("content.xml")
+ local entry = ui.find(content, "chat_entry")
+ local target = ui.find(content, "chat_target")
++-- The original client's scroll bar beside the log (content.xml), its arrows a line at a time. The client puts the
++-- lines straight into the scroll view, so the bar measures the scroll view itself.
++local log = ui.find(content, "chat_log")
++ui.require("core.scroll_bar").attach(log, ui.find(content, "chat_log_frame"),
++	{ content = log, step = 16, borders = { 0, 3, 6, 3 } })
+ ui.root(content)
+ 
+ function chat_present(messages)

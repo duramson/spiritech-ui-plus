@@ -1,0 +1,62 @@
+--- a/UI/Packages/Skills/content.xml
++++ b/UI/Packages/Skills/content.xml
+@@ -17,16 +17,23 @@
+       </View>
+       <View name="body" view_layout="horizontal" min_size="Point(-1,420)" max_size="Point(-1,420)">
+         <BorderView view_layout="vertical" border_gfx="GFX_GUI_INSET" tint="FFFFFF" draw_background="false" min_size="Point(202,420)" max_size="Point(202,420)" layout_borders="Rect(0,0,10,0)">
+-          <ScrollView name="category_scroll" v_scrollbar_mode="auto" min_size="Point(202,382)" max_size="Point(202,382)">
+-            <ScrollViewChild name="category_host" view_layout="vertical" />
+-          </ScrollView>
++          <!-- Without the client's own scroll bars: main.lua puts the original client's (core.scroll_bar) in each
++               scroll view's holder, over the margin the rows leave free at the right (the suggestions' scroll view
++               keeps 12 pixels free for it). -->
++          <View name="category_scroll_holder" view_layout="stacked" min_size="Point(202,382)" max_size="Point(202,382)">
++            <ScrollView name="category_scroll" weight="1">
++              <ScrollViewChild name="category_host" view_layout="vertical" />
++            </ScrollView>
++          </View>
+           <Button name="reset_all" label="Reset all skills" font_size="12" min_size="Point(170,22)" max_size="Point(170,22)" layout_borders="Rect(16,6,16,6)" />
+         </BorderView>
+         <View name="info_area" view_layout="vertical" min_size="Point(458,420)" max_size="Point(458,420)">
+           <BorderView view_layout="vertical" border_gfx="GFX_GUI_INSET" tint="FFFFFF" draw_background="false" min_size="Point(458,184)" max_size="Point(458,184)" layout_borders="Rect(0,0,0,4)">
+-            <ScrollView name="skill_scroll" v_scrollbar_mode="auto" min_size="Point(450,176)" max_size="Point(450,176)" layout_borders="Rect(4,4,4,4)">
+-              <ScrollViewChild name="group_host" view_layout="vertical" />
+-            </ScrollView>
++            <View name="skill_scroll_holder" view_layout="stacked" min_size="Point(450,176)" max_size="Point(450,176)" layout_borders="Rect(4,4,4,4)">
++              <ScrollView name="skill_scroll" weight="1">
++                <ScrollViewChild name="group_host" view_layout="vertical" />
++              </ScrollView>
++            </View>
+           </BorderView>
+           <BorderView view_layout="stacked" border_gfx="GFX_GUI_INSET" tint="FFFFFF" draw_background="false" min_size="Point(458,232)" max_size="Point(458,232)">
+             <View name="details" view_layout="vertical" layout_borders="Rect(5,3,5,5)">
+@@ -39,9 +46,11 @@
+                 <View view_layout="horizontal" min_size="Point(220,22)" max_size="Point(220,22)"><TextView value="Maximum skill allowed:" font_size="12" color="FFFFFF" /><HLayoutSpacer /><TextView name="maxskill" font_size="12" color="FFFFFF" /></View>
+                 <View view_layout="horizontal" min_size="Point(220,22)" max_size="Point(220,22)"><TextView value="Total cost:" font_size="12" color="FFFFFF" /><HLayoutSpacer /><TextView name="totalcost" font_size="12" color="FFFFFF" /></View>
+               </View>
+-              <ScrollView v_scrollbar_mode="auto" min_size="Point(448,91)" max_size="Point(448,91)" layout_borders="Rect(0,8,0,3)">
+-                <ScrollViewChild view_layout="vertical"><TextView name="stat_description" color="FFFFFF" font_size="12" word_wrap="true" max_size="Point(432,-1)" /></ScrollViewChild>
+-              </ScrollView>
++              <View name="description_scroll_holder" view_layout="stacked" min_size="Point(448,91)" max_size="Point(448,91)" layout_borders="Rect(0,8,0,3)">
++                <ScrollView name="description_scroll" weight="1">
++                  <ScrollViewChild view_layout="vertical"><TextView name="stat_description" color="FFFFFF" font_size="12" word_wrap="true" max_size="Point(432,-1)" /></ScrollViewChild>
++                </ScrollView>
++              </View>
+               <View name="reset_area" view_layout="horizontal" min_size="Point(-1,24)" max_size="Point(-1,24)">
+                 <TextView name="reset_points" font_size="12" color="FFFFFF" /><HLayoutSpacer />
+                 <Button name="reset_skill" label="Reset this skill" font_size="12" min_size="Point(145,22)" max_size="Point(145,22)" />
+@@ -49,9 +58,11 @@
+             </View>
+             <View name="suggestion_result" visible="false" view_layout="vertical" layout_borders="Rect(8,8,8,8)">
+               <TextView value="Suggested improvements are staged. Review them, then Save Changes to keep them." word_wrap="true" max_size="Point(430,-1)" font_size="12" color="FFFFFF" />
+-              <ScrollView v_scrollbar_mode="auto" min_size="Point(442,165)" max_size="Point(442,165)" layout_borders="Rect(0,8,0,0)">
+-                <ScrollViewChild name="suggestion_rows" view_layout="vertical" />
+-              </ScrollView>
++              <View name="suggestion_scroll_holder" view_layout="stacked" min_size="Point(442,165)" max_size="Point(442,165)" layout_borders="Rect(0,8,0,0)">
++                <ScrollView name="suggestion_scroll" weight="1" layout_borders="Rect(0,0,12,0)">
++                  <ScrollViewChild name="suggestion_rows" view_layout="vertical" />
++                </ScrollView>
++              </View>
+             </View>
+           </BorderView>
+         </View>

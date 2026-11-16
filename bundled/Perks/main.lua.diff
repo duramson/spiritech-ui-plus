@@ -1,0 +1,12 @@
+--- a/UI/Packages/Perks/main.lua
++++ b/UI/Packages/Perks/main.lua
+@@ -2,6 +2,9 @@
+ local Security = ui.require("core.security")
+ local content = ui.load("content.xml")
+ local lines_host = ui.find(content, "perk_lines")
++-- The original client's scroll bar beside the perk lines (content.xml), its arrows a line at a time.
++ui.require("core.scroll_bar").attach(ui.find(content, "perk_lines_scroll"), ui.find(content, "perk_lines_panel"),
++	{ step = 26, borders = { 0, 9, 3, 5 } })
+ local columns = { ui.find(content, "perk_column_0"), ui.find(content, "perk_column_1") }
+ local line_rows, perk_rows = {}, {}
+ local remove = ui.find(content, "perk_remove")

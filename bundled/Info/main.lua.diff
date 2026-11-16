@@ -1,0 +1,11 @@
+--- a/UI/Packages/Info/main.lua
++++ b/UI/Packages/Info/main.lua
+@@ -2,6 +2,8 @@
+ local content = ui.load("content.xml")
+ local lines = ui.find(content, "info_lines")
+ local scroll = ui.find(content, "info_scroll")
++-- The original client's scroll bar beside the lines (content.xml), its arrows a line at a time.
++ui.require("core.scroll_bar").attach(scroll, ui.find(content, "info_scroll_holder"), { step = 16 })
+ local back = ui.find(content, "info_back")
+ local forward = ui.find(content, "info_forward")
+ local history, current = {}, 0

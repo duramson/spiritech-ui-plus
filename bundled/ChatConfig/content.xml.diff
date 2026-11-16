@@ -1,0 +1,29 @@
+--- a/UI/Packages/ChatConfig/content.xml
++++ b/UI/Packages/ChatConfig/content.xml
+@@ -1,11 +1,13 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <root>
++  <!-- Without the client's own scroll bars: main.lua puts the original client's (core.scroll_bar) over the 11 pixels
++       each list leaves free at the right. -->
+   <View name="chat_config_content" view_layout="vertical" weight="1" layout_borders="Rect(8,8,8,8)">
+     <View view_layout="horizontal" weight="1" fill_by_weight="true" min_size="Point(0,0)">
+       <View view_layout="vertical" min_size="Point(128,0)" max_size="Point(128,-1)" layout_borders="Rect(0,0,12,0)">
+         <TextView value="Chat windows" font_size="13" color="White" min_size="Point(-1,18)" max_size="Point(-1,18)" layout_borders="Rect(0,0,0,4)" />
+-        <BorderView view_layout="vertical" border_gfx="GFX_GUI_INSET" tint="0x8B9699" draw_background="false" weight="1" fill_by_weight="true" min_size="Point(0,0)">
+-          <ScrollView name="chat_config_window_scroll" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" weight="1" fill_by_weight="true" min_size="Point(0,0)" layout_borders="Rect(4,4,4,4)">
++        <BorderView name="chat_config_window_frame" view_layout="stacked" border_gfx="GFX_GUI_INSET" tint="0x8B9699" draw_background="false" weight="1" fill_by_weight="true" min_size="Point(0,0)">
++          <ScrollView name="chat_config_window_scroll" capture_input="true" weight="1" fill_by_weight="true" min_size="Point(0,0)" layout_borders="Rect(4,4,15,4)">
+             <ScrollViewChild name="chat_config_windows" view_layout="vertical" />
+           </ScrollView>
+         </BorderView>
+@@ -13,8 +15,8 @@
+       </View>
+       <View view_layout="vertical" weight="1" fill_by_weight="true" min_size="Point(0,0)">
+         <TextView value="Chat channels" font_size="13" color="White" min_size="Point(-1,18)" max_size="Point(-1,18)" layout_borders="Rect(0,0,0,4)" />
+-        <BorderView view_layout="vertical" border_gfx="GFX_GUI_INSET" tint="0x8B9699" draw_background="false" weight="1" fill_by_weight="true" min_size="Point(0,0)">
+-          <ScrollView name="chat_config_channel_scroll" capture_input="true" v_scrollbar_mode="auto" scrollbar_width="11" weight="1" fill_by_weight="true" min_size="Point(0,0)" layout_borders="Rect(4,4,4,4)">
++        <BorderView name="chat_config_channel_frame" view_layout="stacked" border_gfx="GFX_GUI_INSET" tint="0x8B9699" draw_background="false" weight="1" fill_by_weight="true" min_size="Point(0,0)">
++          <ScrollView name="chat_config_channel_scroll" capture_input="true" weight="1" fill_by_weight="true" min_size="Point(0,0)" layout_borders="Rect(4,4,15,4)">
+             <ScrollViewChild name="chat_config_channels" view_layout="vertical" />
+           </ScrollView>
+         </BorderView>

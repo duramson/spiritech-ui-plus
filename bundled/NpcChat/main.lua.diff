@@ -1,0 +1,33 @@
+--- a/UI/Packages/NpcChat/main.lua
++++ b/UI/Packages/NpcChat/main.lua
+@@ -3,6 +3,12 @@
+ local content = ui.load("content.xml")
+ local transcript = ui.find(content, "transcript")
+ local responses = ui.find(content, "responses")
++local transcript_lines = ui.find(content, "transcript_lines")
++local response_lines = ui.find(content, "response_lines")
++-- The original client's scroll bars beside the transcript and the answers (content.xml), the arrows a line at a time.
++for _, scroll in ipairs({ { transcript, "transcript_holder" }, { responses, "responses_holder" } }) do
++	ui.require("core.scroll_bar").attach(scroll[1], ui.find(content, scroll[2]), { step = 16, borders = { 0, 3, 6, 3 } })
++end
+ local prompt = ui.find(content, "trade_prompt")
+ local buttons = ui.load("buttons.xml")
+ local trade = ui.load("trade.xml")
+@@ -97,7 +103,7 @@
+ 			count = count + 1
+ 			if not paragraphs[count] then
+ 				paragraphs[count] = ui.load("line.xml")
+-				ui.add(transcript, paragraphs[count])
++				ui.add(transcript_lines, paragraphs[count])
+ 			end
+ 			if (line.kind == 0 or line.kind == 6) and state.npc ~= "" then
+ 				prefix = state.npc .. ": "
+@@ -129,7 +135,7 @@
+ 			local root = ui.load("answer.xml")
+ 			answer = { root = root, text = ui.find(root, "text") }
+ 			answers[index] = answer
+-			ui.add(responses, root)
++			ui.add(response_lines, root)
+ 			ui.text_color(answer.text, colors[2])
+ 		end
+ 		ui.text(answer.text, entry.text)

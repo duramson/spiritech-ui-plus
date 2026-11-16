@@ -1,6 +1,6 @@
 --- a/UI/Packages/Core/scroll_bar.lua
 +++ b/UI/Packages/Core/scroll_bar.lua
-@@ -0,0 +1,145 @@
+@@ -0,0 +1,146 @@
 +ui.define("core.scroll_bar", function()
 +	-- The original client's scroll bar (scroll_bar.xml) for a scroll view whose own bar is off: the scroll view
 +	-- leaves out v_scrollbar_mode, and ScrollBar.attach puts this bar over its right edge, in the stacked view that
@@ -81,7 +81,8 @@
 +		ui.borders(self.root, left, top, right, bottom)
 +	end
 +
-+	-- Off while the window shows something else in place of the scroll view (a list instead of the grid).
++	-- Off while the window shows something else in place of the scroll view (a list instead of the grid). A hidden
++	-- scroll view hides its bar by itself.
 +	function ScrollBar:enable(enabled)
 +		self.disabled = not enabled
 +		self:refresh()
@@ -114,7 +115,7 @@
 +	function ScrollBar:refresh()
 +		local view = ui.height(self.scroll)
 +		local content = math.max(ui.height(self.content), ui.desired_height(self.content))
-+		local needed = not self.disabled and content > view + 0.5
++		local needed = not self.disabled and ui.requested_visible(self.scroll) and content > view + 0.5
 +		if needed ~= self.shown then
 +			self.shown = needed
 +			ui.visible(self.root, needed)

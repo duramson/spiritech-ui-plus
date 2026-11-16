@@ -1,13 +1,14 @@
 --- a/UI/Packages/Chat/main.lua
 +++ b/UI/Packages/Chat/main.lua
-@@ -2,6 +2,11 @@
+@@ -2,6 +2,12 @@
  local content = ui.load("content.xml")
  local entry = ui.find(content, "chat_entry")
  local target = ui.find(content, "chat_target")
 +-- The original client's scroll bar beside the log (content.xml), its arrows a line at a time. The client puts the
-+-- lines straight into the scroll view, so the bar measures the scroll view itself.
++-- lines straight into the scroll view, so the bar measures the scroll view itself. The chat has fewer rights than the
++-- windows, so whatever the bar can't set up here leaves the chat working, only without its bar.
 +local log = ui.find(content, "chat_log")
-+ui.require("core.scroll_bar").attach(log, ui.find(content, "chat_log_frame"),
++pcall(ui.require("core.scroll_bar").attach, log, ui.find(content, "chat_log_frame"),
 +	{ content = log, step = 16, borders = { 0, 3, 6, 3 } })
  ui.root(content)
  

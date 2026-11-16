@@ -1,6 +1,6 @@
 --- a/UI/Packages/Core/scroll_bar.lua
 +++ b/UI/Packages/Core/scroll_bar.lua
-@@ -0,0 +1,146 @@
+@@ -0,0 +1,180 @@
 +ui.define("core.scroll_bar", function()
 +	-- The original client's scroll bar (scroll_bar.xml) for a scroll view whose own bar is off: the scroll view
 +	-- leaves out v_scrollbar_mode, and ScrollBar.attach puts this bar over its right edge, in the stacked view that
@@ -14,9 +14,13 @@
 +	ScrollBar.__index = ScrollBar
 +
 +	local bars = {}
++	-- A held arrow scrolls again after REPEAT_DELAY and then every REPEAT_INTERVAL milliseconds, as the arrows'
++	-- layout asks of the client (scroll_bar.xml), where a package has to do it itself (ScrollBar:hook_arrow).
++	local REPEAT_DELAY, REPEAT_INTERVAL = 400, 50
 +
-+	local function update()
++	local function update(now)
 +		for _, bar in ipairs(bars) do
++			bar:hold(now)
 +			bar:refresh()
 +		end
 +	end
@@ -39,12 +43,8 @@
 +		if options.borders then
 +			self:borders(options.borders[1], options.borders[2], options.borders[3], options.borders[4])
 +		end
-+		ui.on_repeat(self.up, function()
-+			self:scroll_by(-self.step)
-+		end)
-+		ui.on_repeat(self.down, function()
-+			self:scroll_by(self.step)
-+		end)
++		self:hook_arrow(self.up, -1)
++		self:hook_arrow(self.down, 1)
 +		ui.on_pointer(self.before, function(phase)
 +			if phase == "start" then
 +				self:scroll_by(-ui.height(self.scroll))
@@ -61,6 +61,40 @@
 +		bars[#bars + 1] = self
 +		Updates.add(update)
 +		return self
++	end
++
++	-- An arrow scrolls a step when pressed and repeats while held. The client does the repeating for most packages, but
++	-- some (the chat's) may not observe its press/repeat input: there the pointer starts and ends the press, and the
++	-- update observer repeats it (ScrollBar:hold).
++	function ScrollBar:hook_arrow(arrow, direction)
++		local repeats = pcall(ui.on_repeat, arrow, function()
++			self:scroll_by(direction * self.step)
++		end)
++		if repeats then
++			return
++		end
++		ui.on_pointer(arrow, function(phase)
++			if phase == "start" then
++				ui.capture_pointer(arrow)
++				self.held = { direction = direction }
++				self:scroll_by(direction * self.step)
++			elseif phase == "end" or phase == "cancel" then
++				self.held = nil
++			end
++		end)
++	end
++
++	function ScrollBar:hold(now)
++		local held = self.held
++		if not held then
++			return
++		end
++		if not held.next then
++			held.next = now + REPEAT_DELAY
++		elseif now >= held.next then
++			held.next = now + REPEAT_INTERVAL
++			self:scroll_by(held.direction * self.step)
++		end
 +	end
 +
 +	-- Stops following the scroll view, before a window destroys it.

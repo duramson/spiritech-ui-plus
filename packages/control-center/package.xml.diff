@@ -1,0 +1,9 @@
+--- a/UI/Packages/ControlCenter/package.xml
++++ b/UI/Packages/ControlCenter/package.xml
+@@ -1,4 +1,5 @@
+-<Package>
++<Package id="duramson.control-center" name="UI+">
++  <Provides role="prk.control-center" />
+   <Script src="minibar.lua" />
+   <Script src="rollup_panel.lua" />
+   <Script src="main.lua" />

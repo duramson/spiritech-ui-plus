@@ -1,0 +1,30 @@
+--- a/UI/Packages/Core/rollup.xml
++++ b/UI/Packages/Core/rollup.xml
+@@ -3,15 +3,19 @@
+   <View name="rollup" capture_input="true" color="Default" composite_layer="true" view_layout="stacked">
+     <BitmapView name="rollup_background" image="gfx://GFX_GUI_TAB_BACKGROUND" graphic_mode="tinted" />
+     <View view_layout="vertical">
+-      <View name="rollup_header" view_layout="horizontal" capture_input="true">
+-        <View name="rollup_icon_slot" view_layout="stacked">
+-          <BitmapView name="rollup_icon" interactive="true" image="gfx://GFX_GUI_WINDOW_ICON_I" graphic_mode="tinted" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(2,2,0,2)" />
++      <!-- The original client draws a docked window's title bar black, over the blue of the page below it. -->
++      <View name="rollup_header" view_layout="stacked" capture_input="true">
++        <View fill_color="000000" />
++        <View view_layout="horizontal">
++          <View name="rollup_icon_slot" view_layout="stacked">
++            <BitmapView name="rollup_icon" interactive="true" image="gfx://GFX_GUI_WINDOW_ICON_I" graphic_mode="tinted" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(2,2,0,2)" />
++          </View>
++          <TextView name="rollup_title" font_size="12" color="FFFFFF" v_alignment="center" layout_borders="Rect(8,2,0,2)" />
++          <HLayoutSpacer />
++          <Button name="rollup_collapse" graphic_mode="tinted" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(2,2,0,2)" gfxid_raised="GFX_GUI_ROLLUP_COLLAPSE_STATE1" gfxid_hover="GFX_GUI_ROLLUP_COLLAPSE_STATE1" gfxid_pressed="GFX_GUI_ROLLUP_EXPAND_STATE3" />
++          <Button name="rollup_expand" visible="false" graphic_mode="tinted" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(2,2,0,2)" gfxid_raised="GFX_GUI_ROLLUP_EXPAND_STATE1" gfxid_hover="GFX_GUI_ROLLUP_EXPAND_STATE1" gfxid_pressed="GFX_GUI_ROLLUP_EXPAND_STATE3" />
++          <Button name="rollup_close" graphic_mode="tinted" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(2,2,2,2)" gfxid_raised="GFX_GUI_WINDOW_CLOSE_X" gfxid_hover="GFX_GUI_WINDOW_CLOSE_X_STATE2" gfxid_pressed="GFX_GUI_WINDOW_CLOSE_X_STATE3" />
+         </View>
+-        <TextView name="rollup_title" font_size="12" color="FFFFFF" v_alignment="center" layout_borders="Rect(8,2,0,2)" />
+-        <HLayoutSpacer />
+-        <Button name="rollup_collapse" graphic_mode="tinted" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(2,2,0,2)" gfxid_raised="GFX_GUI_ROLLUP_COLLAPSE_STATE1" gfxid_hover="GFX_GUI_ROLLUP_COLLAPSE_STATE1" gfxid_pressed="GFX_GUI_ROLLUP_EXPAND_STATE3" />
+-        <Button name="rollup_expand" visible="false" graphic_mode="tinted" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(2,2,0,2)" gfxid_raised="GFX_GUI_ROLLUP_EXPAND_STATE1" gfxid_hover="GFX_GUI_ROLLUP_EXPAND_STATE1" gfxid_pressed="GFX_GUI_ROLLUP_EXPAND_STATE3" />
+-        <Button name="rollup_close" graphic_mode="tinted" min_size="Point(15,15)" max_size="Point(15,15)" v_alignment="center" layout_borders="Rect(2,2,2,2)" gfxid_raised="GFX_GUI_WINDOW_CLOSE_X" gfxid_hover="GFX_GUI_WINDOW_CLOSE_X_STATE2" gfxid_pressed="GFX_GUI_WINDOW_CLOSE_X_STATE3" />
+       </View>
+       <View name="rollup_body" view_layout="vertical" layout_borders="Rect(0,4,0,5)" />
+     </View>

@@ -5,6 +5,10 @@ What changed for players, the newest first. Each line links the pull request or 
 
 ## 2026-11-16
 
+- **Scroll bar:** every window that scrolls has the original client's scroll bar: every list, Actions, Missions,
+  Info, Trade, the NPC dialogue, Tradeskills, Chat, the chat configuration, Perks and Skills, and Spiritech's own
+  Nano Programs, Inventory, Stats and rollup. It comes with UI+ by itself, with nothing to pick in Options.
+  ([#18](https://github.com/duramson/spiritech-ui-plus/pull/18))
 - **Rollup:** a docked window's title bar is black, as in the original client, with a cream collapse button.
   ([#16](https://github.com/duramson/spiritech-ui-plus/pull/16))
 - **Control Center:** new. UI+'s Control Center (`duramson.control-center`) draws the rollup column without a scroll

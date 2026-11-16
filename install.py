@@ -619,7 +619,7 @@ def install(client):
     say()
     say("Done. It loads at your next character login (log out to character select and back in).")
     say("- The window frame and the scroll bars change every window by themselves. The client's own screens (Options,")
-    say("  login) take them after a restart of the game.")
+    say("  login) take the frame after a restart of the game.")
     say("- Pick UI+'s windows in Options > Interface & HUD > UI packages, where they show as")
     say("  \"External [duramson.<window>] - UI+\": " + ", ".join(p.name for p in repo_packages()) + ".")
 

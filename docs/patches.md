@@ -6,9 +6,13 @@ installer reads the files from your own client and patches them there.
 - **`core/`** holds patches for the client's `UI/Packages/Core`, the frame every window is built from. No UI
   package can replace those files, so they are patched in place. Each file is kept as it was beside it
   (`<name>.ui-plus-backup`), and uninstalling puts it back.
+- **`bundled/<package>/`** holds patches for the client's other bundled packages, patched in place the same way.
+  They are for a piece every window has in its own layout, where the client has no shared place for it: the scroll
+  bar, which each window with a scroll view of its own attaches with a line.
 - **`packages/`** holds windows. Each names the bundled package it is made from in `stock-package.txt`. The
-  installer copies that package from the client, applies the window's patches, adds the window's own files, and
-  puts the result in the per-user package folder (`ProjectRubiKa/ui-packages/ui-plus-<window>`).
+  installer copies that package from the client as UI+ patches it in place, applies the window's patches, adds the
+  window's own files, and puts the result in the per-user package folder
+  (`ProjectRubiKa/ui-packages/ui-plus-<window>`).
 
 Installing again starts from the client's own files each time, so nothing is patched twice. Another mod that
 patches the same files keeps its changes, as long as it changes other lines than UI+. If a client update

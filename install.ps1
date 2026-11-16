@@ -664,7 +664,7 @@ function Invoke-Install([string]$ClientDir) {
     Say
     Say 'Done. It loads at your next character login (log out to character select and back in).'
     Say '- The window frame and the scroll bars change every window by themselves. The client''s own screens (Options,'
-    Say '  login) take them after a restart of the game.'
+    Say '  login) take the frame after a restart of the game.'
     Say '- Pick UI+''s windows in Options > Interface & HUD > UI packages, where they show as'
     Say "  `"External [duramson.<window>] - UI+`": $($repoPackages -join ', ')."
 }

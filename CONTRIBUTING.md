@@ -132,6 +132,18 @@ A change one can see gets a picture: the window before and after, and the origin
 Crop screenshots to the windows: no character names or chat. In [docs/changes.md](docs/changes.md) the newest
 change comes first too: a new section goes on top, and a section that is changed moves to the top.
 
+## Where a change goes
+
+UI+ rebuilds the original client's look, and changes each thing where it comes from:
+
+- **A window that looks different** is a window of UI+'s own (`packages/`), which the player picks under Options →
+  Interface & HUD → UI packages. That is the client's own way to change a window, and it is used as far as it goes.
+- **What no package can reach**, such as the window frame, is patched in Core (`core/`).
+- **A piece many windows share** is patched once, where it comes from: in Core when it lives there (the list every
+  list view is built from), and in each window's own layout when the client gives it no shared place (the scroll
+  bar, `bundled/`). A spacing every window takes from one value is changed in that value, not in one window.
+- **Nothing that plays the game** for the player.
+
 ## Patches
 
 The repository holds only patches against Project Rubi-Ka's files, never a whole file of theirs or Funcom's
@@ -146,7 +158,7 @@ python3 tools/dev.py sync      # patches from work/, then install into the clien
 1. `fork` puts the client's files, with UI+'s patches applied, into `work/` (not tracked).
 2. Edit them there. `sync` writes the patches and installs them into your client; log out to character select and
    back in to see the change.
-3. Commit what `sync` wrote to `core/` and `packages/`.
+3. Commit what `sync` wrote to `core/`, `bundled/` and `packages/`.
 
 More of `tools/dev.py`:
 
@@ -154,6 +166,9 @@ More of `tools/dev.py`:
   the client's `UI/Packages`). Give its `package.xml` its own id, `duramson.<short>`, and the name `UI+`, so it
   shows beside the bundled window in the UI package list.
 - **`core <file>`** starts patching another file of the client's `UI/Packages/Core`.
+- **`bundled <Package>/<file>`** starts patching a file of another of the client's bundled packages in place, for
+  a shared piece that sits in each window's own layout. UI+'s windows made from that package are built on top of
+  it.
 - **`diff`** writes the patches from `work/` without installing.
 - **`preview`** shows a layout file (XML) without logging out. It installs a preview package (restart the game
   once after it), whose windows are copies of the window frame, the NCU window and the scroll bar, built from the

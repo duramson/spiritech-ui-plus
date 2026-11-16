@@ -2,7 +2,7 @@
 """Working on UI+: whole files to edit in work/, and the patches made back from them.
 
     python3 tools/dev.py fork             work/: the client's files with UI+'s patches applied, to edit
-    python3 tools/dev.py new NAME STOCK   start a window: packages/NAME, from the client's bundled package STOCK
+    python3 tools/dev.py new NAME STOCK   start a window: packages/NAME, patching the client's package STOCK
     python3 tools/dev.py core FILE        start patching another file of the client's UI/Packages/Core
     python3 tools/dev.py diff             the patches (and UI+'s own files) in core/ and packages/, from work/
     python3 tools/dev.py sync             diff, then install into the client
@@ -28,18 +28,19 @@ PREVIEW_FOLDER = "ui-plus-dev-preview"
 
 
 def stock_package(client, source):
-    stock_file = source / ui.STOCK
-    if not stock_file.exists():
+    """The client's package a window patches and its files as the client has them, without UI+'s changes."""
+    stock = ui.stock_of(source)
+    if not stock:
         return None, {}
-    name = stock_file.read_text(encoding="utf-8").strip()
-    return name, ui.files_of(client / "UI" / "Packages" / name)
+    return stock, ui.original_package(client, ui.load_state(client), stock)
 
 
 def fork(client):
     state = ui.load_state(client)
     shutil.rmtree(WORK, ignore_errors=True)
-    for name, _, _, style, new, _ in ui.plan_core(client, state, ui.repo_core()):
-        path = WORK / "core" / name
+    core = [(f"Core/{p.name[:-len('.diff')]}", p.read_text(encoding="utf-8")) for p in ui.repo_core()]
+    for rel, _, _, style, new, _ in ui.plan_files(client, state, core):
+        path = WORK / "core" / rel[len("Core/"):]
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(ui.encode(new, style))
     for source in ui.repo_packages():
@@ -54,19 +55,24 @@ def new_package(client, name, stock):
     source, work = REPO / "packages" / name, WORK / "packages" / name
     if source.exists():
         sys.exit(f"packages/{name} exists already")
-    if not (client / "UI" / "Packages" / stock).is_dir():
-        sys.exit(f"the client has no bundled package {stock}")
+    try:
+        files = ui.original_package(client, ui.load_state(client), stock)
+    except ui.PatchError as error:
+        sys.exit(str(error))
     source.mkdir(parents=True)
     (source / ui.STOCK).write_text(stock + "\n", encoding="utf-8")
     shutil.rmtree(work, ignore_errors=True)
-    shutil.copytree(client / "UI" / "Packages" / stock, work)
-    print(f"work/packages/{name} is a copy of {stock}. Give its package.xml its own id (duramson.<short>) and the "
-          f"name UI+, so it shows beside the bundled window; then diff.")
+    for rel, data in files.items():
+        path = work / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
+    print(f"work/packages/{name} holds the client's {stock}: edit it, then diff. UI+ patches the client's package in "
+          f"place, so its package.xml keeps the client's id.")
 
 
 def new_core(client, name):
     path = WORK / "core" / name
-    base, style, _ = ui.core_base(client, ui.load_state(client), name)
+    base, style, _ = ui.original(client, ui.load_state(client), f"Core/{name}")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(ui.encode(base, style))
     print(f"work/core/{name} is the client's file: edit it, then diff")
@@ -77,7 +83,7 @@ def diff(client):
     written = 0
     if (WORK / "core").is_dir():
         for rel, path in ui.files_of(WORK / "core").items():
-            base, _, _ = ui.core_base(client, state, rel)
+            base, _, _ = ui.original(client, state, f"Core/{rel}")
             patch = ui.make_diff(base, ui.decode(path.read_bytes())[0], f"UI/Packages/Core/{rel}")
             written += put(REPO / "core" / (rel + ".diff"), patch)
     for work in sorted((WORK / "packages").iterdir()) if (WORK / "packages").is_dir() else []:
@@ -92,7 +98,7 @@ def diff(client):
                 keep.add(rel)
                 continue
             if rel in stock:
-                original = stock[rel].read_bytes()
+                original = stock[rel]
                 if data == original:
                     continue
                 try:

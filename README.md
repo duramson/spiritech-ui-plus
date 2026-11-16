@@ -11,8 +11,6 @@ its layouts and its crisp pixel text. With a few fixes and additions of its own.
 2. **Windows:** double-click `install.bat`.\
    **macOS, Linux:** run `python3 install.py` in a terminal.
 3. Press Enter to install, then log in a character.
-4. In Options → Interface & HUD → UI packages, set **Inventory containers**, **Nano programs**, **Wear**,
-   **Overhead nameplates**, **Planet Map**, **Stats** and **Control Center** to **UI+**, and log in again.
 
 > [!IMPORTANT]
 > Before the launcher updates the game, start the installer again and choose Uninstall. Install again after the

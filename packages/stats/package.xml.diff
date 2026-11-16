@@ -1,9 +1,0 @@
---- a/UI/Packages/Stats/package.xml
-+++ b/UI/Packages/Stats/package.xml
-@@ -1,4 +1,5 @@
- <?xml version="1.0" encoding="utf-8"?>
--<Package>
-+<Package id="duramson.stats" name="UI+">
-+  <Provides role="prk.stats" />
-   <Script src="main.lua" />
- </Package>

@@ -37,7 +37,7 @@ out at the original client's size, as in the picture above (taken on a Retina Ma
 The names over the heads take the same pixels. Spiritech writes them with a font of its own that no package can
 change, so the font file can't help there: the installer writes Notum Grotesk's 13 px pixels into a table beside it,
 and UI+'s nameplates draw each run of them as a small rectangle, a pixel further apart than in the windows, as the
-original client does. Set Overhead nameplates to UI+ under UI packages; the interface font doesn't matter for them.
+original client does. The interface font doesn't matter for them.
 The [picture page](changes.md#overhead-nameplates) shows them beside the original's.
 
 ## Open

@@ -1,9 +1,7 @@
 --- a/UI/Packages/Nameplates/package.xml
 +++ b/UI/Packages/Nameplates/package.xml
-@@ -1,3 +1,5 @@
--<Package>
-+<Package id="duramson.nameplates" name="UI+">
-+  <Provides role="prk.nameplates" />
+@@ -1,3 +1,4 @@
+ <Package>
 +  <Script src="glyphs.lua" />
    <Script src="main.lua" />
  </Package>

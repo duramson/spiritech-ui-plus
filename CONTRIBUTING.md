@@ -2,6 +2,10 @@
 
 Fixes, reworked windows and pictures are welcome, as pull requests or as issues with a screenshot.
 
+UI+ changes Spiritech as if it were its own client: each change goes where it belongs in the client's interface
+files, in the window's own layout or in Core's shared pieces, not around them. A limit of the client's Lua interface
+is fixed once in Core rather than worked around in every window. UI+ builds nothing that plays for the player.
+
 ## Rules
 
 1. **`main` is what players download.** Nobody commits or pushes to it. It changes only when a pull request is
@@ -150,9 +154,8 @@ python3 tools/dev.py sync      # patches from work/, then install into the clien
 
 More of `tools/dev.py`:
 
-- **`new <name> <BundledPackage>`** starts a window from one of the client's bundled packages (the folder name in
-  the client's `UI/Packages`). Give its `package.xml` its own id, `duramson.<short>`, and the name `UI+`, so it
-  shows beside the bundled window in the UI package list.
+- **`new <name> <Package>`** starts patching another window: `packages/<name>`, for one of the client's packages
+  (the folder name in the client's `UI/Packages`). The package keeps its id: UI+ changes the client's own window.
 - **`core <file>`** starts patching another file of the client's `UI/Packages/Core`.
 - **`diff`** writes the patches from `work/` without installing.
 - **`preview`** shows a layout file (XML) without logging out. It installs a preview package (restart the game

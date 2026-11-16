@@ -9,13 +9,19 @@
                                       it isn't found by itself; the environment variable UIPLUS_CLIENT works too
 
 UI+ ships none of Project Rubi-Ka's files, only patches: its changes to their files. The installer reads the files
-from your own client and patches them there.
+from your own client and patches them there, in place, as if UI+ were part of the client.
 
-- core/*.diff patch the client's UI/Packages/Core in place, the frame every window is built from. Each file is kept
-  as it was beside it, as <name>.ui-plus-backup, and uninstalling puts it back.
-- packages/<name>/ is a window. When its stock-package.txt names one of the client's bundled packages, that package
-  is copied from the client and patched with the *.diff files; any other file is UI+'s own. The window goes into the
-  per-user package folder as ui-plus-<name>, and the client lists it under Options > Interface & HUD > UI packages.
+- core/*.diff patch the client's UI/Packages/Core, the frame every window is built from.
+- packages/<name>/ is a window: its stock-package.txt names the client's package for it in UI/Packages, which the
+  *.diff files patch; any other file is UI+'s own and is added to that package.
+- Each file UI+ changes is kept as it was beside it, as <name>.ui-plus-backup, and uninstalling puts it back. Files
+  UI+ adds get no kept copy; uninstalling removes them.
+- A package in packages/ without a stock-package.txt is an addon of UI+'s own, a window the client has none of. It
+  goes into the per-user package folder as ui-plus-<name>.
+
+Earlier versions installed UI+'s windows as packages of their own, picked in Options > Interface & HUD > UI packages.
+Installing removes those and takes their choice out of the client's settings, so the client uses its own windows,
+which carry UI+'s changes now.
 
 Installing again, after a client update or with a newer UI+, starts from the client's own files each time, so nothing
 is patched twice. What was installed is recorded in ui-plus.json in the client folder. Needs Python 3.8 or newer and
@@ -271,40 +277,54 @@ def client_version(client):
 
 
 def load_state(client):
+    """What is installed: "files", the client's files UI+ patched or added (by their path under UI/Packages), and
+    "packages", UI+'s packages in the per-user folder. Versions before 2026-11-16 patched only Core in place and
+    recorded its files under "core" by name; they are read as Core's."""
     path = client / STATE
-    if path.exists():
-        return json.loads(path.read_text(encoding="utf-8"))
-    return {"version": None, "core": {}, "packages": {}}
+    state = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    state.setdefault("version", None)
+    files = state.setdefault("files", {})
+    for name, entry in state.pop("core", {}).items():
+        files.setdefault(f"Core/{name}", entry)
+    state.setdefault("packages", {})
+    return state
 
 
 def save_state(client, state):
     path = client / STATE
-    if state["core"] or state["packages"]:
+    if state["files"] or state["packages"]:
         path.write_text(json.dumps(state, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     elif path.exists():
         path.unlink()
 
 
 def files_of(root):
-    return {p.relative_to(root).as_posix(): p for p in sorted(root.rglob("*")) if p.is_file() and p.name not in SKIP}
+    """{relative path: path} of the files in a folder, without system clutter and UI+'s kept copies."""
+    return {p.relative_to(root).as_posix(): p for p in sorted(root.rglob("*"))
+            if p.is_file() and p.name not in SKIP and not p.name.endswith(BACKUP)}
 
 
-# ---- Core: patched in place ------------------------------------------------------------------------------------------
+# ---- the client's UI files: patched in place -------------------------------------------------------------------------
+
+def ui_file(client, rel):
+    """A file of the client's UI/Packages, by its path there ("Core/window.xml")."""
+    return client / "UI" / "Packages" / rel
+
 
 def made_by_ui_plus(entry, backup):
-    """Whether a Core file is UI+'s own, one the client doesn't have: it gets no kept copy, and uninstalling deletes
-    it. Earlier installers took such a file for the client's own when installing again and kept an empty copy of it,
+    """Whether a file is UI+'s own, one the client doesn't have: it gets no kept copy, and uninstalling deletes it.
+    Earlier installers took such a Core file for the client's own when installing again and kept an empty copy of it,
     so an empty kept copy means the same."""
     return entry.get("created", False) or (backup.exists() and backup.stat().st_size == 0)
 
 
-def core_base(client, state, name):
-    """The client's own file for a Core patch, without UI+'s changes: the kept copy while the installed file is still
-    UI+'s, else the file in the client with UI+'s last changes taken out where they are still in it. Nothing, for a
-    file UI+ makes."""
-    target = client / "UI" / "Packages" / "Core" / name
-    backup = target.with_name(name + BACKUP)
-    entry = state["core"].get(name)
+def original(client, state, rel):
+    """The client's own file without UI+'s changes, its style, and whether UI+ makes the file: the kept copy while
+    the installed file is still UI+'s, else the file in the client with UI+'s last changes taken out where they are
+    still in it. Nothing, for a file UI+ makes."""
+    target = ui_file(client, rel)
+    backup = target.with_name(target.name + BACKUP)
+    entry = state["files"].get(rel)
     made = entry is not None and made_by_ui_plus(entry, backup)
     if not target.exists():
         return "", (False, False), entry is None or made
@@ -322,12 +342,16 @@ def core_base(client, state, name):
     return text, style, False
 
 
-def plan_core(client, state, diffs):
+def plan_files(client, state, items):
+    """What installing writes, worked out before anything is: per (path, diff) of items the path, the diff, the
+    client's own text and its style, UI+'s text, and whether UI+ makes the file."""
     plan = []
-    for diff_path in diffs:
-        name = diff_path.name[:-len(".diff")]
-        diff = diff_path.read_text(encoding="utf-8")
-        base, style, created = core_base(client, state, name)
+    for rel, diff in items:
+        package = rel.split("/", 1)[0]
+        if not ui_file(client, package).is_dir():
+            raise PatchError(f"the client has no package UI/Packages/{package}. It is not the client this version of "
+                             f"UI+ was made for (client {MADE_FOR}).")
+        base, style, created = original(client, state, rel)
         try:
             new = apply_diff(base, diff)
         except PatchError as error:
@@ -335,38 +359,40 @@ def plan_core(client, state, diffs):
                 base = apply_diff(base, diff, reverse=True)
                 new = apply_diff(base, diff)
             except PatchError:
-                raise PatchError(f"UI/Packages/Core/{name}: {error}. The client's file is not the one this version of "
-                                 f"UI+ was made for (client {MADE_FOR}).") from None
+                raise PatchError(f"UI/Packages/{rel}: {error}. The client's file is not the one this version of UI+ "
+                                 f"was made for (client {MADE_FOR}).") from None
             created = created or not base  # nothing of the client's left in it: a file UI+ made
-        plan.append((name, diff, base, style, new, created))
+        plan.append((rel, diff, base, style, new, created))
     return plan
 
 
-def write_core(client, state, plan):
-    core, changed = client / "UI" / "Packages" / "Core", 0
-    for name, diff, base, style, new, created in plan:
-        target, backup = core / name, core / (name + BACKUP)
+def write_files(client, state, plan):
+    changed = 0
+    for rel, diff, base, style, new, created in plan:
+        target = ui_file(client, rel)
+        backup = target.with_name(target.name + BACKUP)
         if not created:
             data = encode(base, style)
             if not backup.exists() or backup.read_bytes() != data:
                 backup.write_bytes(data)
         elif backup.exists():  # a kept copy of a file UI+ made: the empty one an earlier installer left
             backup.unlink()
-            say(f"  removed UI/Packages/Core/{name}{BACKUP} (UI+ made that file, the client has none to keep)")
+            say(f"  removed UI/Packages/{rel}{BACKUP} (UI+ made that file, the client has none to keep)")
             changed += 1
         data = encode(new, style)
         if not target.exists() or target.read_bytes() != data:
+            target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(data)
-            say(f"  patched UI/Packages/Core/{name}")
+            say(f"  {'added' if created else 'patched'} UI/Packages/{rel}")
             changed += 1
-        state["core"][name] = {"sha": sha(data), "diff": diff, "created": created}
+        state["files"][rel] = {"sha": sha(data), "diff": diff, "created": created}
     return changed
 
 
-def remove_core(client, state, name):
-    core = client / "UI" / "Packages" / "Core"
-    target, backup = core / name, core / (name + BACKUP)
-    entry = state["core"].pop(name)
+def remove_file(client, state, rel):
+    target = ui_file(client, rel)
+    backup = target.with_name(target.name + BACKUP)
+    entry = state["files"].pop(rel)
     made = made_by_ui_plus(entry, backup)
     if not target.exists():
         if backup.exists():
@@ -377,58 +403,90 @@ def remove_core(client, state, name):
             target.unlink()
             if backup.exists():
                 backup.unlink()
-            say(f"  removed UI/Packages/Core/{name}")
+            say(f"  removed UI/Packages/{rel}")
         elif backup.exists():
             target.write_bytes(backup.read_bytes())
             backup.unlink()
-            say(f"  put back the client's UI/Packages/Core/{name}")
+            say(f"  put back the client's UI/Packages/{rel}")
         return
     text, style = decode(target.read_bytes())
     try:
         base = apply_diff(text, entry["diff"], reverse=True)
         if made and not base:
             target.unlink()
-            say(f"  removed UI/Packages/Core/{name}")
+            say(f"  removed UI/Packages/{rel}")
         else:
             target.write_bytes(encode(base, style))
-            say(f"  took UI+'s changes out of UI/Packages/Core/{name} (it changed since UI+ installed it)")
+            say(f"  took UI+'s changes out of UI/Packages/{rel} (it changed since UI+ installed it)")
     except PatchError:
-        say(f"  left UI/Packages/Core/{name}: it changed since UI+ installed it and has none of UI+'s changes left")
+        say(f"  left UI/Packages/{rel}: it changed since UI+ installed it and has none of UI+'s changes left")
     if backup.exists():
         backup.unlink()
 
 
-# ---- packages: forked from the client's bundled ones -----------------------------------------------------------------
+# ---- packages: the client's as UI+ changes them, and UI+'s own -----------------------------------------------------
 
-def build_package(client, source, generated=True):
-    """{relative path: bytes} of a UI+ package: the bundled package it names, patched, plus UI+'s own files, with the
-    files made on this computer in place of their placeholders (unless generated is False)."""
+def stock_of(source):
+    """The client's package a window in packages/ patches, from its stock-package.txt; None for an addon of UI+'s
+    own."""
+    path = source / STOCK
+    return path.read_text(encoding="utf-8").strip() if path.exists() else None
+
+
+def original_package(client, state, stock):
+    """{relative path: bytes} of one of the client's packages as the client has it: without UI+'s changes, the kept
+    copies and the files UI+ adds."""
+    root = ui_file(client, stock)
+    if not root.is_dir():
+        raise PatchError(f"the client has no package UI/Packages/{stock}")
     files = {}
-    stock_file = source / STOCK
-    stock_name = stock_file.read_text(encoding="utf-8").strip() if stock_file.exists() else None
-    if stock_name:
-        stock = client / "UI" / "Packages" / stock_name
-        if not stock.is_dir():
-            raise PatchError(f"packages/{source.name}: the client has no bundled package {stock_name}")
-        files = {rel: path.read_bytes() for rel, path in files_of(stock).items()}
+    for rel, path in files_of(root).items():
+        key = f"{stock}/{rel}"
+        if key in state["files"]:
+            base, style, created = original(client, state, key)
+            if not created:
+                files[rel] = encode(base, style)
+        else:
+            files[rel] = path.read_bytes()
+    return files
+
+
+def own_file(source, rel, generated=True):
+    """One of UI+'s own files in packages/, or the file made on this computer in place of its placeholder."""
+    made = GENERATED.get((source.name, rel))
+    return made.read_bytes() if generated and made and made.is_file() else (source / rel).read_bytes()
+
+
+def window_items(source, stock, generated=True):
+    """(path under UI/Packages, diff) for each file a window in packages/ changes or adds in the client's package: its
+    patches, and its own files as patches that add them."""
+    items = []
     for rel, path in files_of(source).items():
         if rel == STOCK:
             continue
-        if rel.endswith(".diff") and stock_name:
-            target = rel[:-len(".diff")]
-            if target not in files:
-                raise PatchError(f"packages/{source.name}: {stock_name} has no {target}")
-            text, style = decode(files[target])
-            try:
-                files[target] = encode(apply_diff(text, path.read_text(encoding="utf-8")), style)
-            except PatchError as error:
-                raise PatchError(f"UI/Packages/{stock_name}/{target}: {error}. The client's file is not the one this "
-                                 f"version of UI+ was made for (client {MADE_FOR}).") from None
+        if rel.endswith(".diff"):
+            items.append((f"{stock}/{rel[:-len('.diff')]}", path.read_text(encoding="utf-8")))
         else:
-            files[rel] = path.read_bytes()
-    for (name, rel), made in GENERATED.items():
-        if generated and name == source.name and rel in files and made.is_file():
-            files[rel] = made.read_bytes()
+            text = decode(own_file(source, rel, generated))[0]
+            items.append((f"{stock}/{rel}", make_diff("", text, f"UI/Packages/{stock}/{rel}")))
+    return items
+
+
+def build_package(client, source, generated=True):
+    """{relative path: bytes} of a package as UI+ makes it: for a window the client's package with UI+'s changes, for
+    an addon its own files."""
+    stock = stock_of(source)
+    if not stock:
+        return {rel: own_file(source, rel, generated) for rel in files_of(source)}
+    files = original_package(client, load_state(client), stock)
+    for key, diff in window_items(source, stock, generated):
+        rel = key.split("/", 1)[1]
+        text, style = decode(files[rel]) if rel in files else ("", (False, False))
+        try:
+            files[rel] = encode(apply_diff(text, diff), style)
+        except PatchError as error:
+            raise PatchError(f"UI/Packages/{key}: {error}. The client's file is not the one this version of UI+ was "
+                             f"made for (client {MADE_FOR}).") from None
     return files
 
 
@@ -498,6 +556,61 @@ def repo_packages():
     return sorted(p for p in root.iterdir() if p.is_dir() and files_of(p)) if root.is_dir() else []
 
 
+def repo_items(generated=True):
+    """(path under UI/Packages, diff) for every file of the client's UI that UI+ changes or adds."""
+    items = [(f"Core/{p.name[:-len('.diff')]}", p.read_text(encoding="utf-8")) for p in repo_core()]
+    for source in repo_packages():
+        stock = stock_of(source)
+        if stock:
+            items += window_items(source, stock, generated)
+    return items
+
+
+def repo_addons():
+    return [source for source in repo_packages() if not stock_of(source)]
+
+
+# ---- the client's choice of packages ---------------------------------------------------------------------------------
+
+CHOICE = re.compile(rb'^[ \t]*<Value name="UiPackageProvider_[^"]*" value="&quot;(duramson\.[^&"]*)&quot;" />[ \t]*\r?\n',
+                    re.M)
+
+
+def prefs_file():
+    """The client's settings, where Options > Interface & HUD > UI packages keeps its choices."""
+    return package_dir().parent / "prefs" / "Client.xml"
+
+
+def drop_choices(client):
+    """Takes the client's choice of UI+ packages that are gone out of its settings, so it uses its own window there.
+    Before 2026-11-16, UI+'s windows were packages of their own, picked in Options > Interface & HUD > UI packages;
+    now the client's own windows carry UI+'s changes. Returns how many it took out."""
+    path = prefs_file()
+    if not path.is_file():
+        return 0
+    there = set()
+    for root in (package_dir(), client / "UI" / "Addons"):
+        if root.is_dir():
+            for folder in root.iterdir():
+                manifest = folder / "package.xml"
+                if manifest.is_file():
+                    there.add(package_id(manifest.read_bytes()))
+    gone = []
+
+    def drop(match):
+        if match.group(1).decode() in there:
+            return match.group(0)
+        gone.append(match.group(1).decode())
+        return b""
+
+    data = CHOICE.sub(drop, path.read_bytes())
+    if gone:
+        path.write_bytes(data)
+        say(f"  Options > Interface & HUD > UI packages: {len(gone)} window(s) set back from UI+'s old packages "
+            f"({', '.join(sorted(gone))}) to the client's own")
+    return len(gone)
+
+
 def ask_font():
     """The question before installing: generate Notum Grotesk too? Only asked when someone is there to answer."""
     if not FONT_TOOL.exists() or not sys.stdin.isatty():
@@ -529,27 +642,30 @@ def install_font(client, state):
 
 def install(client):
     state = load_state(client)
-    if ask_font():  # first, so the nameplates package gets the pixels made with it
+    if ask_font():  # first, so the nameplates get the pixels made with it
         install_font(client, state)
     say(f"Installing {TITLE} {version()} into {client}")
     if client_version(client) != MADE_FOR:
         say(f"  note: this is client {client_version(client)}, UI+ was made for {MADE_FOR}. It installs what still "
             f"fits and stops at anything that doesn't.")
     try:  # everything is worked out before anything is written
-        core = plan_core(client, state, repo_core())
-        packages = [(source.name, build_package(client, source)) for source in repo_packages()]
-        for name, files in packages:
-            check_package(client, name, files)
+        files = plan_files(client, state, repo_items())
+        addons = [(source.name, build_package(client, source)) for source in repo_addons()]
+        for name, data in addons:
+            check_package(client, name, data)
     except PatchError as error:
         sys.exit(f"Nothing was changed. {error}")
     try:
-        changed = write_core(client, state, core)
-        for name, files in packages:
-            changed += write_package(client, state, name, files)
-        for name in sorted(set(state["core"]) - {p.name[:-len('.diff')] for p in repo_core()}):
-            remove_core(client, state, name)
-        for name in sorted(set(state["packages"]) - {p.name for p in repo_packages()}):
-            remove_package(state, name)
+        changed = write_files(client, state, files)
+        for name, data in addons:
+            changed += write_package(client, state, name, data)
+        for rel in sorted(set(state["files"]) - {plan[0] for plan in files}):
+            remove_file(client, state, rel)
+            changed += 1
+        for name in sorted(set(state["packages"]) - {source.name for source in repo_addons()}):
+            remove_package(state, name)  # an addon UI+ no longer has, or a window from before 2026-11-16
+            changed += 1
+        changed += drop_choices(client)
     except PatchError as error:
         save_state(client, state)
         sys.exit(str(error))
@@ -559,22 +675,21 @@ def install(client):
         say("  nothing to change: this version is installed")
     say()
     say("Done. It loads at your next character login (log out to character select and back in).")
-    say("- The window frame changes every window by itself. The client's own screens (Options, login) take it")
-    say("  after a restart of the game.")
-    say("- Pick UI+'s windows in Options > Interface & HUD > UI packages, where they show as")
-    say("  \"External [duramson.<window>] - UI+\": " + ", ".join(p.name for p in repo_packages()) + ".")
+    say("- UI+ changes the client's own windows, so there is nothing to pick in Options. The client's own screens")
+    say("  (Options, login) take the new window frame after a restart of the game.")
 
 
 def uninstall(client):
     state = load_state(client)
-    if not state["core"] and not state["packages"]:
+    if not state["files"] and not state["packages"]:
         say("UI+ is not installed in this client.")
         return
     say(f"Removing {TITLE} from {client}")
-    for name in sorted(state["core"]):
-        remove_core(client, state, name)
+    for rel in sorted(state["files"]):
+        remove_file(client, state, rel)
     for name in sorted(state["packages"]):
         remove_package(state, name)
+    drop_choices(client)
     fonts = installed_fonts(state)
     state.pop("font", None)
     state.pop("fonts", None)
@@ -582,37 +697,41 @@ def uninstall(client):
         subprocess.run([sys.executable, str(FONT_TOOL), "uninstall"])
     save_state(client, state)
     say("Done. The client's own UI is back at your next character login (the Options and login screens after a")
-    say("restart). If you picked UI+'s windows in Options, the client falls back to its own ones.")
+    say("restart).")
 
 
 def status(client):
     state = load_state(client)
     say(f"Client: {client} (version {client_version(client)}; UI+ {version()} was made for {MADE_FOR})")
-    if not state["core"] and not state["packages"]:
+    if not state["files"] and not state["packages"]:
         say("UI+ is not installed.")
         return
     say(f"UI+ {state['version']} is installed:")
     try:
-        core = {name: new for name, _, _, _, new, _ in plan_core(client, state, repo_core())}
+        planned = {plan[0]: plan[4] for plan in plan_files(client, state, repo_items())}
     except PatchError as error:
-        core, note = {}, str(error)
+        planned, note = {}, str(error)
     else:
         note = None
-    for name in sorted(set(state["core"]) | set(core)):
-        target = client / "UI" / "Packages" / "Core" / name
-        entry = state["core"].get(name)
+    for rel in sorted(set(state["files"]) | set(planned)):
+        target = ui_file(client, rel)
+        entry = state["files"].get(rel)
         if not entry:
-            say(f"  Core {name}: not installed yet")
+            say(f"  {rel}: not installed yet")
         elif not target.exists() or sha(target.read_bytes()) != entry["sha"]:
-            say(f"  Core {name}: changed since it was installed (a client update?): install again")
-        elif name in core and encode(core[name], decode(target.read_bytes())[1]) != target.read_bytes():
-            say(f"  Core {name}: installed, this copy of UI+ has a newer version")
+            say(f"  {rel}: changed since it was installed (a client update?): install again")
+        elif rel in planned and encode(planned[rel], decode(target.read_bytes())[1]) != target.read_bytes():
+            say(f"  {rel}: installed, this copy of UI+ has a newer version")
         else:
-            say(f"  Core {name}: installed")
-    for source in repo_packages():
-        entry = state["packages"].get(source.name)
-        say(f"  window {source.name}: " + (f"installed as {package_dir() / entry['folder']}" if entry else
-                                          "not installed yet"))
+            say(f"  {rel}: installed")
+    addons = {source.name for source in repo_addons()}
+    for name in sorted(addons | set(state["packages"])):
+        entry = state["packages"].get(name)
+        if name not in addons:
+            say(f"  package {entry['folder']}: from an earlier UI+, installing again removes it")
+        else:
+            say(f"  addon {name}: " + (f"installed as {package_dir() / entry['folder']}" if entry else
+                                       "not installed yet"))
     for font in installed_fonts(state):
         say(f"  font {font}: installed")
     if note:

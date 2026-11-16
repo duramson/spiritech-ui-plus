@@ -34,9 +34,8 @@ windows' right edge too, and gives the docked Stats window a scroll bar of its o
 scroll bar: a window that doesn't fit, as Stats here, is cut off at the bottom. Its title bars are black and 19
 pixels high, the collapse button cream where the close button takes the interface colour.
 
-UI+ draws the title bars that way for every window that docks, with nothing to choose. The two scroll bars belong
-to the Control Center and the Stats window, so they go with UI+'s own Control Center and Stats: set both to UI+ in
-Options → Interface & HUD → UI packages. UI+'s Stats has no scroll bar when it floats either.
+UI+ draws the title bars that way for every window that docks. The two scroll bars belong to the Control Center
+and the Stats window, whose layouts UI+ changes too; Stats has no scroll bar when it floats either.
 
 ![The rollup: Anarchy Online, Spiritech as shipped, and Spiritech with UI+](images/rollup.png)
 
@@ -135,10 +134,10 @@ the frame's blue. The School Tabs layout keeps Spiritech's field for now.
 
 ## Inventory: search and slot count
 
-UI+ replaces the Inventory window (Options > Interface & HUD > UI packages, "duramson.inventory"), the one package the
-client draws the inventory, bags, banks and loot with. It takes out what got in the way: the tooltips on the search
-field ("Item name, at least three letters, then Enter") and on the slot count ("Slots holding an item, of all slots")
-only repeated what they show, and the search's opened right over the slot count and ran far past the window's edge.
+UI+ changes the Inventory window, the one package the client draws the inventory, bags, banks and loot with. It takes
+out what got in the way: the tooltips on the search field ("Item name, at least three letters, then Enter") and on the
+slot count ("Slots holding an item, of all slots") only repeated what they show, and the search's opened right over
+the slot count and ran far past the window's edge.
 
 The search and the count were Spiritech's grey, rounded input fields. Now each sits in a frame like the Nano Programs
 window's second frame, in the tab frame's blue line on its dark background, and the two mirror each other: the
@@ -201,18 +200,17 @@ as shipped. The original client's picture has no nano running.
 
 ## Nano Programs: the bundled layout
 
-UI+ replaces the Nano Programs window (Options > Interface & HUD > UI packages, "duramson.nano"); its own layout is
-brought close to the original client's. The window is called "Programs" as there. The school buttons are plain
-buttons drawn as the original draws them: each as wide as its label and about 10 pixels more on either side, each
-row's free width shared equally around its buttons, a lone one centred (Spiritech shows pictures with the label baked
-in, at fixed widths, packed to the left). Under the buttons the list and the grid sit in a second frame, as in the
-original client: its line one pixel clear of the window's frame at the sides and the bottom and 4 pixels under the
-buttons, the tab background inside it a little darker and bluer than the window's. The search sits in that frame
-under the grid, lined up with the tiles, as far from the frame on the left as on the right (it used to stand half a
-pixel closer to it on the left). The tiles show the slot picture at 40 pixels, 2 apart, with the icon 4 pixels in, and
-stand 4 pixels clear of the frame's lines at the sides and 3 under its top. The search field has no tooltip ("Nano
-name"): it only repeated what the field shows. The middle picture has Psi picked, the others Medical; the UI+ picture
-uses Notum Grotesk 200.
+UI+ brings the Nano Programs window's own layout close to the original client's. The window is called "Programs" as
+there. The school buttons are plain buttons drawn as the original draws them: each as wide as its label and about 10
+pixels more on either side, each row's free width shared equally around its buttons, a lone one centred (Spiritech
+shows pictures with the label baked in, at fixed widths, packed to the left). Under the buttons the list and the grid
+sit in a second frame, as in the original client: its line one pixel clear of the window's frame at the sides and the
+bottom and 4 pixels under the buttons, the tab background inside it a little darker and bluer than the window's. The
+search sits in that frame under the grid, lined up with the tiles, as far from the frame on the left as on the right
+(it used to stand half a pixel closer to it on the left). The tiles show the slot picture at 40 pixels, 2 apart, with
+the icon 4 pixels in, and stand 4 pixels clear of the frame's lines at the sides and 3 under its top. The search field
+has no tooltip ("Nano name"): it only repeated what the field shows. The middle picture has Psi picked, the others
+Medical; the UI+ picture uses Notum Grotesk 200.
 
 ![Nano Programs: Anarchy Online, Spiritech as shipped, Spiritech with UI+](images/nano-programs-bundled.png)
 
